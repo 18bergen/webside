@@ -1,0 +1,164 @@
+<script type='text/javascript'>
+//<![CDATA[
+
+function validateOnSubmit() {
+    var elem;
+    var errs=0;
+    // execute all element validations in reverse order, so focus gets
+    // set to the first one in error.
+    
+    if ($('not').checked) {
+    	return true;
+    }
+    
+    if (!validatePresent(getObject('firstname'),  'firstname_notes'))        errs += 1; 
+    if (!validatePresent(getObject('lastname'),  'lastname_notes'))        errs += 1; 
+
+    if (!validatePresent(getObject('street'),  'street_notes'))        errs += 1; 
+    if (!validatePresent(getObject('streetno'),  'streetno_notes'))        errs += 1; 
+    if (!validatePostNo(getObject('postno'),  'postno_notes'))        errs += 1; 
+    if (!validatePresent(getObject('city'),  'city_notes'))        errs += 1; 
+ 
+    if (!validatePhone  (getObject('homephone'), 'homephone_notes', false)) errs += 1; 
+    if (!validatePhone  (getObject('cellular'), 'cellular_notes', false)) errs += 1; 
+    if (!validateEmail  (getObject('email'), 'email_notes', false)) errs += 1; 
+
+    if (errs>1)  alert('Det er felt som må korrigeres før skjemaet kan sendes.');
+    if (errs==1) alert('Det er et felt som må korrigeres før skjemaet kan sendes.');
+
+    return (errs==0);
+   
+};
+
+function sjekkp2() {
+	if ($('not').checked) {
+		Element.hide('parent2_details');
+	} else {
+		Element.show('parent2_details');	
+	}
+}
+
+function autoFill(){
+	getObject('firstname').value = 'Juhl';
+	getObject('middlename').value = 'Ellingsen';
+	getObject('lastname').value = 'Nihlsen';
+	getObject('street').value = 'Stemmeveien';
+	getObject('streetno').value = '10';
+	getObject('postno').value = '5009';
+	getObject('city').value = 'Nordpolby';
+	getObject('homephone').value = '55318481';
+	getObject('cellular').value = '90207510';
+	getObject('email').value = 'juhl@nordpolen.net';
+}
+
+//]]>
+</script>
+
+<form method="post" action="%formaction%" onsubmit="return validateOnSubmit();">
+
+	<input type="hidden" name="id" value="%id%" />
+	<input type="hidden" name="group" value="%group%" />
+
+	<div id="steg4" class="reg_steg">
+		
+		<h3><img src="%image_dir%pil.png" /> Informasjon om foresatt 2:</h3>
+		
+		<ul>
+			<li>
+				Dersom medlemmet ikke har to foresatte, dersom foresatt 2 ikke har kontakt med 
+				medlemmet eller dersom det av andre grunner ikke er relevant å knytte medlemmet 
+				til mer enn én foresatt, krysser du bare av i avkryssingsruten under.
+			</li>
+		</ul>
+		<div id='regschema'>
+		<label for="not" onclick="sjekkp2();">
+			<input type="checkbox" id="not" name="ignore" onchange="sjekkp2();" %ignore% /> 
+			Jeg ønsker kun å registrere én foresatt.
+		</label>
+		</div>
+		
+		<div id="parent2_details" style="%ignore_block%">
+		<table class="skjema">
+			<tr>
+				<td>
+					<label for="firstname">Fornavn<span id="firstname_notes" class="notes"></span>:</label>
+					<input type="text" name="firstname" id="firstname" value="%firstname%" maxlength="50" style="width:180px;" onblur="validatePresent(this,'firstname_notes');" />
+				</td><td>
+					<label for="middlename">Mellomnavn:</label>
+					<input type="text" name="middlename" id="middlename" value="%middlename%" maxlength="50" style="width:100px;" />
+				</td><td>
+					<label for="lastname">Etternavn<span id="lastname_notes" class="notes"></span>:</label>
+					<input type="text" name="lastname" id="lastname" value="%lastname%" maxlength="50" style="width:180px;" onblur="validatePresent(this,'lastname_notes');" />
+				</td>
+			</tr>
+		</table>
+		
+		<table class="skjema">
+			<tr>
+				<td>
+					<label for="street">Gate<span id="street_notes" class="notes"></span>:</label>
+					<input type="text" name="street" id="street" maxlength="50" style="width:250px;" value="%street%" onblur="validatePresent(this,'street_notes');" />
+					
+				</td><td>
+					<label for="streetno">Gatenr.<span id="streetno_notes" class="notes"></span>:</label>
+					<input type="text" name="streetno" id="streetno" maxlength="5" style="width:40px;" value="%streetno%" onblur="validatePresent(this,'streetno_notes');" />
+				</td>
+			</tr>
+		</table>
+		
+		<table class="skjema">
+			<tr>
+				<td>
+					<label for="postno">Postnr.<span id="postno_notes" class="notes"></span>:</label>
+					<input type="text" name="postno" id="postno" maxlength="5" style="width:40px;" value="%postno%" onblur="validatePostNo(this,'postno_notes',true);" />
+				</td><td>
+					<label for="city">Sted<span id="city_notes" class="notes"></span>:</label>
+					<input type="text" name="city" id="city" maxlength="50" style="width:130px;" value="%city%" onblur="validatePresent(this,'city_notes');" />
+				</td>
+			</tr>
+		</table>
+		
+		<table class="skjema">
+			<tr>
+				<td>
+					<label for="homephone">Tlf<span id="homephone_notes" class="notes"></span>:</label>
+					<input type="text" name="homephone" id="homephone" value="%homephone%" maxlength="12" style="width:100px;" onblur="validatePhone(this,'homephone_notes',false);" />
+				</td><td>
+					<label for="cellular">Mobil<span id="cellular_notes" class="notes"></span>:</label>
+					<input type="text" name="cellular" id="cellular" value="%cellular%" maxlength="12" style="width:100px;" onblur="validatePhone(this,'cellular_notes',false);" />
+				</td>
+			</tr>
+		</table>
+		
+		<table class="skjema">
+			<tr>
+				<td>
+					<label for="email">E-post<span id="email_notes" class="notes"></span>:</label>
+					<input type="text" name="email" id="email" value="%email%" maxlength="50" style="width:300px;" onblur="validateEmail(this,'email_notes',false);" />
+				</td>
+			</tr>
+		</table>
+		</div>
+		
+		<p>
+			<input type="submit" value="Fortsett" />
+			<!--<input type="button" value="autofill" onclick="autoFill()">-->
+		</p>
+	
+	</div>
+	<div id="indicator" class="reg_below">
+		3 av 4
+		<div id="indicatorbar" style="width:69%;"></div>
+	</div>
+	
+
+</form>
+
+<script type="text/javascript">
+//<![CDATA[
+	YAHOO.util.Event.onDOMReady(function() {
+		Nifty("div.reg_steg");
+		Nifty("div.reg_below","bottom");
+	});
+//]]>
+</script>

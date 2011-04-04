@@ -1,0 +1,213 @@
+function stopMembershipForm($member,$id){
+
+		if (!$this->allow_editmemberships){
+			$this->permissionDenied();
+			return 0;
+		}
+
+		if (!is_numeric($id)) $this->fatalError("Invalid input 8.1");
+		$m = $this->members[$member];
+		$url_post = $this->generateURL(array("noprint=true","membershipsave=stopp"));
+		$url_back = $this->generateURL(array("editmemberships")); 
+		if (!$this->validateMembershipRelation($member,$id)){
+			return $this->notSoFatalError("Medlemskapet eksisterer ikke, eller det tilhører en annen bruker enn gitt."); 
+		}
+		return '
+			<h3>'.$m->fullname.': Medlemskap</h3>
+			<form method="post" action="'.$url_post.'">
+				<input type="hidden" name="membership_id" value="'.$id.'" />
+				Er du sikker på at du vil avslutte medlemskapet i <strong>'.$this->groupCaptionFromMembership($id).'</strong>?<br /><br />
+				
+				<input type="submit" value="     Ja      " /> 
+				<input type="button" value="     Nei      " onclick="window.location=\''.$url_back.'\'" />
+			</form>
+		';
+	}
+
+	function stopMembershipFromPOST(){
+
+		if (!$this->allow_editmemberships) return $this->permissionDenied();
+
+		$id = $_POST['membership_id'];
+		if (!is_numeric($id)) $this->fatalError("Invalid input 1.1");
+		
+		if (!$this->validateMembershipRelation($this->current_medlem,$id)){ 
+			return $this->notSoFatalError("Medlemskapet eksisterer ikke, eller det tilhører en annen bruker enn gitt."); 
+		}
+		
+		$details = $this->fetchMembershipDetails($id);
+
+		// Stopp alle patruljeverv i gruppen (peff, ass) hvis eksisterende
+		$vervObj = new vervredigering();
+		$verv_id = $vervObj->stoppAllePatruljeVerv($this->current_medlem,$details['groupid']);
+		unset($vervObj);
+
+		$this->stopMembership($id);
+		$this->redirect($this->generateURL("editmemberships",true)); 
+	}
+	
+	function editMembershipInnutmelding($member,$id){
+
+		if (!$this->allow_editmemberships) return $this->permissionDenied();
+
+		if (!is_numeric($id)) $this->fatalError("Invalid input 10.1");
+		$url_post = $this->generateURL(array("noprint=true","membershipsave=innutm"));
+		$url_back = $this->generateURL(array("editmemberships"));
+		
+		if (!$this->validateMembershipRelation($member,$id)){ 
+			return $this->notSoFatalError("Medlemskapet eksisterer ikke, eller det tilhører en annen bruker enn gitt."); 
+		}
+		$details = $this->fetchMembershipDetails($id);
+		$current = date("Y",time());
+		return '
+			<h3>'.$this->members[$member]->fullname.': Medlemskap</h3>
+			<form name="membershipform" id="membershipform" method="post" action="'.$url_post.'">
+				<input type="hidden" name="membership_id" value="'.$id.'" />
+				Medlem av '.$details["groupcaption"].'
+				<table>
+					<tr><td>fra </td><td>'.$this->makeDateField(2,$details["membershipstart"]).'</td></tr>
+					<tr><td>til </td><td>'.$this->makeDateField(4,$details["membershipend"]).'</td></tr>
+				</table><br /><br />
+				
+				<input type="button" value="Avbryt" onclick="window.location=\''.$url_back.'\'" /> 
+				<input type="submit" value="Lagre" />
+			</form>
+		';
+	}
+
+	function saveMembershipInnutmelding(){
+
+		if (!$this->allow_editmemberships) return $this->permissionDenied();
+
+		$id = $_POST['membership_id'];
+		if (!is_numeric($id)) $this->fatalError("Invalid input 1.1");
+		if (!$this->validateMembershipRelation($this->current_medlem,$id)){ 
+			return $this->notSoFatalError("Medlemskapet eksisterer ikke, eller det tilhører en annen bruker enn gitt."); 
+		}
+		$dmy = explode('-',$_POST['cal2date']);
+		if (count($dmy) != 3) $this->fatalError("Invalid input 1.2");
+		$fra = addslashes($this->generateTimeStamp($dmy[2],$dmy[1],$dmy[0],0,0));
+		$dmy = explode('-',$_POST['cal4date']);
+		if (count($dmy) != 3) $this->fatalError("Invalid input 1.2");
+		$til = addslashes($this->generateTimeStamp($dmy[2],$dmy[1],$dmy[0],0,0));
+		if ($til > time()){
+			$this->fatalError("Medlemskapet kan ikke slutte i fremtiden.");
+		}
+		if ($til < $fra){
+			$this->fatalError("Medlemskapet kan ikke slutte før det begynner.");
+		}
+		$rs = $this->query("UPDATE $this->table_memberships SET fra='$fra', til='$til' WHERE id='$id'");
+		$this->redirect($this->generateURL("editmemberships",true));
+	}
+
+
+
+	function editMembershipInnmelding($member,$id){
+
+		if (!$this->allow_editmemberships) return $this->permissionDenied();
+
+		if (!is_numeric($id)) $this->fatalError("Invalid input 8.1");
+		$url_post = $this->generateURL(array("noprint=true","membershipsave=innm"));
+		$url_back = $this->generateURL(array("editmemberships"));
+		
+		if (!$this->validateMembershipRelation($member,$id)){ 
+			$this->notSoFatalError("Medlemskapet eksisterer ikke, eller det tilhører en annen bruker enn gitt."); 
+			return 0; 
+		}
+
+		$details = $this->fetchMembershipDetails($id);
+		$current = date("Y",time());
+		return '
+			<h3>'.$this->members[$member]->fullname.': Medlemskap</h3>
+			<form name="membershipform" id="membershipform" method="post" action="'.$url_post.'">
+				<input type="hidden" name="membership_id" value="'.$id.'" />
+				<table>
+					<tr><td>Medlem av <strong>'.$details["groupcaption"].'</strong> siden </td><td>'.$this->makeDateField(2,$details["membershipstart"]).'</td></tr>
+				</table><br /><br />
+				
+				<input type="button" value="Avbryt" onclick="window.location=\''.$url_back.'\'" /> 
+				<input type="submit" value="Lagre" />
+			</form>
+		';
+	}
+
+	function saveMembershipInnmelding(){
+
+		if (!$this->allow_editmemberships) return $this->permissionDenied();
+
+		$id = $_POST['membership_id'];
+		if (!is_numeric($id)) $this->fatalError("Invalid input 1.1");
+		if (!$this->validateMembershipRelation($this->current_medlem,$id)){ 
+			return $this->notSoFatalError("Medlemskapet eksisterer ikke, eller det tilhører en annen bruker enn gitt."); 
+		}
+		$dmy = explode('-',$_POST['cal2date']);
+		if (count($dmy) != 3) $this->fatalError("Invalid input 1.2");
+		$fra = addslashes($this->generateTimeStamp($dmy[2],$dmy[1],$dmy[0],0,0));
+		if ($fra >= time()){
+			$this->fatalError("Medlemskapet kan ikke begynne i fremtid!");
+		}
+		$rs = $this->query("UPDATE $this->table_memberships SET fra='$fra' WHERE id='$id'");
+		$this->redirect($this->generateURL("editmemberships",true));
+	}
+	
+	
+	
+	
+	
+	function addMembershipForm($id,$action){
+
+		if (!$this->allow_editmemberships) return $this->permissionDenied();
+
+		if ($action == "nyttaktivt"){
+			if (!$this->allow_addcurrentmembership) return $this->permissionDenied();
+		}
+		
+		$url_post = $this->generateURL(array("noprint=true","membershipsave=$action"));
+		$url_back = $this->generateURL(array("editmemberships"));
+		
+		$grpList = "";
+		foreach ($this->groups as $grp){
+			$add = true;
+			if (($action == "nyttaktivt") && (in_array($grp->id,$this->members[$id]->memberof))) $add = false;
+			if ($add) {
+				$grpList .= "<input type='radio' name='nygruppe' id='ng".$grp->id."' value='".$grp->id."' />\n";
+				$grpList .= "<label for='ng".$grp->id."'>".$grp->caption."</label><br />\n";
+			}
+		}
+		
+		return '
+			<h3>'.$this->members[$id]->fullname.': Medlemskap</h3>
+			<form method="post" action="'.$url_post.'">
+				<h4>Legg til '.(($action == "nyttidl") ? "tidligere" : "nytt").' medlemskap i:</h4>
+				'.$grpList.'
+				<br />
+				<input type="button" value="Avbryt" onclick="window.location=\''.$url_back.'\'" /> 
+				<input type="submit" value="Lagre" />
+			</form>
+		';
+	}
+	
+	function addMembership($member,$action){
+
+		if (!$this->allow_editmemberships) return $this->permissionDenied();
+
+		$gruppe = $_POST['nygruppe'];
+		if (!is_numeric($gruppe)) $this->fatalError("Invalid input 6.1");
+		if (!$this->isGroup($gruppe)) $this->fatalError("Invalid input 6.2");
+		$g = $this->groups[$gruppe];
+
+		if ($action == "nyttaktivt"){
+
+			if (!$this->allow_addcurrentmembership) return $this->permissionDenied();
+		
+			$this->startMembership($member, $gruppe);
+			$this->redirect($this->generateURL("editmemberships",true));
+
+		} else if ($action == "nyttidl"){	
+
+			$id = $this->startMembership($member, $gruppe);
+			$this->stopMembership($id);
+			$this->redirect($this->generateURL(array("membershipedit=innutm","membership=$id"),true));
+			
+		}
+	}

@@ -1,0 +1,68 @@
+
+<form id="regschema" method="post" action="%formaction%">
+
+	<input type="hidden" name="id" value="%id%" />
+
+	<div id="steg5" class="reg_steg">		
+		<h3><img src="%image_dir%pil.png" /> Tips andre </h3>
+				
+		<p>
+			Har du gamle speidervenner som du ønsker skal få vite om gruppens nettside?
+			Skriv inn deres navn og e-postadresse eller telefon-nr på denne siden, så sender vi de informasjon.
+			Alle feltene er valgfrie og du kan fint fortsette uten å fylle inn noe om du ønsker det.
+		</p>
+		
+		<table>
+			<tr>
+				<td><strong>Navn:</strong></td>
+				<td><strong>Telefon-nr.:</strong></td>
+				<td><strong>E-post:</strong></td>
+			</tr>
+			<tr>
+				<td><input name="friend1_name" value="%friend1name%" /></td>
+				<td><input name="friend1_phone" value="%friend1phone%" /></td>
+				<td><input name="friend1_email" value="%friend1email%" /></td>
+			</tr>
+			<tr>
+				<td><input name="friend2_name" value="%friend2name%" /></td>
+				<td><input name="friend2_phone" value="%friend2phone%" /></td>
+				<td><input name="friend2_email" value="%friend2email%" /></td>
+			</tr>
+			<tr>
+				<td><input name="friend3_name" value="%friend3name%" /></td>
+				<td><input name="friend3_phone" value="%friend3phone%" /></td>
+				<td><input name="friend3_email" value="%friend3email%" /></td>
+			</tr>
+			<tr>
+				<td><input name="friend4_name" value="%friend4name%" /></td>
+				<td><input name="friend4_phone" value="%friend4phone%" /></td>
+				<td><input name="friend4_email" value="%friend4email%" /></td>
+			</tr>
+			<tr>
+				<td><input name="friend5_name" value="%friend5name%" /></td>
+				<td><input name="friend5_phone" value="%friend5phone%" /></td>
+				<td><input name="friend5_email" value="%friend5email%" /></td>
+			</tr>
+		</table>
+		
+		<p>
+			<input type="submit" value="Fortsett" />
+		</p>
+	
+	</div>
+	<div id="indicator" class="reg_below">
+		4 av 5
+		<div id="indicatorbar" style="width:72%;"></div>
+	</div>	
+	
+
+</form>
+
+<script type="text/javascript">
+//<![CDATA[
+	YAHOO.util.Event.onDOMReady(function() {
+		Nifty("div.reg_steg");
+		Nifty("div.reg_below","bottom");
+	});
+//]]>
+</script>

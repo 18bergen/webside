@@ -1,0 +1,161 @@
+<script type='text/javascript'>
+//<![CDATA[
+
+function validateOnSubmit() {
+    var elem;
+    var errs=0;
+    // execute all element validations in reverse order, so focus gets
+    // set to the first one in error.
+    if (!validatePresent(getObject('firstname'),  'firstname_notes', true))        errs += 1; 
+    if (!validatePresent(getObject('lastname'),  'lastname_notes', true))        errs += 1; 
+
+    if (!validatePresent(getObject('street'),  'street_notes', true))        errs += 1; 
+    if (!validatePresent(getObject('streetno'),  'streetno_notes', true))        errs += 1; 
+    if (!validatePostNo(getObject('postno'),  'postno_notes', true))        errs += 1; 
+    if (!validatePresent(getObject('city'),  'city_notes', true))        errs += 1; 
+ 
+    if (!validatePhone  (getObject('homephone'), 'homephone_notes', false)) errs += 1; 
+    if (!validatePhone  (getObject('cellular'), 'cellular_notes', false)) errs += 1; 
+    if (!validateEmail  (getObject('email'), 'email_notes', false)) errs += 1; 
+
+    if (errs>1)  alert('Det er felt som må korrigeres før skjemaet kan sendes.');
+    if (errs==1) alert('Det er et felt som må korrigeres før skjemaet kan sendes.');
+
+    return (errs==0);
+   
+};
+
+function autoFill(){
+	getObject('firstname').value = 'Juhl';
+	getObject('middlename').value = 'Ellingsen';
+	getObject('lastname').value = 'Nihlsen';
+	getObject('street').value = 'Stemmeveien';
+	getObject('streetno').value = '10';
+	getObject('postno').value = '5009';
+	getObject('city').value = 'Nordpolby';
+	getObject('homephone').value = '55318481';
+	getObject('cellular').value = '90207510';
+	getObject('email').value = 'juhl@nordpolen.net';
+}
+
+//]]>
+</script>
+
+<div id="steg1" class="reg_steg">
+
+<form method="post" action="%formaction%" onsubmit="return validateOnSubmit();">
+
+	<input type="hidden" name="id" value="%id%" />
+		
+		<h3><img src="%image_dir%pil.png" /> Informasjon om deg selv:</h3>
+		<ul style="border: 1px dashed #bbb; padding: 3px;">
+			<li>
+				Feltene mellomnavn, telefon, mobil, e-post og født kan du velge om du vil fylle 
+				inn, men vi setter pris på mest mulig informasjon om deg.
+			</li>
+			<li>
+				Vi vil sterkt anbefale å fylle inn en e-post-adresse. Da kan du (om du ønsker det) 
+				få mulighet til å logge inn på nettsiden og få tilsendt nyhetsbrev og informasjon.
+			</li>
+		</ul>
+		
+		<table class="skjema" style="display:%group_visibility%">
+			<tr>
+				<td>
+					<label for="group">Ønsker medlemskap i<span id="group_notes" class="notes"></span>:</label>
+					%field_group%
+				</td>
+			</tr>
+		</table>
+		
+		<table class="skjema">
+			<tr>
+				<td>
+					<label for="firstname">Fornavn<span id="firstname_notes" class="notes"></span>:</label>
+					<input type="text" name="firstname" id="firstname" value="%firstname%" maxlength="50" style="width:180px;" onblur="validatePresent(this,'firstname_notes');" />
+				</td><td>
+					<label for="middlename">Mellomnavn:</label>
+					<input type="text" name="middlename" id="middlename" value="%middlename%" maxlength="50" style="width:100px;" />
+				</td><td>
+					<label for="lastname">Etternavn<span id="lastname_notes" class="notes"></span>:</label>
+					<input type="text" name="lastname" id="lastname" value="%lastname%" maxlength="50" style="width:180px;" onblur="validatePresent(this,'lastname_notes');" />
+				</td>
+			</tr>
+		</table>
+		
+		<table class="skjema">
+			<tr>
+				<td>
+					<label for="street">Gate<span id="street_notes" class="notes"></span>:</label>
+					<input type="text" name="street" id="street" value="%street%" maxlength="50" style="width:250px;" onblur="validatePresent(this,'street_notes');" />
+					
+				</td><td>
+					<label for="streetno">Gatenr.<span id="streetno_notes" class="notes"></span>:</label>
+					<input type="text" name="streetno" id="streetno" value="%streetno%" maxlength="5" style="width:40px;" onblur="validatePresent(this,'streetno_notes');" />
+				</td>
+			</tr>
+		</table>
+		
+		<table class="skjema">
+			<tr>
+				<td>
+					<label for="postno">Postnr.<span id="postno_notes" class="notes"></span>:</label>
+					<input type="text" name="postno" id="postno" value="%postno%" maxlength="5" style="width:40px;" onblur="validatePostNo(this,'postno_notes',true);" />
+				</td><td>
+					<label for="city">Sted<span id="city_notes" class="notes"></span>:</label>
+					<input type="text" name="city" id="city" value="%city%" maxlength="50" style="width:130px;" onblur="validatePresent(this,'city_notes');" />
+				</td>
+			</tr>
+		</table>
+		
+		<table class="skjema">
+			<tr>
+				<td>
+					<label for="homephone">Tlf<span id="homephone_notes" class="notes"></span>:</label>
+					<input type="text" name="homephone" id="homephone" value="%homephone%" maxlength="12" style="width:100px;" onblur="validatePhone(this,'homephone_notes',false);" />
+				</td><td>
+					<label for="cellular">Mobil<span id="cellular_notes" class="notes"></span>:</label>
+					<input type="text" name="cellular" id="cellular" value="%cellular%" maxlength="12" style="width:100px;" onblur="validatePhone(this,'cellular_notes',false);" />
+				</td>
+			</tr>
+		</table>
+		
+		<table class="skjema">
+			<tr>
+				<td>
+					<label for="email">E-post<span id="email_notes" class="notes"></span>:</label>
+					<input type="text" name="email" id="email" value="%email%" maxlength="50" style="width:300px;" onblur="validateEmail(this,'email_notes',false);" />
+				</td>
+			</tr>
+		</table>
+		
+		<table class="skjema">
+			<tr>
+				<td>
+					Født:<span id="born_notes" class="notes"></span>:
+					%field_born%
+				</td>
+			</tr>
+		</table>
+		
+		<p>
+			<input type="submit" value="Fortsett" />
+			<!--<input type="button" value="autofill" onclick="autoFill()">-->
+		</p>
+	
+	</form>
+
+</div>
+<div id="indicator" class="reg_below">
+	1 av 5
+	<div id="indicatorbar" style="width:18%;"></div>
+</div>	
+
+<script type="text/javascript">
+//<![CDATA[
+	YAHOO.util.Event.onDOMReady(function() {
+		Nifty("div.reg_steg");
+		Nifty("div.reg_below","bottom");
+	});
+//]]>
+</script>

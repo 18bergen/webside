@@ -1,0 +1,18 @@
+Hei %recipient_name%!
+
+Som medlem av 18. Bergen får du også tilgang til den flotte internett-
+portalen vår. %sender_name% har nå registrert deg som bruker der.
+
+   Ditt brukernavn er: %username%
+
+Dette brukernavnet bruker du hver gang du skal logge deg på. Ta derfor 
+vare på denne e-posten. Neste steg er å lage et passord, som du også 
+trenger for å kunne logge på. Trykk på linken under for å fortsette 
+(evt. kopier og lim inn i nettleseren for å få med hele):
+
+%activation_url%
+
+-- 
+Speiderhilsen,
+18. Bergen Speidergruppe
+(Dette er en automatisk mailutsendelse)

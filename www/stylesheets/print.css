@@ -1,0 +1,40 @@
+/* Hide som stuff from printing */
+
+body {
+ background		: #ffffff;
+}
+h2 {
+ color: #000000;
+}
+h3 {
+ padding-bottom: 1px;
+ margin-bottom: 5px;
+ border-bottom: 1px solid #ccc;
+}
+.hidefromprint {
+ display: none;
+}
+div#header {
+ display : none;
+ position: absolute;
+ left: 0px;
+ top: 0px;
+}
+div#linje {
+ display 		: none;
+}
+#right_col, #left_col {
+ display		: none;
+}
+.article .author {
+ display: none;
+}
+.authors {
+ display: none;
+}
+div#footer {
+ border-top: 1px solid #ccc;
+ font-size: 10px;
+ padding: 5px;
+ text-align:center;
+}

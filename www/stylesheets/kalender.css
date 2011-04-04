@@ -1,0 +1,88 @@
+/* ############### NORMAL CALENDAR ############# */
+
+div.calendarItem1 {
+ font-family     : Tahoma;
+ font-size       : 14px;
+ color           : #CCFFCC;
+ padding         : 6px;
+ border-bottom   : #000000 1px dashed;
+ border-top      : #000000 1px dashed;
+}
+div.calendarItem2 {
+ font-family     : Tahoma;
+ font-size       : 14px;
+ color           : #CCFFCC;
+ padding         : 6px;
+}
+
+.calendarSubject:link {
+ font-size       : 14px;
+ font-weight     : bold;
+ color           : #FFFFFF;
+ text-decoration : none;
+}
+.calendarSubject:visited {
+ color           : #FFFFFF;
+ font-size       : 14px;
+ font-weight     : bold;
+ text-decoration : none;
+}
+.calendarSubject:hover {
+ color           : #FFFFFF;
+ font-size       : 14px;
+ font-weight     : bold;
+ text-decoration : underline;
+}
+.calendarDate {
+ display        : inline;
+ text-align     : right;
+ font-family    : Tahoma;
+ font-size      : 14px;
+ color          : #EEEEEE;
+}
+
+/* ############### MINI CALENDAR ############# */
+
+div.calendarItem1Mini {
+ font-family     : Tahoma;
+ font-size       : 10px;
+ color           : #CCFFCC;
+ padding         : 1px;
+ border-bottom   : #777777 dotted 1px;
+}
+div.calendarItem2Mini {
+ font-family     : Tahoma;
+ font-size       : 10px;
+ color           : #CCFFCC;
+ padding         : 1px;
+ border-bottom   : #777777 dotted 1px;
+}
+
+.calendarSubjectMini:link {
+ font-family     : Tahoma;
+ font-size       : 10px;
+ font-weight     : bold;
+ color           : #FFFFFF;
+ text-decoration : none;
+}
+.calendarSubjectMini:visited {
+ font-family     : Tahoma;
+ font-size       : 10px;
+ font-weight     : bold;
+ color           : #FFFFFF;
+ text-decoration : none;
+}
+.calendarSubjectMini:hover {
+ font-family     : Tahoma;
+ font-size       : 10px;
+ font-weight     : bold;
+ color           : #FFFFFF;
+ text-decoration : underline;
+}
+
+.calendarDateMini {
+ text-align     : right;
+ font-family    : Tahoma;
+ font-size      : 10px;
+ color          : #EEEEEE;
+}

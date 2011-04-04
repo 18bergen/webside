@@ -1,0 +1,128 @@
+﻿body {
+ background		: #EDF0ED;
+ font			: 12px Verdana,tahoma,arial,sans-serif;
+ color			: #222;
+}
+h2 {
+/* font			: lighter 230%/0.95 "Trebuchet MS",arial,sans-serif;*/
+ font-family: Sylfaen, Georgia, 'Times New Roman', Times, serif;
+ font-weight:lighter;
+ font-size:2.6em;
+ letter-spacing:-1px;
+ color			: #770000;
+ margin			: 0px;
+ padding		: 5px 0px 20px 0px;
+ /*text-shadow    : 2px 2px 2px #333;*/
+}
+/*
+h3 {
+ font-size      : 12pt;
+ font-weight    : bold;
+ color			: #770000;
+ letter-spacing : 2px;
+ margin			: 0px;
+ padding		: 10px 0px 5px 0px;
+}
+*/
+h3 {
+ font-family: Sylfaen, Georgia, 'Times New Roman', Times, serif;
+ font-weight:lighter;
+ font-size:1.8em;
+/*
+ text-shadow    : 1px 1px 2px #333;
+	font-weight:normal;
+	font-size:160%;
+*/	
+    color:#1B0431;
+    letter-spacing: -1px;
+	margin:0;
+    padding: 16px 0px 8px 0px;
+}
+a:link {
+ color           : #880000;
+ text-decoration : none;
+}
+a:visited {
+ color           : #880000;
+ text-decoration : none;
+}
+a:hover {
+ text-decoration : underline;
+ color           : #E56D00;
+}
+a.icn, span.icn {
+ background-repeat: no-repeat;
+ background-position: 2px 50%;
+ padding:3px 2px 3px 22px;
+ display:inline-block;
+}
+a.right_icn, span.right_icn {
+ background-repeat: no-repeat;
+ background-position: right 50%;
+ padding:3px 22px 3px 2px;
+ display:inline-block;
+}
+a.icn:hover, a.right_icn:hover {
+ background-color:#ffc;
+ color:#000;
+}
+a.smallicn {
+ background-position: 6px 50%;
+ padding:2px 2px 2px 22px;
+}
+/*
+ul {
+ margin:5px;
+ padding:0px;
+}
+*/
+
+abbr {
+ color: #006;
+ cursor: default;
+}
+
+/*** List environments **/
+
+ul.custom_icons {
+ margin:5px;
+ padding:0px;
+}
+
+ul.custom_icons li {
+ line-height: 150%;
+ list-style: none;
+ background-repeat: no-repeat;
+ background-position: top left;
+ vertical-align:top;
+ padding: 0px 0 2px 20px;
+ margin:0px;
+}
+
+li.peff { background-image: url(../images/medlemsliste/peff.gif); }
+li.ass { background-image: url(../images/medlemsliste/ass.gif); }
+li.speider { background-image: url(../images/medlemsliste/speider.gif); }
+li.rover { background-image: url(../images/medlemsliste/rover.gif); }
+li.smaaspeider { background-image: url(../images/medlemsliste/smaaspeider.gif); }
+li.leder { background-image: url(../images/medlemsliste/leder.gif); }
+li.annet { background-image: url(../images/medlemsliste/annet.gif); }
+li.newuser { background-image: url(../images/medlemsliste/newuser.gif); }
+
+li.group { background-image:url(../images/icns/group.png); }
+li.star { background-image:url(../images/icns/star.png); }
+
+ul.noBullets {
+ margin:0px;
+ padding:0px;
+}
+ul.noBullets li {
+ list-style:none;
+ background:none;
+ vertical-align:top;
+ padding: 2px;
+ margin:0;
+}
+.reg_steg ul li {
+ background:url(../images/lightbulb.gif) no-repeat top left;
+ padding: 0px 0 4px 20px;
+}

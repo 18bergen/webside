@@ -1,0 +1,67 @@
+
+input {
+	font-size : 8pt; font-family : Verdana, Arial, sans-serif;
+	color : #000000
+}
+
+input.button {
+	border-style : outset;
+	width : 190px;
+	cursor : hand;
+/*	background : rgb(212,208,200);*/
+}
+
+
+input.field {
+	border-style : ridge;
+	width : 190px;
+/*	background : rgb(212,208,200);*/
+}
+
+input.halfbutton {
+	border-style : outset;
+	width : 95px;
+	cursor : hand;
+/*	background : rgb(212,208,200);*/
+}
+
+input.longfield {
+	border-style : ridge;
+	width : 300px;
+/*	background : rgb(212,208,200);*/
+}
+
+input.shortfield {
+	border-style : ridge;
+	width : 35px;
+/*	background : rgb(212,208,200);*/
+}
+
+select {
+	font-size : 8pt;
+	font-family : Verdana, Arial, sans-serif;
+}
+
+textarea {
+	font-family : Verdana, Arial, sans-serif;
+	font-size : 8pt;
+	color : #000000;
+/*	background : rgb(212,208,200);*/
+	border-style : ridge;
+	width : 230px
+}
+
+.text {
+	font-family : Verdana, Arial, sans-serif;
+	font-size : 8pt;
+	color : #000000;
+}
+
+#book-title {
+	font : bold 14pt Verdana , Arial, Tahoma, Helvetica, sans-serif;
+	text-align : center;
+}
+
+#line {
+	color : #000000;
+}

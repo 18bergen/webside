@@ -1,0 +1,316 @@
+		<h3>%editarticle%</h3>
+
+		<form method="post" action="%posturl%" style="margin-top:20px;">
+			<input type="hidden" name="log_id" value="%id%" />
+			
+					<div class="postbox closed">
+						<h3 class="handle">Ingress</h3>
+						<div class="inside">
+						  <p>En ingress er en kort introduksjon til loggen. Hvis du bruker 
+						  ingress-feltet må leseren trykke «Les mer» for å komme til selve loggen.
+						  Ingress-feltet brukes for lengre logger; for eksempel turlogger, 
+						  men du kan la det stå tomt for korte referater.</p>
+						  <textarea name="log_lead" id="log_lead">%lead%</textarea>
+						</div>		
+					</div>
+					
+					<div style="margin-bottom:10px;">
+						<textarea name="log_body" id="log_body" cols="30" rows="10" style="width:490px; height: %bodyeditheight%px;">%body%</textarea>
+					</div>
+					
+					<div class="postbox">
+						<h3 class="handle">Arrangement og bilder</h3>
+						<div class="inside">
+						
+							<div style="padding:10px;">
+								Hva skriver du logg fra? 
+								<select name="event_id" id="event_id">
+									%calendar_list%
+								</select>
+							</div>
+
+							<div id="imagearchive_wait" style="display:none;padding:10px;">
+								Vent litt… <img src="/images/progressbar1.gif" alt="Vent litt…" />
+							</div>
+							
+							<div id="imagearchive_error" style="display:none;padding:10px;color:#ff0000;">
+								Feil
+							</div>
+							
+							<div id="imagearchive_yes" style="display:none;padding:0px 10px 10px 10px;">
+								<div id="imagearchive_info" style="padding-bottom:10px;"></div>
+								Vis <input type="text" name="imagearchive_count" value="%imagearchive_itemcount%" size="2" style="background:#ffffee;" /> 
+								bilder fra bildearkivet
+								<select name="imagearchive_location">
+									%imagearchive_locations%
+								</select>
+							</div>
+							
+							<div id="imagearchive_no" style="display:none;padding:0px 10px 10px 10px;">
+								<div style="padding-bottom:10px;">
+									Bildearkivet inneholder ikke bilder fra dette arrangementet, men
+									du kan istedet velge et ingressbilde manuelt:
+								</div>
+								%ingressbilde%
+							</div>
+							
+						</div>
+					</div>
+
+					<div class="postbox">
+						<h3 class="handle">Forfattere</h3>
+						<div class="inside">
+							%author_list%
+							<div style="clear:both;"><!-- --></div>
+							<div id="addAuthorBtnPanel" style="padding:3px;">
+								<a href="#" onclick="addAuthorForm(); return false;" class="icn" style="background-image:url(/images/icns/user_add.png);">Legg til</a>
+							</div>
+							<div id="addAuthorFieldPanel" style="display:none;padding:3px;">
+								<img src="/images/icns/user_add.png" style="vertical-align:middle;" />
+								<label for="addAuthorSelect">Legg til forfatter:&nbsp;</label> 
+								<select id="addAuthorSelect" name="addAuthorSelect">
+									<option value="0">Velg person</option>
+									%namesArray%
+								</select>
+								<input type="button" value="Avbryt" onclick="cancelAuthorForm();"> <input type="button" value="OK" onclick="addAuthor();">
+							</div>
+							<div id="addAuthorProgress" style="display:none;padding:3px;">
+								Vent litt… <img src="/images/progressbar1.gif" />
+							</div>
+						</div>
+					</div>
+					
+				<p>
+					<input type="submit" value="%publiser%" id="publiserKnapp" />
+					<input type="submit" value="%kladd%" id="kladdKnapp" name="kladd" />
+				</p>
+	
+			</form>
+	
+			<script type="text/javascript">
+			//<![CDATA[
+
+			// ============================ (1) Load YUI lib ===================================
+
+			function onYuiLoaderComplete() {
+				initTogglers();
+				new YAHOO.widget.Button("publiserKnapp");
+				new YAHOO.widget.Button("kladdKnapp");
+				YAHOO.util.Event.addListener("event_id","change",onEventIdChanged);
+				onEventIdChanged(null);
+			}
+			loader.require("button","connection","json");
+			loader.insert();		
+
+			// ============================ (2) INIT PANELS ====================================
+			
+			function initTogglers() {
+				var handles = YAHOO.util.Dom.getElementsByClassName('handle','h3','main_col');
+				for (i = 0; i < handles.length; i++) {
+					YAHOO.util.Event.addListener(handles[i],'click',clickHandle);
+				}
+			}	
+
+			function clickHandle(e) {
+				var el = YAHOO.util.Event.getTarget(e).parentNode; 
+				if (YAHOO.util.Dom.hasClass(el,'closed')) {
+					YAHOO.util.Dom.removeClass(el,'closed');
+				} else {
+					YAHOO.util.Dom.addClass(el,'closed');
+				}
+			}
+						
+			function togglePostbox() {
+				
+			}
+			
+			// =========== (3) CHECK IF SELECTED EVENT IS RELATED TO A PHOTO ALBUM =============
+						
+			function onEventIdChanged(e) {
+				newEventId = $('event_id').options[$('event_id').selectedIndex].value;
+				if (newEventId == "0") {
+					YAHOO.util.Dom.setStyle("imagearchive_yes","display","none");
+					YAHOO.util.Dom.setStyle("imagearchive_no","display","block");
+				} else {
+					YAHOO.util.Dom.setStyle("imagearchive_wait","display","block");
+					YAHOO.util.Dom.setStyle("imagearchive_yes","display","none");					
+					YAHOO.util.Dom.setStyle("imagearchive_no","display","none");
+					getAlbumIdFromEventId(newEventId);
+				}
+			}
+			
+			function getAlbumIdFromEventId(eventId) {
+				$('event_id').disabled = true;				
+				var url = "%urlGetAlbumId%";
+				YAHOO.util.Connect.asyncRequest("POST", url, {
+					success: gotAlbumId,
+					failure: getAlbumIdFailed
+				}, "event_id="+eventId);
+			}
+
+			function gotAlbumId(o) {
+				$('event_id').disabled = false;
+				YAHOO.util.Dom.setStyle("imagearchive_wait","display","none");
+				try {
+					var json = YAHOO.lang.JSON.parse(o.responseText);
+					if (json.error == "0") {
+						var hasAlbum = json.hasAlbum;
+						if (hasAlbum) {
+							var photoCount = json.photo_count;
+							var photos = json.photos;
+							YAHOO.util.Dom.setStyle("imagearchive_yes","display","block");
+							$('imagearchive_info').innerHTML = "<div style='padding-bottom:10px;'>Bildearkivet inneholder "+photoCount+" bilder fra dette arrangementet. Bildene som vises i loggen vil være et tilfeldig utvalg fra disse og ikke nødvendigvis de som vises under.</div>"+photos
+						} else {
+							YAHOO.util.Dom.setStyle("imagearchive_no","display","block");
+						}
+					} else {
+						errorMsg(json.error);
+					}
+				} catch (e) {
+					errorMsg("Det oppstod en feil under lagringen ("+o.responseText+")");
+				}
+			}
+			
+			function getAlbumIdFailed(o) {
+				$('event_id').disabled = false;
+				YAHOO.util.Dom.setStyle("imagearchive_wait","display","none");
+				errorMsg("Det oppstod en feil");					
+			}
+
+			function errorMsg(txt) {
+				YAHOO.util.Dom.setStyle("imagearchive_error","display","block");
+				$("imagearchive_error").innerHTML = txt;
+			}
+						
+			// =========================== (4) INIT CKEDITOR ===================================
+				
+			var editor;
+			
+			YAHOO.util.Event.onDOMReady(initCKeditor);				
+					
+			/* http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.html#instanceReady */
+			function initCKeditor() {
+
+				editor = CKEDITOR.replace( "log_body", { 
+					customConfig : "%ckeditor_uri%config_18bergen.js",
+					toolbar: "BergenVS",
+					width:500,
+					height:300,
+					resize_minWidth:500,
+					resize_maxWidth:500, // disables horizontal resizing
+					filebrowserBrowseUrl: "%ckfinder_uri%ckfinder.html?type=Vedlegg&start=Vedlegg:%imagestartuppath%&rlf=0&dts=1",
+					filebrowserUploadUrl: "%ckfinder_uri%core/connector/php/connector.php?command=QuickUpload&type=Vedlegg&currentFolder=Vedlegg:%imagestartuppath%/",
+					filebrowserImageBrowseUrl: "%ckfinder_uri%ckfinder.html?type=Bilder&start=Bilder:%imagestartuppath%&rlf=0&dts=1",
+					filebrowserImageUploadUrl: "%ckfinder_uri%core/connector/php/connector.php?command=QuickUpload&type=Bilder&currentFolder=%imagestartuppath%/",
+					filebrowserFlashBrowseUrl: "%ckfinder_uri%ckfinder.html?type=Flash&start=Flash:%imagestartuppath%&rlf=0",
+					filebrowserFlashUploadUrl: "%ckfinder_uri%core/connector/php/connector.php?command=QuickUpload&type=Flash&currentFolder=%imagestartuppath%/"
+				});
+
+			}
+
+			// ===================== (4) CKFINDER FOR INGRESSBILDE =============================
+				
+			// Render CKFinder in a popup page:
+			function BrowseServer() {
+				var finder = new CKFinder() ;
+				finder.basePath = "%ckfinder_uri%" ;	// The path for the installation of CKFinder.
+				finder.selectActionFunction = SetFileField ;
+				finder.startupPath = "Bilder:%imagestartuppath%" ; // /aktivitetslogg
+				finder.startupFolderExpanded = true ;
+				finder.disableThumbnailSelection = true ;
+				finder.resourceType = "Bilder" ;
+				finder.popup() ;
+			}
+			
+			// Called when a file is selected in CKFinder:
+			function SetFileField( fileUrl, data ) {
+				var f = pathToThumbs + fileUrl.substr(pathToUserFiles.length);
+				$("lead_image").value = f;				
+				$("ingressbildespan").innerHTML = "<img src=\'" + f + "\' alt=\'Velg bilde\' border=\'0\' style=\'margin:5px;\' />"
+			}
+			
+			// ===================== (5) EDITABLE AUTHOR LIST =============================
+			
+			Array.prototype.in_array = function(p_val) {
+				for(var i = 0, l = this.length; i < l; i++) {
+					if(this[i] == p_val) {
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			function getAuthors() {
+				var authors = $F("authors");
+				if (authors == "") return [];
+				else return authors.split(",");
+			}
+
+			function setAuthors(authors) {
+				return $("authors").value = authors.join(",");
+			}
+			
+			function addAuthorForm() {
+				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","none");
+				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","block");
+			}
+
+			function cancelAuthorForm() {
+				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
+				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");
+			}
+			
+			function addAuthor(){					
+				var authors = getAuthors();
+				var newAuthorId = $("addAuthorSelect").options[$("addAuthorSelect").selectedIndex].id;
+				if (authors.length == 0) {
+					authors = [newAuthorId];
+				} else {
+					if (authors.in_array(newAuthorId)) {
+						YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");					
+						YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
+						return;
+					}
+					authors.push(newAuthorId);
+				}
+				setAuthors(authors);
+				updateAuthorList();
+			}
+			
+			function removeAuthor(id){					
+				var authors = getAuthors();
+				var newAuthors = [];
+				for (var i = 0; i < authors.length; i++) {
+					if (authors[i] != id) newAuthors.push(authors[i]);
+				}
+				setAuthors(newAuthors);					
+				if (newAuthors.length == 0) {
+					setText("authorlist","<input type=\"hidden\" name=\"authors\" id=\"authors\" value=\"\" /><em style=\"color:red\">Ingen forfattere. Du må legge til minst én forfatter før du kan lagre.</em>");
+				} else {
+					updateAuthorList();
+				}
+			}
+			
+			function updateAuthorList() {
+				var url = "%updateAuthorListUrl%";
+				var pars = new Array();
+				pars.push("authors="+escape($F("authors")));
+				pars = pars.join("&");
+				var success = function(t){ 
+					YAHOO.util.Dom.setStyle("addAuthorProgress","display","none");					
+					YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
+					setText("authorlist",t.responseText);
+				}
+				var failure = function(t) {
+					YAHOO.util.Dom.setStyle("addAuthorProgress","display","none");					
+					YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");					
+					setText("authorlist","Å nei, det oppstod en feil.");
+				}
+				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","none");
+				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");
+				YAHOO.util.Dom.setStyle("addAuthorProgress","display","block");
+				var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success, onFailure:failure});
+			}
+
+			//]]>				
+			</script>

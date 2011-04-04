@@ -1,0 +1,10 @@
+# %newsletter_name%:
+# %subject%
+# Skrevet av %author_name% (%author_addr%)
+
+%body%
+
+-- 
+Sendt fra 18. Bergen sin nettside, %url_main%
+Eldre nyhetsbrev kan leses på %url_archive%
+Ønsker du ikke å motta nyhetsbrev? %url_unsubscribe%

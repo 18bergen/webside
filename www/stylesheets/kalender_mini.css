@@ -1,0 +1,41 @@
+h3.hvaskjer {
+ font-family     : Tahoma;
+ font-size       : 14px;
+ text-align      : center;
+}
+div.calendarItem1 {
+ font-family     : Tahoma;
+ font-size       : 10px;
+ color           : #CCFFCC;
+ padding         : 1px;
+ border-top      : #777777 dotted 1px;
+}
+div.calendarItem2 {
+ font-family     : Tahoma;
+ font-size       : 10px;
+ color           : #CCFFCC;
+ padding         : 1px;
+ border-top      : #777777 dotted 1px;
+}
+
+.calendarSubject {
+ font-family     : Tahoma;
+ font-size       : 10px;
+ font-weight     : bold;
+ color           : #FFFFFF;
+}
+.calendarSubject:visited {
+ color           : #FFFFFF;
+}
+.calendarSubject:hover {
+ color           : #FFFFFF;
+ text-decoration : underline;
+}
+
+.calendarDate {
+ display        : inline;
+ float          : right;
+ font-family    : Tahoma;
+ font-size      : 10px;
+ color          : #EEEEEE;
+}

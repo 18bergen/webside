@@ -1,0 +1,23 @@
+%recipient_name%,
+
+Du er registrert som bruker av 18. Bergen sin internettportal, 
+www.18bergen.org, men vi kan ikke se at du har aktivert ditt 
+brukernavn der. Ved å aktivere brukernavnet ditt får du tilgang
+til flere deler av nettsiden - og det gir oss en verdifull 
+indikasjon på at e-postadressen din er i bruk.
+
+   Ditt brukernavn er: %username%
+
+For å aktivere brukernavnet, må du lage ditt eget passord. 
+Dette passordet lager du ved å trykke på denne linken:
+
+%activation_url%
+
+Dersom du ved en senere anledning, glemmer passordet ditt, 
+kan du få det tilsendt til denne e-postadressen ved å skrive 
+inn brukernavnet ditt. Ta derfor vare på denne e-posten. 
+
+-- 
+Speiderhilsen,
+18. Bergen Speidergruppe
+(Dette er en automatisk mailutsendelse)

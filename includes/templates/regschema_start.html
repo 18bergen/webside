@@ -1,0 +1,60 @@
+
+<form id="regschema" method="post" action="%formaction%">
+
+	<div id="steg5" class="reg_steg">		
+		<h3><img src="%image_dir%pil.png" /> Velg ønsket enhet</h3>
+		
+		<p>
+			Velkommmen til skjemaet for registrering av nye og gamle
+            medlemmer i 18. Bergens medlemssystem. Ferdig utfylte skjema
+            blir manuelt behandlet av <a
+                href="/kontakt/gruppeleder">gruppeleder</a>, som også er 
+            personen du kan ta kontakt med om du har spørsmål underveis.
+            Start med å velge enhet:
+		</p>
+		
+		<p>
+			<label for="kat0">
+				<input type="radio" name="kat" id="kat0" value="SM" /> 
+				Nytt medlem i Flokken (8-10 år)
+			</label>
+			
+			<label for="kat1">
+				<input type="radio" name="kat" id="kat1" value="SP" checked="checked" /> 
+				Nytt medlem i Troppen (10-16 år)
+			</label>
+				
+			<label for="kat2">
+				<input type="radio" name="kat" id="kat2" value="RO" /> 
+				Nytt medlem i Roverlaget (16+ år)
+			</label>
+				
+			<label for="kat3">
+				<input type="radio" name="kat" id="kat3" value="LE" /> 
+				Nytt medlem i Ledelsen (16+ år)
+			</label>
+				
+			<label for="kat4">
+				<input type="radio" name="kat" id="kat4" value="PE" /> 
+				Tidligere medlem / Støttemedlem
+			</label>
+			
+		</p>
+		<p>
+			<input type="submit" value="Fortsett" />
+		</p>
+	
+	</div>
+	
+
+</form>
+
+<script type="text/javascript">
+//<![CDATA[
+	YAHOO.util.Event.onDOMReady(function() {
+		Nifty("div.reg_steg");
+	});
+//]]>
+</script>
+
+

@@ -1,0 +1,295 @@
+	<h3>Brukerprofil for %fullname%</h3>
+	
+	<form name="profileform" id="profileform" enctype="multipart/form-data" method="post" action="%postUrl%" style="margin-top:20px;">
+		
+
+		<!-- ############################### BEGIN TAB 1 ############################### -->
+
+		<div class="postbox">
+			<h3 class="handle">Opplysninger til medlemsregisteret</h3>
+			<div class="inside">
+
+				<p>
+					Her oppgir du opplysninger til medlemsregisteret. Sensitive data som epost-adresse, 
+					adresse og telefonnumre vises kun for innloggede brukere. Lenger nede kan du legge
+					inn bilder og annet til bruk på nettsiden.
+					<strong>Husk å lagre når du er ferdig!</strong> 
+				</p>
+				
+				<table class='skjema'>
+					<tr>
+						<td>
+							<label for='pFirstname'>Fornavn:</label><br />
+							<input type='text' id='pFirstname' name='firstname' value='%firstname%' style='width:160px;' />
+						</td>
+						<td>
+							<label for='pMiddlename'>Mellomnavn:</label><br />
+							<input type='text' id='pMiddlename' name='middlename' value='%middlename%' style='width:130px;' />
+						</td>
+						<td>
+							<label for='pLastname'>Etternavn:</label><br />
+							<input type='text' id='pLastname' name='lastname' value='%lastname%' style='width:150px;' />
+						</td>
+					</tr>					
+				</table>
+				
+				<table class='skjema'>
+					<tr>
+						<td>
+							<label for='pStreet'>Gate:</label><br />
+							<input type='text' id='pStreet' name='street' value='%street%' style='width:180px;' />
+						</td>
+						<td>
+							<label for='pStreetno'>Nr.:</label><br />
+							<input type='text' id='pStreetno' name='streetno' maxlength='4' value='%streetno%' style='width:30px;' />
+						</td>
+						<td>
+							<label for='pPostno'>Postnr.:</label><br />
+							<input type='text' id='pPostno' name='postno' maxlength='5' value='%postno%' style='width:50px;' />
+						</td>
+						<td>
+							<label for='pCity'>Sted:</label><br />
+							<input type='text' id='pCity' name='city' value='%city%' style='width:150px;' />
+						</td>
+					</tr>					
+				</table>
+				<a href="#" onclick="$('pForeign').style.display='block'; this.style.display='none'; return false;" style="display:%disp_norway%;padding-bottom:10px;">I utlandet?</a>
+				<div id='pForeign' style='display:%disp_foreign%;'>
+				<table class='skjema'>
+					<tr>
+						<td>
+							Evt. provins/stat:<br />
+							<input type='text' id='pState' name='state' value='%state%' style='width:150px;' />
+						</td>
+						<td>
+							Land:<br />
+							<select id='pCountry' name='country'>
+								%countrylist%
+							</select>
+						</td>
+					</tr>					
+				</table>
+				</div>
+				
+				<table class='skjema'>
+					<tr>
+						<td>
+							<label for='pHomephone'>Hjemmetelefon:</label><br />
+							<input type='text' id='pHomephone' name='homephone' maxlength='15' value='%homephone%' style='width:100px;' />
+						</td>
+						<td>
+							<label for='pCellular'>Mobiltelefon:</label><br />
+							<input type='text' id='pCellular' name='cellular' maxlength='15' value='%cellular%' style='width:100px;' />
+						</td>
+						<td>
+							<label for='pEmail'>E-post:</label><br />
+							<input type='text' id='pEmail' name='email' value='%email%' style='width:180px;' />
+						</td>
+					</tr>					
+				</table>
+				
+				<table class='skjema'>
+					<tr>
+						<td>
+							Født:<br />
+							 %birthday%
+						</td>
+					</tr>					
+				</table>
+			
+			</div>
+		</div>
+
+		<!-- ################################ END TAB 1 ################################ -->
+		
+		<div class="postbox closed">
+			<h3 class="handle">Bilder</h3>
+			<div class="inside">
+
+				<table cellpadding="2" cellspacing="0" width="100%">
+					<tr><td valign="top" align="center">Profilbilde:</td><td valign="top" align="center">Forumavatar:</td></tr>
+					<tr>
+						<td valign="top" width="50%" align="center">
+									%userimage%									
+									(Profilbildet skal være et bilde av profilinnehaveren, 
+									helst et portrettbilde)
+						</td>
+						<td valign="top" align="center">
+									%forumavatar%
+									(Forumavataren vises under navnet ditt når 
+									du skriver innlegg på forumet. Du kan velge helt 
+									fritt hva slags bilde dette skal være.)
+
+						</td>
+					</tr>
+				</table>
+
+			</div>
+		</div>
+		
+
+		<!-- ############################### BEGIN TAB 2 ############################### -->
+		
+		
+		<div class="postbox closed">
+			<h3 class="handle">Mer info til nettsiden</h3>
+			<div class="inside">
+
+				<p>
+					Her kan du oppgi mer informasjon som til bruk på nettsiden.
+				</p>
+
+				<table class='skjema'>
+					<tr><td>
+						Kallenavn: </td><td>
+						<input type='text' name='nickname' maxlength='15' style='width: 160px;' value='%nickname%' /><br />
+						(Kallenavn blir brukt på Snikk Snakk. Maks 15 tegn)
+					</td></tr>
+					<tr><td>
+						Nettside: </td><td>
+						<input type='text' name='homepage' size='50' value='%homepage%' />
+					</td></tr>
+					<tr>
+						<td valign='top'>
+							Litt om deg:
+						</td><td>
+							<textarea name='notes' id='notes' rows='10' cols='50' style='width: 410px; height: 100px;'>%aboutme%</textarea>
+							<div style='text-align:right; font-style:italic; background: #eee; border-bottom: 1px solid #aaa; color: 999; vertical-align:top;'>Dette feltet lokaliseres %localFlag%</div>
+							(Skriv gjerne litt om deg selv, f.eks. hva du liker å gjøre, hva du liker best med speideren, 
+							hvor lenge du har vært med, og ellers hva du måtte finne på)
+						</td>
+					</tr>
+					<tr><td>
+						Min adresse: </td><td>
+						%adressPrefix%<input type='text' name='slug' value='%slug%' />
+					</td></tr>
+				</table>
+
+			</div>
+		</div>
+
+		<!-- ############################### BEGIN TAB 3 ############################### -->
+
+		<div class="postbox closed">
+			<h3 class="handle">Medlemsskap</h3>
+			<div class="inside">
+				%memberships%
+			</div>
+		</div>
+
+		<!-- ############################### BEGIN TAB 4 ############################### -->
+
+		<div class="postbox closed">
+			<h3 class="handle">Endre passord</h3>
+			<div class="inside">
+				%editpassword%			
+			</div>
+		</div>
+
+		<!-- ################################ END TAB 5 ################################ -->
+
+
+		<input type="submit" value="Lagre" id="lagreknapp" />
+		
+	</form>
+
+	<script type="text/javascript">
+	//<![CDATA[
+				
+		function onYuiLoaderComplete() {
+
+
+			YAHOO.util.Event.onDOMReady(function() {
+				(new BG18.datePicker("birthday", { selectedDate: %born_date_js%, maxDate: "%$max_date_js%" } )).init();
+			});
+
+		}
+		loader.require("json","connection","button","calendar");
+		loader.insert();
+
+		function clickHandle(e) {
+			var el = YAHOO.util.Event.getTarget(e).parentNode; 
+			if (YAHOO.util.Dom.hasClass(el,'closed')) {
+				YAHOO.util.Dom.removeClass(el,'closed');
+			} else {
+				YAHOO.util.Dom.addClass(el,'closed');
+			}
+		}
+		
+		function initDocument() {
+			
+			initCKeditor();
+			
+			var handles = YAHOO.util.Dom.getElementsByClassName('handle','h3','main_col');
+			for (i = 0; i < handles.length; i++) {
+				YAHOO.util.Event.addListener(handles[i],'click',clickHandle);
+			}
+			
+		}
+		YAHOO.util.Event.onDOMReady(initDocument);
+
+		/* ======== CKEditor ======= */
+
+		var editor;
+		
+		/* http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.html#instanceReady */
+		function initCKeditor() {
+
+			editor = CKEDITOR.replace( "notes", { 
+				customConfig : "%ckeditor_uri%config_18bergen.js",
+				toolbar: "VerySimpleBergenVS",
+				width:400,
+				resize_minWidth:400,
+				resize_maxWidth:400, // disables horizontal resizing
+				filebrowserImageBrowseUrl: "%ckfinder_uri%ckfinder.html?type=Bilder&rlf=0&dts=1",
+				filebrowserImageUploadUrl: "%ckfinder_uri%core/connector/php/connector.php?command=QuickUpload&type=Bilder"
+			});
+
+		}		
+
+		/* ======== CKFinder ======= */
+
+		// Render CKFinder in a popup page:
+		function BrowseServer1() {
+			var finder = new CKFinder() ;
+			finder.basePath = "%ckfinder_uri%" ;	// The path for the installation of CKFinder.
+			finder.selectActionFunction = SetFileField1 ;
+			finder.disableThumbnailSelection = true ;
+			finder.rememberLastFolder = false ;
+			finder.resourceType = "Bilder" ;
+			finder.popup() ;
+		}
+		
+		// Called when a file is selected in CKFinder:
+		function SetFileField1( fileUrl, data ) {
+			var pathToUserFiles = "%userFilesDir%";
+			var pathToThumbs = "%smallThumbsDir%";
+			var f = pathToThumbs + fileUrl.substr(pathToUserFiles.length);
+			$("profile_image").value = fileUrl;
+			$("profilbildespan").innerHTML = "<img src=\'" + f + "\' alt=\'Velg bilde\' border=\'0\' style=\'margin:5px;\' />"
+		}
+		
+		// Render CKFinder in a popup page:
+		function BrowseServer2() {
+			var finder = new CKFinder() ;
+			finder.basePath = "%ckfinder_uri%" ;	// The path for the installation of CKFinder.
+			finder.selectActionFunction = SetFileField2 ;
+			finder.disableThumbnailSelection = true ;
+			finder.rememberLastFolder = false ;
+			finder.resourceType = "Bilder" ;
+			finder.popup() ;
+		}
+		
+		// Called when a file is selected in CKFinder:
+		function SetFileField2( fileUrl, data ) {
+			var pathToUserFiles = "%userFilesDir%";
+			var pathToThumbs = "%smallThumbsDir%";
+			var f = pathToThumbs + fileUrl.substr(pathToUserFiles.length);
+			$("forum_image").value = fileUrl;
+			$("forumbildespan").innerHTML = "<img src=\'" + f + "\' alt=\'Velg bilde\' border=\'0\' style=\'margin:5px;\' />"
+		}
+
+
+
+	//]]>
+	</script>

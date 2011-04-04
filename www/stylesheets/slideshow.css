@@ -1,0 +1,93 @@
+
+
+#OuterContainer {
+	padding: 0px;
+	margin: 0 auto;
+}
+
+#ImageContainer {
+	position: relative;
+	height: 200px;
+	width: 200px;
+	margin: 0 auto;
+	padding:0px;
+	background-color: #dedede;
+	border: 5px solid #ccc;
+	font-size: 0px;
+}
+
+#Photo {
+	position: absolute;
+	top: 0;
+	padding:0px;
+	margin:0px;
+	left: 0;
+	z-index: 5;
+}
+
+#Loading {
+	height: 25%;
+	width: 100%;
+	position: absolute;
+	top: 40%;
+	left: 0%;
+	text-align: center;
+	z-index: 0;
+	line-height: 0;
+}
+
+#LinkContainer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	z-index: 10;
+	/* filter:alpha(opacity:80); /* Specify opacity for IE */
+}
+
+#PrevLink, #NextLink {
+	cursor: pointer;
+	width: 48%;
+	height: 100%;
+	background: transparent url(../images/slideshow/c.gif) no-repeat; /* Trick IE into showing hover */
+	display: block;
+	padding: 0px;
+	margin: 0px;
+}
+
+#PrevLink span, #NextLink span { display: none; }
+
+#PrevLink { left: 0; float: left; }
+#NextLink { right: 0; float: right; }
+
+/* background image for IE */
+#PrevLink:hover, #PrevLink:visited:hover { background: url(../images/slideshow/prev_minus.gif) 20% 50% no-repeat; }
+#NextLink:hover, #NextLink:visited:hover { background: url(../images/slideshow/next_plus.gif) 80% 50% no-repeat; }
+
+/* backgroudn image for compliant browsers */
+#LinkContainer>#PrevLink:hover, #LinkContainer>#PrevLink:visited:hover { background: url(../images/slideshow/prev_chevron.png) 20% 50% no-repeat; }
+#LinkContainer>#NextLink:hover, #LinkContainer>#NextLink:visited:hover { background: url(../images/slideshow/next_chevron.png) 80% 50% no-repeat; }
+
+#CaptionContainer {
+	margin: 0 auto;
+	width: 200px;
+	text-align: left;
+	background-color: #ccc;
+	}
+
+#CaptionContainer p {
+	padding: 5px 10px 10px 10px;
+	font-size: 11px;
+	margin: 0px;
+	text-align: center;
+	font-family: 'Lucida Grande', 'Trebuchet MS', verdana, arial, sans-serif;
+	color: #666;
+
+}
+
+#Counter {
+	font-weight: bold;
+	color: #999;
+	padding-right: 5px;
+}

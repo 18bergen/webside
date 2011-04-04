@@ -1,0 +1,187 @@
+
+.cal_default {
+	font-family: sans-serif;
+	font-size: 10pt;
+}
+.cal_link {
+	font-family: sans-serif;
+	font-size: 11pt;
+}
+
+
+/* ====================== Calendar new/edit-form ================= */
+
+.calendar_form textarea.inp {
+	width: 395px; 
+	border: 1px solid #888888;
+	font-family: sans-serif;
+	font-size: 10pt;
+}
+.calendar_form input.inp {
+	width: 390px;
+	border: 1px solid #AAAAAA;
+	font-family: sans-serif;
+	font-size: 10pt;
+	padding: 4px;
+}
+.calendar_form select.inp {
+	width: 400px;
+	border: 1px solid #AAAAAA;
+}
+.calendar_form select.inp option {
+	font-family: sans-serif;
+	font-size: 10pt;
+	padding: 4px;
+}
+.calendar_form #category {
+	background: #FFFFCC;
+}
+div.invalidField {
+	color: red;
+	font-style: italic;
+	/* insert-before: " * " */
+}
+
+div.auto_complete {
+	width: 350px;
+	background: #fff;
+}
+div.auto_complete ul {
+	border:1px solid #888;
+	margin:0;
+	padding:0;
+	width:100%;
+	list-style-type:none;
+}
+div.auto_complete ul li {
+	margin:0;
+	padding:3px;
+}
+div.auto_complete ul li.selected { 
+	background-color: #ffb; 
+}
+div.auto_complete ul strong.highlight { 
+	color: #800; 
+	margin:0;
+	padding:0;
+}
+
+/* ====================== Calendar output ================= */
+
+div.cal_Item {
+	padding: 10px 0px 10px 6px;
+	font-family: sans-serif;
+	border-top: 1px dashed #cccccc;
+}
+div.cal_Item_line1 {
+	font-weight: bold;
+}
+div.cal_Item_line2 {
+	font-size: smaller;
+	padding-left: 10px;
+}
+div.cal_entrydetails_notes {
+	font-size: 12px;
+	padding-left: 12px;
+}
+
+/* ====================== Calendar details output ================= */
+
+div.cal_entrydetails {
+	padding: 3px;
+	margin: 3px;
+	font-family: sans-serif;
+}
+div.cal_entrydetails_line1 {
+	font-weight: bold;
+	font-style: italic;
+	padding: 5px;
+	font-size: 14pt;
+	letter-spacing: 2px;
+}
+div.cal_entrydetails_line2 {
+	font-size: smaller;
+	padding-left: 10px;
+}
+.cal_entrydetails .lead {
+
+}
+
+.cal_entrydetails .body {
+
+}
+
+.intro-element h2 {
+  font-size                                       : 1.4em;
+  font-family                                     : Arial, Verdana, Helvetica, Sans-serif;
+  padding                                         : 0 4px 0 4px;
+}
+
+.intro-element h2 a:link,
+.intro-element h2 a:active,
+.intro-element h2 a:focus,
+.intro-element h2 a:visited {
+  font-family                                     : Arial, Verdana, Helvetica, Sans-serif;
+}
+
+.intro-element h2 a:hover {
+  font-family                                     : Arial, Verdana, Helvetica, Sans-serif;
+}
+
+.intro-element p {
+  font-size                                       : 1em;
+}
+
+.calendar_element {
+  margin                                          : 0 0 4px 0 !important;
+  padding                                         : 2px;
+  background-color                                : #ffffff;
+  border-width                                    : 1px 1px 1px 1px;
+  border-style                                    : solid;
+  border-color                                    : #ddd #888 #888 #ddd;
+  cursor										  : pointer;
+}
+
+.calendar_element em {
+  font-size                                       : 10px;
+  color                                           : #900;
+  font-weight                                     : 500;
+}
+
+.calendar_element:hover {
+  background-color                                : #c9f4c9;
+}
+
+.calendar_element h4 {
+  display                                         : block;
+  font-size                                       : 11px;
+  font-family                                     : Verdana, Arial, Helvetica, Sans-serif;
+  line-height                                     : 12px;
+  margin                                          : 2px 0 2px 0;
+  letter-spacing : 1px;
+  font-weight    : bold;
+  color			: #000000;
+}
+.calendar_element a, .calendar_element a:visited {
+  color			: #000000;
+}
+.calendar_element a:hover {
+  text-decoration: none;
+}
+
+.calendar_element p,
+.calendar_element p a {
+  display                                         : block;
+  margin: 0px 0px 0px 5px;
+  font-family    : Tahoma;
+  font-size      : 10px;
+  color: #666666;
+}
+
+.calendar_element em {
+  font-family                                     : Verdana, Arial, Helvetica, Sans-serif;
+  font-style                                      : normal;
+  color                                           : #900;
+  margin                                          : 0;
+}
+

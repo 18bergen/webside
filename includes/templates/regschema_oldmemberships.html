@@ -1,0 +1,56 @@
+
+<form id="regschema" method="post" action="%formaction%">
+
+	<input type="hidden" name="id" value="%id%" />
+
+	<div id="steg5" class="reg_steg">		
+		<h3><img src="%image_dir%pil.png" /> 80-års jubileum!</h3>
+		
+		<p>
+			18. Bergen fyller 80 år i år. Dette skal feires storslått lørdag 5. september.
+			Ønsker du å melde deg på?
+			
+			<label for="jubile1">
+				<input type="checkbox" name="jubile" id="jubile1" />
+				Ja,  meld meg på 18. Bergens 80-års jubileum.
+			</label>			
+		</p>
+
+		<h3><img src="%image_dir%pil.png" /> Fortell litt om deg selv</h3>
+				
+		<p>
+			Vi ønsker veldig gjerne å vite litt om deg. Eksempler på ting du kan skrive
+			her:
+		</p>
+		<ul>
+			<li>Når du ble medlem og når du sluttet</li>
+			<li>Hvilke patruljer du har vært medlem i og i hvilken tidsperiode</li>
+			<li>Hvilke verv du har hatt og når du hadde disse</li>
+		</ul>
+		<p>
+			Hvis du ikke husker nøyaktige datoer eller årstall kan du f.eks. skrive «rundt <em>n</em>». 
+		</p>
+		
+		<p>
+			<textarea name="about" style="width: 400px; height: 150px;">%about%</textarea>
+		</p>
+		<p>
+			<input type="submit" value="Fortsett" />
+		</p>
+	
+	</div>
+	<div id="indicator" class="reg_below">
+		3 av 5
+		<div id="indicatorbar" style="width:54%;"></div>
+	</div>	
+	
+</form>
+
+<script type="text/javascript">
+//<![CDATA[
+	YAHOO.util.Event.onDOMReady(function() {
+		Nifty("div.reg_steg");
+		Nifty("div.reg_below","bottom");
+	});
+//]]>
+</script>

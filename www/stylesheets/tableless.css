@@ -1,0 +1,190 @@
+body {
+width: 720px;
+margin: 0px;
+padding: 0px; // this is a concession to opera 7 which has margin 0, but some padding by default.
+font-size: 10px;
+}
+ 
+/* Sets Width to Maximum allowed */
+div#logo {
+width: 720px;
+height: 65px;
+}
+ 
+/* Sets Height and width, aligns images right 
+and Sets the Background Colour */
+div#sect_nav {
+width: 720px;
+height: 20px;
+background: rgb(0,102,0);
+text-align: right;
+}
+/* Sets Width to Maximum allowed */
+ 
+div#main {
+width: 720px;
+background: rgb(51,204,153);
+}
+/* Set's Style for the Copyright Paragrh text */
+div#copyright p {
+font-family: Tahoma, sans-serif;  
+font-size: 90%; 
+color: div#336633; 
+margin-left: 5px;
+font-weight: bold;
+clear: both;
+}
+
+/* Defines the pagelink width and location */
+div#pagelinks {
+position: absolute;
+left: 0px;
+top: 90px;
+width: 120px;
+background: rgb(51,204,153);
+}
+/* Defines the Links */
+div#pagelinks p {
+font-family: Arial, Helvetica, sans-serif; 
+font-size: 130%; 
+font-weight: bold;
+margin-left: 5px; 
+}
+div#pagelinks ul {
+font-family: Arial, Helvetica, sans-serif;
+font-size: 100%;
+color: rgb(255,255,255);
+text-decoration: none;
+text-transform: uppercase;
+font-weight: lighter;
+list-style-type: square;
+margin-top: -5px;
+line-height: 110%;
+ }
+div#pagelinks ul a:link { 
+    color: rgb(255,255,255);
+    text-decoration: none
+ }
+div#pagelinks ul a:visited { 
+    color: rgb(255,255,255);
+    text-decoration: none 
+ }
+div#pagelinks ul a:active { 
+    color: rgb(255,255,153);
+    text-decoration: none 
+ }
+div#pagelinks ul a:hover { 
+    color: rgb(0,102,0);
+    text-decoration: none 
+ }
+/* Defines the pagelink width and location */
+div#mainpage {
+width: 600px;
+margin-left: 120px;
+background: rgb(255,255,255);
+}
+/* Defines the Styles for this Section */
+div#mainpage p {  
+font-family: Arial, Helvetica, sans-serif; 
+font-size: 130%; 
+line-height: 150%; 
+margin-left: 10px
+}
+div#mainpage h1 {  
+font-family: Tahoma, sans-serif; 
+font-size: 240%;
+color:  rgb(0,102,0); 
+margin-left: 5px
+}
+div#mainpage h2 {  
+font-family: Tahoma, sans-serif; 
+font-size: 160%;
+color:  rgb(0,102,0);
+margin-left: 5px
+}
+
+/* --------------------------------- LEVEL 3  --------------------------------- */
+
+/* Set's the width and position */
+div#insert {
+width: 120;
+float: right;
+text-align: right;
+}
+/* Defines the title */
+div#insert h1 {
+display: block;
+font-family: Arial, Helvetica, sans-serif;
+background: rgb(0,102,0);
+font-size: 170%;
+color: rgb(255,255,255);
+}
+/* Defines the links */
+div#insert a {
+font-family: Arial, Helvetica, sans-serif;
+font-size: 10px;
+color: rgb(0,102,0);
+text-decoration: none;
+text-transform: uppercase;
+font-weight: lighter;
+text-align: right;
+}
+div#insert a:link { 
+    color: rgb(0,102,0);
+    text-decoration: none
+ }
+div#insert a:visited { 
+    color: rgb(0,102,0);
+    text-decoration: none 
+ }
+div#insert a:active { 
+    color: rgb(0,102,0);
+    text-decoration: none 
+ }
+div#insert a:hover { 
+    color: rgb(51,204,153);
+    text-decoration: none 
+ }
+
+/* --------------------------------- JS ROLLOVERS  --------------------------------- */
+
+ div#insert a {
+font-family: Arial, Helvetica, sans-serif;
+color: rgb(0,102,0);
+background: rgb(255,255,255);
+text-decoration: none;
+text-transform: uppercase;
+font-weight: lighter;
+display: block;
+border: solid 1px;
+padding: 0.33em;
+}
+div#insert a:hover { 
+    color: rgb(51,204,153);
+    background: rgb(51,204,153);
+    text-decoration: none 
+ }
+
+ div#insert {
+width: 120;
+float: right;
+text-align: right;
+font-family: Arial, Helvetica, sans-serif;
+background: rgb(0,102,0);
+font-size: 170%;
+color: rgb(255,255,255);
+font-weight: bold;
+}
+
+div#insert a {
+font-family: Arial, Helvetica, sans-serif;
+font-size: 60%;
+color: rgb(0,102,0);
+background: rgb(255,255,255);
+text-decoration: none;
+text-transform: uppercase;
+font-weight: lighter;
+display: block;
+border: solid 1px;
+padding: 0.33em;
+}

@@ -1,0 +1,20 @@
+# robots.txt
+#
+# This file is to prevent the crawling and indexing of certain parts
+# of your site by web crawlers and spiders run by sites like Yahoo!
+# and Google. It must be located at the domain root!
+#
+# For more information about the robots.txt standard, see:
+# http://www.robotstxt.org/wc/robots.html
+#
+# For syntax checking, see:
+# http://www.sxw.org.uk/computing/robots/check.html
+
+User-agent: *
+Disallow: /userfiles/
+Disallow: /libs/
+Disallow: /jscript/
+Disallow: /uimages/
+Disallow: /images/
+Disallow: /development/
+

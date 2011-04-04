@@ -1,0 +1,17 @@
+Hei %recipient_name%!
+
+Du mottar denne e-posten fordi du abonnerer på emnet «%topic%» i forumet på %site_name%.
+Det har kommet svar i dette emnet siden sist du besøkte forumet, klikk på linken under 
+for å gå til emnet. Du vil ikke bli varslet om flere svar i emnet før du har besøkt forumet.
+
+%topic_url%
+
+Hvis du ønsker å endre innstillingene dine for e-post-varsling fra forumene på denne siden, 
+kan du klikke på følgende link:
+
+%settings_url%
+
+-- 
+Speiderhilsen,
+18. Bergen Speidergruppe
+(Dette er en automatisk mailutsendelse)

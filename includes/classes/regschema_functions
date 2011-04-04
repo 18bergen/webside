@@ -1,0 +1,14 @@
+<?
+ function loadFullMemberlist() {
+ 	global $memberdb,$site_rootdir,$login,$db,$classpath;
+ 	require_once("$classpath/memberlist_actions.php");
+	unset($memberdb);
+	$memberdb = new memberlist_actions($db);
+	$memberdb->login_identifier = $login->ident;
+	$memberdb->eventlog_function = "addToEventLog";
+	$memberdb->permission_denied_function = "permissionDenied";
+	$memberdb->image_dir = "site_rootdir/images";
+	$memberdb->initialize();
+	return $memberdb;
+ }
+?>

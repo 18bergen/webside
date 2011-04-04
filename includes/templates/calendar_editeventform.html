@@ -1,0 +1,342 @@
+		<h3>%title%</h3>
+		<form name="calendarform" id="calendarform" method="post" action="%post_url%" class="calendar_form">
+			<input type="hidden" name="event_id" value="%event_id%" />
+
+				<div class="postbox">
+					<h3 class="handle">Hva, hvor, når?</h3>
+					<div class="inside">
+						<table class="dataTable editable">
+							<tr>
+								<th class="label">
+									<div%error_subject%>Hva?</div>
+								</th><td class="data">
+									<input autocomplete="off" id="cal_subject" name="cal_subject" type="text" value="%subject%" class="inp" />
+									<div class="auto_complete" id="subject_auto_complete"></div>
+									<script type="text/javascript">
+										new Ajax.Autocompleter("cal_subject", "subject_auto_complete", "%url_autocomplete_subject%", { });
+									</script>
+								</td>
+							</tr>
+							<tr>
+								<th class="label">
+									<div%error_location%>Hvor?</div>
+								</th><td class="data">
+									<input autocomplete="off" id="cal_location" name="cal_location" type="text" value="%location%" class="inp" />
+									<div class="auto_complete" id="location_auto_complete"></div>
+									<script type="text/javascript">
+										new Ajax.Autocompleter("cal_location", "location_auto_complete", "%url_autocomplete_location%", { });
+									</script>
+								</td>
+							</tr>
+							<tr>
+								<th class="label">
+									<div%error_datetime%>Når?</div>
+								</th><td class="data">
+									<div id="datetimeContainer">
+										%startdate% – %enddate%
+									</div>
+									<!--
+									<a href=\"nojs.html\" onclick=\"cal1.showCalendar('anchor1',document.calendarform.cal1date.value); return false;\" name=\"anchor1\" id=\"anchor1\">
+										<span id='cal1var'>$dt_start_string<input type='hidden' name='cal1date' value='$dt_start_js' /></span>
+									</a>, kl. $dt_start_timefield
+									
+									<a href=\"nojs.html\" onclick=\"cal2.showCalendar('anchor2',document.calendarform.cal2date.value); return false;\" name=\"anchor2\" id=\"anchor2\">
+										<span id='cal2var'>$dt_end_string<input type='hidden' name='cal2date' value='$dt_end_js' /></span>
+									</a>, kl. $dt_end_timefield
+									-->
+									
+									
+								</td>
+							</tr>
+							<tr>
+								<th class="label">
+									<div%error_lead%>Kort info:</div>
+								</th><td class="data">
+									<textarea name="cal_lead" id="cal_lead" class="inp" style="height:50px;">%lead%</textarea>
+									<p style="font-size:10px;">
+										Teksten du skriver inn her vises også på terminlistens hovedside. 
+										Hvis du vil formatere teksten, eller legge inn bilder, tabeller, osv.,
+										kan du gjøre dette under «Mer info» under.
+									</p>
+								</td>
+							</tr>
+							<tr>
+								<th class="label">
+									<div%error_responsible%>Ansvarlig(e):</div>
+								</th><td class="data">
+									
+									%author_list%
+									<div style="clear:both;"><!-- --></div>
+									<div id="addAuthorBtnPanel" style="padding:3px;">
+										<a href="#" onclick="addAuthorForm(); return false;" class="icn" style="background-image:url(/images/icns/user_add.png);">Legg til</a>
+									</div>
+									<div id="addAuthorFieldPanel" style="display:none;padding:3px;">
+										<img src="/images/icns/user_add.png" style="vertical-align:middle;" />
+										<label for="addAuthorSelect">Legg til: </label> 
+										<select id="addAuthorSelect" name="addAuthorSelect">
+											<option value="0">Velg person</option>
+											%namesArray%
+										</select>
+										<input type="button" value="Avbryt" onclick="cancelAuthorForm();"> <input type="button" value="OK" onclick="addAuthor();">
+									</div>
+									<div id="addAuthorProgress" style="display:none;padding:3px;">
+										Vent litt… <img src="/images/progressbar1.gif" />
+									</div>
+									
+									
+								</td>
+							</tr>
+						</table>
+					</div>		
+				</div>
+
+				<div class="postbox closed">
+					<h3 class="handle">Mer info</h3>
+					<div class="inside">
+						  
+						  <textarea name="cal_body" id="cal_body" cols="30" rows="10" style="width:490px; height: %bodyeditheight%px;">%body%</textarea>
+					</div>
+				</div>
+				
+				<div class="postbox closed">
+					<h3 class="handle">Avansert</h3>
+					<div class="inside">
+						<table class="dataTable editable">
+							<tr>
+								<th class="label">
+									<div>Kalender:</div>
+								</th><td class="data">
+									<select name="cal_calendar" class="inp">
+										%calendars%
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<th class="label">
+									Valg:
+								</th><td class="data">
+									<input type="checkbox" name="cal_private" id="cal_private" onChange="checkPrivate();"%privateChecked% />
+									<label for="cal_private">Vis kun for innloggede.</label><br />
+									<div id="cal_private_info" style="font-size:10px;display:none;">
+									Hendelsen vil fremdeles listes opp for alle på hovedsiden, 
+									men innlogging kreves for å komme inn på siden for arrangementet. 
+									Dermed kan du trygt putte sensitiv informasjon under «Mer info».
+									Legg aldri sensitiv informasjon under «Kort info»!</div>
+								</td>
+							</tr>
+							<tr>
+								<th class="label">
+									<div>URL:</div>
+								</th><td class="data">
+									<div style="font-size:10px;border:1px solid #ccc;padding:3px;">%pre_slug%<input id="cal_slug" name="cal_slug" type="text" value="%slug%" class="inp" style="width:110px;font-size:10px;padding:0px;background:#ffffaa;border:none;" /></div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+
+				<p>
+					<input type="submit" value="Lagre" id="lagreKnapp" />
+				</p>
+	
+			</form>
+						
+			<script type="text/javascript">
+		    //<![CDATA[	
+
+			// ============================ (1) Load YUI lib ===================================
+
+			var startTimeButton, endTimeButton;
+			var startDatePicker, endDatePicker;
+			function onYuiLoaderComplete() {
+				YAHOO.util.Event.onContentReady("startdate", function() {
+					startDatePicker = new BG18.datePicker("startdate", { selectedDate: %startdate_js% } );
+					startDatePicker.onSelectDate = function(nDay,nMonth,nYear) {
+						endDatePicker.setDate(nDay,nMonth,nYear);
+					}
+					startDatePicker.init();
+				});
+				YAHOO.util.Event.onContentReady("enddate", function() {
+					endDatePicker = new BG18.datePicker("enddate", { selectedDate: %enddate_js% } );
+					endDatePicker.init();
+				});
+				initTogglers();
+				new YAHOO.widget.Button("lagreKnapp");
+			}
+
+			loader.require("button","menu","calendar","connection","json","autocomplete");
+			loader.insert();
+			
+			// ============================ (2) INIT PANELS ====================================
+			
+			function initTogglers() {
+				var handles = YAHOO.util.Dom.getElementsByClassName('handle','h3','main_col');
+				for (i = 0; i < handles.length; i++) {
+					YAHOO.util.Event.addListener(handles[i],'click',clickHandle);
+				}
+			}	
+
+			function clickHandle(e) {
+				var el = YAHOO.util.Event.getTarget(e).parentNode; 
+				if (YAHOO.util.Dom.hasClass(el,'closed')) {
+					YAHOO.util.Dom.removeClass(el,'closed');
+				} else {
+					YAHOO.util.Dom.addClass(el,'closed');
+				}
+			}
+						
+			function togglePostbox() {
+				
+			}
+			
+			// =========================== (3) INIT CKEDITOR ===================================
+				
+			var editor;
+			
+			YAHOO.util.Event.onDOMReady(initCKeditor);				
+
+			YAHOO.util.Event.onDOMReady(function() {
+				YAHOO.util.Event.addListener("cal_subject","keyup",onSubjectChange);
+			});
+					
+			/* http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.html#instanceReady */
+			function initCKeditor() {
+
+				editor = CKEDITOR.replace( "cal_body", { 
+					customConfig : "%ckeditor_uri%config_18bergen.js",
+					toolbar: "BergenVS",
+					width:500,
+					height:300,
+					resize_minWidth:500,
+					resize_maxWidth:500, // disables horizontal resizing
+					filebrowserBrowseUrl: "%ckfinder_uri%ckfinder.html?type=Vedlegg&start=Vedlegg:%imagestartuppath%&rlf=0&dts=1",
+					filebrowserUploadUrl: "%ckfinder_uri%core/connector/php/connector.php?command=QuickUpload&type=Vedlegg&currentFolder=Vedlegg:%imagestartuppath%/",
+					filebrowserImageBrowseUrl: "%ckfinder_uri%ckfinder.html?type=Bilder&start=Bilder:%imagestartuppath%&rlf=0&dts=1",
+					filebrowserImageUploadUrl: "%ckfinder_uri%core/connector/php/connector.php?command=QuickUpload&type=Bilder&currentFolder=%imagestartuppath%/",
+					filebrowserFlashBrowseUrl: "%ckfinder_uri%ckfinder.html?type=Flash&start=Flash:%imagestartuppath%&rlf=0",
+					filebrowserFlashUploadUrl: "%ckfinder_uri%core/connector/php/connector.php?command=QuickUpload&type=Flash&currentFolder=%imagestartuppath%/"
+				});
+				/*	
+					CKFinder.SetupCKEditor( editor, {
+						BasePath: "'.LIB_CKFINDER_URI.'",
+						StartupPath : "Bilder:/terminliste"
+					}, "Bilder");
+				*/
+			}
+				
+			function generateSlug(tittel){
+				tittel = tittel.toLowerCase();
+				tittel = tittel.replace(/\s/g, "-");
+				tittel = tittel.replace(/ø/g, "o");
+				tittel = tittel.replace(/å/g, "a");
+				tittel = tittel.replace(/æ/g, "ae");
+				re = /[^\w-]/g;  // \w is a shorthand for A-Za-z0-9_
+				tittel = tittel.replace(re, "");
+				return tittel;
+			}
+			
+			function checkPrivate() {
+				if ($("cal_private").checked) {
+					YAHOO.util.Dom.setStyle("cal_private_info","display","block");
+				} else {
+					YAHOO.util.Dom.setStyle("cal_private_info","display","none");						
+				}
+			}
+
+			/*
+			function onStartDateChanged(e,newDate) {
+				var d = newDate[0].split("-");
+				var year = d[0];
+				$("slugYear").innerHTML = year;						
+			}
+			cal1.onDateChanged.subscribe(onStartDateChanged); 
+			*/
+			function onSubjectChange(e) {
+				$("cal_slug").value = generateSlug($("cal_subject").value);
+			}
+			
+			// ===================== (5) EDITABLE AUTHOR LIST =============================
+			
+			Array.prototype.in_array = function(p_val) {
+				for(var i = 0, l = this.length; i < l; i++) {
+					if(this[i] == p_val) {
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			function getAuthors() {
+				var authors = $F("authors");
+				if (authors == "") return [];
+				else return authors.split(",");
+			}
+
+			function setAuthors(authors) {
+				return $("authors").value = authors.join(",");
+			}
+			
+			function addAuthorForm() {
+				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","none");
+				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","block");
+			}
+
+			function cancelAuthorForm() {
+				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
+				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");
+			}
+			
+			function addAuthor(){					
+				var authors = getAuthors();
+				var newAuthorId = $("addAuthorSelect").options[$("addAuthorSelect").selectedIndex].id;
+				if (authors.length == 0) {
+					authors = [newAuthorId];
+				} else {
+					if (authors.in_array(newAuthorId)) {
+						YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");					
+						YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
+						return;
+					}
+					authors.push(newAuthorId);
+				}
+				setAuthors(authors);
+				updateAuthorList();
+			}
+			
+			function removeAuthor(id){					
+				var authors = getAuthors();
+				var newAuthors = [];
+				for (var i = 0; i < authors.length; i++) {
+					if (authors[i] != id) newAuthors.push(authors[i]);
+				}
+				setAuthors(newAuthors);					
+				if (newAuthors.length == 0) {
+					setText("authorlist","<input type=\"hidden\" name=\"authors\" id=\"authors\" value=\"\" /><em style=\"color:red\">Noen må ta ansvar… Du må legge til minst én ansvarlig person.</em>");
+				} else {
+					updateAuthorList();
+				}
+			}
+			
+			function updateAuthorList() {
+				var url = "%updateAuthorListUrl%";
+				var pars = new Array();
+				pars.push("authors="+escape($F("authors")));
+				pars = pars.join("&");
+				var success = function(t){ 
+					YAHOO.util.Dom.setStyle("addAuthorProgress","display","none");					
+					YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
+					setText("authorlist",t.responseText);
+				}
+				var failure = function(t) {
+					YAHOO.util.Dom.setStyle("addAuthorProgress","display","none");					
+					YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");					
+					setText("authorlist","Å nei, det oppstod en feil.");
+				}
+				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","none");
+				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");
+				YAHOO.util.Dom.setStyle("addAuthorProgress","display","block");
+				var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success, onFailure:failure});
+			}
+
+			//]]>
+			</script> 

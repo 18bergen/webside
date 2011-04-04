@@ -1,0 +1,14 @@
+%sender_name% <%sender_email%> har sendt deg en melding fra %site_name% sin 
+nettside. Vi kan ikke bekrefte identiteteten til avsenderen, så vær klar 
+over at avsender ikke trenger å være den han/hun utgir seg for å være!
+
+---------------------------------------------------------------------
+
+%message_plain%
+
+---------------------------------------------------------------------
+
+Denne eposten ble sendt fra meldingssystemet på %site_name% sin 
+nettside av en gjest med ip %ip%. Misbruk av meldingssystemet kan 
+rapporteres til <webmaster@18bergen.org>.
+<%url_root%>

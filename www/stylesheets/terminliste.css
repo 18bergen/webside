@@ -1,0 +1,66 @@
+/* HUSK div.imgShadow LOCALHOST */
+
+/* Generic styles */
+
+body {
+ font-family    : Tahoma, Arial, serif;
+ color          : #000000;
+}
+
+/* Common styles */
+
+h1.header {
+ font-size      : 18pt;
+ color          : #000000;
+ font-family    : Tahoma, Arial, serif;
+ font-weight    : bold;
+ text-align     : center;
+}
+
+/* Calendar styles */
+
+div.calendarItem1 {
+ font-family     : Tahoma;
+ font-size       : 14;
+ color           : #000000;
+ padding         : 6px;
+ border-bottom   : #000000 1px dashed;
+ border-top      : #000000 1px dashed;
+}
+div.calendarItem2 {
+ font-family     : Tahoma;
+ font-size       : 14;
+ color           : #000000;
+ padding         : 6px;
+}
+
+.calendarSubject {
+ font-family     : Tahoma;
+ font-size       : 14;
+ font-weight     : bold;
+ color           : #000000;
+}
+.calendarSubject:visited {
+ color           : #000000;
+}
+.calendarSubject:hover {
+ color           : #000000;
+ text-decoration : underline;
+}
+
+.calendarDate {
+ display        : inline;
+ font-family    : Tahoma;
+ font-size      : 14;
+ color          : #333333;
+}
+
+/* Others styles */
+
+.ErrorMessage {
+ background     : #FFFFFF; 
+ border         : #FF0000 1px solid; 
+ margin         : 10px; 
+ padding        : 10px; 
+ color          : #FF0000;
+}

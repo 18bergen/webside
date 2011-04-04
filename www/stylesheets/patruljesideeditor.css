@@ -1,0 +1,183 @@
+div.epMainFrame {
+	color           : #000000; 
+    border          : 1px solid #444444;
+	border-bottom   : 2px solid #000000;
+	border-right    : 2px solid #000000;
+	background      : #FFFFFF;
+	top             : 20px;
+	position        : relative;
+}
+div.epSep1 {
+	border-top      : 1px dotted #000000;
+	color           : #000000;
+}
+a.epSep2 {
+	position        : relative;
+	top             : -6px;
+	left            : -6px;
+	font-family     : Tahoma;
+	font-size       : 10px;
+	text-align      : center;
+	border          : 1px solid #000000;
+	background      : #77DD77;
+	color           : #000000;
+	text-decoration : none;
+	width           : 120px;
+	float           : right; 
+	cursor          : pointer; cursor: hand; /* Do not reverse those two values! */
+}
+a.epSep2:hover {
+	background      : #99FF99;
+	color           : #000000;
+	text-decoration : none;
+}
+div.epCon1 {
+	border          : 1px solid #CCCCCC;
+	background      : #DDEEDD;
+	margin          : 15px;
+	color           : #000000;
+}
+div.epCon1Red {
+	border          : 1px solid #CCCCCC;
+	background      : #EEDDDD;
+	margin          : 15px;
+	color           : #000000;
+}
+div.epCon1Highlight {
+	border          : 1px solid #CCCCCC;
+	background      : #FFFFAA;
+	margin          : 15px;
+	color           : #000000;
+}
+div.epCon2holder {
+	position        : relative;
+	top             : -8px;
+	left            : 3px;
+}
+a.epCon2 {
+	font-family     : Tahoma;
+	font-size       : 10px;
+	text-align      : center;
+	color           : #000000;
+	border          : 1px solid #000000;
+	background      : #77DD77;
+	padding-left    : 10px;
+	padding-right   : 10px;
+	margin-left     : 2px;
+	margin-right    : 2px;
+	cursor          : pointer; cursor: hand; /* Do not reverse those two values! */
+}
+a.epCon2:hover {
+	background      : #99FF99;
+	color           : #000000;
+}
+div.epVersionInfoHolder {
+	position        : relative;
+	top             : -8px;
+	left            : 3px;
+}
+p.epVersionInfo {
+	display         : inline;
+	margin          : 0px;
+	padding-left    : 5px;
+	padding-right   : 5px;
+	padding-top     : 2px;
+	padding-bottom  : 2px;
+	color           : #000000;
+	font-weight     : bold;
+	border          : 1px solid #444444;
+	background      : #FFCC00;
+	font-family     : Courier New;
+	font-size       : 10px;
+}
+div.epCon1 p {
+	margin          : 2px;
+	padding         : 0px;
+}
+div.epCon1 form {
+	margin          : 10px;
+	padding         : 0px;
+}
+div.popupMenu {
+	position        : absolute;
+	left            : 10px;
+	top             : 0px;
+	width           : 120px;
+	z-index         : 100;
+	background      : #77DD77;
+	font-family     : Tahoma;
+	font-size       : 10px;
+	color           : #000000;
+	border          : 1px solid #000000;
+	visibility      : hidden;
+}
+div.popupMenu ul {
+	margin          : 0px;
+	list-style-type : none;
+}
+div.popupMenu a {
+	display         : block;
+	text-decoration : none;
+	text-align      : center;
+	padding-top     : 2px;
+	padding-bottom  : 2px;
+}
+div.popupMenu a:hover {
+	color           : #000000;
+	background      : #99FF99;
+}
+p.normParagraph {
+	padding-left    : 10px;
+	margin-top      : 0px;
+}
+a.normLink:link {
+	font-family     : Tahoma;
+	font-size       : 12px;
+	color           : #0000FF;
+}
+a.normLink:visited {
+	color           : #0000FF;
+}
+a.normLink:hover {
+	color           : #0000FF;
+	text-decoration : underline;
+}
+
+div.epEditHolder {
+	border          : 1px dotted #666666;
+	background      : #EEEEEE;
+	margin          : 8px;
+	padding         : 10px;
+	color           : #000000;
+	font            : 12px "Tahoma";
+}
+div.epEditHolder a {
+	color           : #0000FF;
+	text-decoration : none;
+}
+div.epEditHolder a:visited {
+	color           : #0000FF;
+	text-decoration : none;
+}
+div.epEditHolder a:hover {
+	color           : #0000FF;
+	text-decoration : underline;
+}
+div.epEditHolder ul {
+	margin-top      : 3px;
+	margin-bottom   : 5px;
+}
+div.epEditHolder li {
+	font            : 12px "Tahoma";
+	color           : #000000;
+}
+div.epEditHolder td {
+	font            : 12px "Tahoma";
+	color           : #000000;
+}
+div.epEditHolder p {
+	margin-top      : 5px;
+	margin-bottom   : 0px;
+	font            : 12px "Tahoma";
+	color           : #000000;
+}

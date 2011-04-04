@@ -1,0 +1,35 @@
+div.calendarItem1 {
+ font-family     : Tahoma;
+ font-size       : 14px;
+ color           : #CCFFCC;
+ padding         : 6px;
+ border-bottom   : #000000 1px dashed;
+ border-top      : #000000 1px dashed;
+}
+div.calendarItem2 {
+ font-family     : Tahoma;
+ font-size       : 14px;
+ color           : #CCFFCC;
+ padding         : 6px;
+}
+
+.calendarSubject {
+ font-family    : Tahoma;
+ font-size      : 14px;
+ font-weight    : bold;
+ color           : #FFFFFF;
+}
+.calendarSubject:visited {
+ color           : #FFFFFF;
+}
+.calendarSubject:hover {
+ color           : #FFFFFF;
+ text-decoration : underline;
+}
+
+.calendarDate {
+ display        : inline;
+ font-family    : Tahoma;
+ font-size      : 14px;
+ color          : #EEEEEE;
+}

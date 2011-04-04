@@ -1,0 +1,289 @@
+﻿li.bildegalleri {
+  height: 200px;
+  margin: 0px;
+  background: none;
+}
+
+.img-shadow {
+ float:left;
+ background: url(../images/shadowAlpha.png) no-repeat bottom right !important;
+ background: url(../images/shadow.gif) no-repeat bottom right #ffffff;
+ margin: 10px 0 0 10px !important;
+ margin: 10px 0 0 5px;
+}
+
+.img-shadow img {
+ display: block;
+ position: relative;
+ background-color: #fff;
+ border: 1px solid #a9a9a9;
+ margin: -6px 6px 6px -6px;
+ padding: 4px;
+}
+
+/* Bildearkiv */
+
+
+div.imgarchive_largethumb1 {
+
+}
+div.imgarchive_largethumb1 img {
+	width: 200px;
+	height: 150px;
+	padding: 4px;
+	border: 1px solid #aaaaaa;
+}
+div.imgarchive_smallthumb1 {
+}
+div.imgarchive_smallthumb1  img {
+	width: 140px;
+	height: 105px;
+	margin: 0px;
+	padding: 0px;
+	margin-bottom: 6px;
+	padding: 4px;
+	border: 1px solid #aaaaaa;
+}
+
+/*
+table,td{border-collapse:collapse;vertical-align:top;font: 11px Arial,sans-serif}
+td,th{border:0px solid #CCC;padding: 5px}
+thead th{background: #3399FF;color: #FFF}
+tbody th{font-weight:normal;text-align:left;vertical-align:top}
+*/
+
+
+/*
+div.imgarchive_largethumb {
+	background: url(../images/shadowlargeimgarch.jpg) top left no-repeat;
+	width: 209px;
+	text-align: left;
+	height: 160px;
+	padding: 1px;
+	margin: 0px;
+}
+div.imgarchive_largethumb img {
+	width: 200px;
+	height: 150px;
+	border: none;
+}
+td.imgarchive_smallthumb {
+	vertical-align: top;
+}
+td.imgarchive_smallthumb a {
+	display: block;
+	background: url(../images/shadowsmallimgarch.jpg) no-repeat top left;
+	width: 149px;
+	margin: 0px;
+	padding: 1px;
+}
+span.imgarchive_smallthumb {
+	display: block;
+	float:left;
+	background: url(../images/shadowsmallimgarch.jpg) no-repeat top left;
+	width: 149px;
+	margin: 0px;
+	padding: 1px;
+}
+span.imgarchive_smallthumb img {
+	display: block;
+	width: 140px;
+	height: 105px;
+	border: none;
+	margin: 0px;
+	padding: 0px;
+	margin-bottom: 6px;
+
+}
+td.imgarchive_smallthumb p {
+	text-align: center; 
+	font-size:10px;
+	margin: 0px;
+	padding: 0px;
+}
+td.imgarchive_smallthumb a:hover {
+	background: url(../images/shadowsmallimgarch2.jpg) no-repeat top left;
+	text-decoration: none;
+}
+td.imgarchive_smallthumb img {
+	display: block;
+	width: 140px;
+	height: 105px;
+	border: none;
+	margin: 0px;
+	padding: 0px;
+	margin-bottom: 6px;
+}
+*/
+
+.newsImage {
+	background: url(../images/shadowback.jpg);
+	width: 109px;
+	height: 90px;
+	float: right;
+	padding: 0px;
+	margin: 0px 0px 0px 10px;
+}
+.newsImage img {
+	border: 1px solid #000000;
+}
+	
+/* Utstyr */
+
+div.utstyrContainer1 {
+ font-family     : Tahoma;
+ font-size       : 14px;
+ color           : #CCFFCC;
+ padding         : 6px;
+ border-bottom   : #000000 1px dashed;
+ border-top      : #000000 1px dashed;
+ height          : 170px;
+}
+div.utstyrContainer2 {
+ font-family     : Tahoma;
+ font-size       : 14px;
+ padding         : 6px;
+ color           : #CCFFCC;
+ height          : 170px;
+}
+div.utstyrSubContainer {
+ overflow        : auto;
+ height          : 140px;
+ width           : 320px;
+}
+div.imgShadow {
+ float           : right;
+ background      : url(../images/shadow.jpg);
+ padding         : 1px;
+ width           : 153px;
+ height          : 153px;
+}
+ul.reservering {
+	font-size       : 10px;
+	margin-top      : 0px;
+	padding-top     : 0px;
+	margin-bottom   : 0px;
+	padding-bottom  : 0px;
+}
+
+/*
+a.forumlisting {
+ display: block;
+ padding-left: 5px;
+ color: #000000;
+}
+a.forumlisting:visited {
+ color: #000000;
+}
+a.forumlisting:hover {
+	background: #ccddcc;
+	text-decoration: none;
+}
+*/
+.bizCard {
+ float          : right;
+ margin         : 0px;
+ border         : 1px solid #000000;
+ background     : url(../images/scoutlogo100px.gif) no-repeat bottom right #FFFFFF;
+ width          : 250px;
+}
+.bizCard h1 {
+ text-align     : right;
+ font-size      : 14px;
+ font-weight    : bold;
+ font-family    : Tahoma;
+ color          : #000000;
+ margin         : 0px;
+ padding        : 3px;
+ border-bottom  : 1px dashed #666666;
+}
+.bizCard p {
+ font-size      : 10px;
+ font-family    : Tahoma;
+ color          : #000000;
+ margin         : 0px;
+}
+.bizCard table p {
+ font-size      : 12px;
+ font-family    : Tahoma;
+ color          : #000000;
+ margin         : 0px;
+}
+
+/* Kalender entry etc.. */
+
+.comboBox {
+	position     : relative;
+	z-index      : 3;
+}
+.comboInner {
+	display      : block;
+	z-index      : 3;
+}
+.comboBoxField {
+	position     : relative;
+	height       : 22px;
+	top          : 0px;
+	float        : left;
+	background   : #FFFFFF;
+	font-family  : Tahoma;
+	font-size    : 12px;
+	border       : 1px #626562 solid;
+	z-index      : 3;
+}
+.comboBoxButton {
+	position     : relative;
+	top          : 0px;
+	left         : -4px;
+	height       : 20px;
+	border       : 1px #626562 solid;
+	z-index      : 3;
+}
+.comboBoxMenuInner {
+	position     : relative;
+	z-index      : 3;
+}
+.comboBoxMenu {
+	color        : #000000;
+	background   : #FFFFFF;
+	visibility   : hidden;
+	border       : 1px #626562 solid;
+	padding      : 0px;
+	z-index      : 3;
+	display      : block;
+	position     : absolute;
+	left         : 0px;
+	top          : 0px;
+	z-index      : 3;
+}
+.comboBoxItem {
+	color         : #000000;
+	font-family   : Tahoma;
+	font-size     : 12px;
+	padding       : 1px;
+	background    : #FFFFFF;
+	display       : block;
+	z-index       : 3;
+}
+.comboBoxItem:hover {
+	color         : #000000;
+	background    : #A3D3F8;
+}
+
+/* Besøksstatistikk */
+
+table.statTable {
+ border         : 1px solid #000000; 
+ background     : #FFFFFF;
+}
+td.statRight {
+ font-family    : Tahoma;
+ font-size      : 10px;
+ color          : #000000;
+}
+td.statLeft {
+ background     : #DDDDDD;
+ font-family    : Tahoma;
+ font-size      : 10px;
+ color          : #000000;
+}

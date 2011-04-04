@@ -1,0 +1,61 @@
+
+<form id="regschema" method="post" action="%formaction%">
+
+	<input type="hidden" name="id" value="%id%" />
+
+	<div id="steg5" class="reg_steg">		
+		<h3><img src="%image_dir%pil.png" /> Ønsker du å tegne støttemedlemskap?</h3>
+				
+		<ul>
+			<li>
+			Ved å tegne et støttemedlemskap får du tilgang til å logge inn på
+			gruppens nettsider. Du kan holde deg oppdatert på hva som skjer i
+			gruppen og også delta aktivt ved å komme med kommentarer eller delta 
+			i vårt gruppeforum. Du får tilgang til høyoppløselige versjoner
+			av alle bilder i bildearkivet og du kan få tilsendt gruppens 
+			nyhetsbrev på e-post. Du er dessuten med på å sikre at aktiviteten
+			i gruppen kan opprettholdes og at speiderarbeidet kan bringes videre 
+			til nye generasjoner. Støttemedlemskap koster 200 kr. per år.
+		</li>
+		<li>
+			Dersom du ikke ønsker å tegne støttemedlemskap vil du allikevel
+			få tilsendt gratis informasjon om spesielt viktige hendelser, f.eks.
+			neste jubileum.
+		</li>
+		</ul>
+
+		<label for="membership1">
+			<input type="radio" name="membership" value="stottemedlem" id="membership1"%stotte% />
+			Ja, jeg ønsker å tegne støttemedlemskap (200 kr/år).
+		</label>
+		<label for="membership2">
+			<input type="radio" name="membership" value="pensjonert" id="membership2"%pensjonert% />
+			Nei, jeg ønsker kun å registrere mine personalia (gratis).
+		</label>
+		<!--
+		<label for="membership3">
+			<input type="radio" name="membership" value="none" id="membership3"%none% />
+			Jeg ønsker kun å registrere mine personalia (gratis).
+		</label>
+		-->
+		
+		<p>
+			<input type="submit" value="Fortsett" />
+		</p>
+	
+	</div>
+	<div id="indicator" class="reg_below">
+		2 av 5
+		<div id="indicatorbar" style="width:36%;"></div>
+	</div>	
+	
+</form>
+
+<script type="text/javascript">
+//<![CDATA[
+	YAHOO.util.Event.onDOMReady(function() {
+		Nifty("div.reg_steg");
+		Nifty("div.reg_below","bottom");
+	});
+//]]>
+</script>

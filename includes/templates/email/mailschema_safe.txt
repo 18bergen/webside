@@ -1,0 +1,16 @@
+%sender_name% <%sender_email%> har sendt deg denne meldingen: 
+
+-----------------------------------
+
+%message_plain%
+
+-----------------------------------
+
+Svar på denne meldingen:
+%url_reply%
+
+-- 
+Denne eposten ble sendt fra %site_name% sin nettside av en innlogget bruker.
+%url_root%
+
+

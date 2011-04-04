@@ -1,0 +1,108 @@
+<script type='text/javascript'>
+//<![CDATA[
+
+function validateOnSubmit() {
+    var elem;
+    var errs=0;
+    // execute all element validations in reverse order, so focus gets
+    // set to the first one in error.
+    if (!getObject('bekreft').checked)        errs += 1; 
+    
+    if (errs==1) alert('Du må krysse av i avkryssingsfeltet under \"Bekreft\".');
+
+    return (errs==0);
+   
+};
+
+function autoFill(){
+	getObject('firstname').value = 'Juhl';
+	getObject('middlename').value = 'Ellingsen';
+	getObject('lastname').value = 'Nihlsen';
+	getObject('street').value = 'Stemmeveien';
+	getObject('streetno').value = '10';
+	getObject('postno').value = '5009';
+	getObject('city').value = 'Nordpolby';
+	getObject('homephone').value = '55318481';
+	getObject('cellular').value = '90207510';
+	getObject('email').value = 'juhl@nordpolen.net';
+}
+
+//]]>
+</script>
+
+<form id="regschema" method="post" action="%formaction%" onsubmit="return validateOnSubmit();">
+
+	<input type="hidden" name="id" value="%id%" />
+
+	<div id="steg5" class="reg_steg" style="display:block;">
+		
+		<h3><img src="%image_dir%pil.png" /> Bekreft opplysningene</h3>
+
+		<p style="background:#ddd; padding: 2px;">
+			<strong>Informasjon om medlemmet:</strong> <a href="%url_step1%">[Endre]</a>
+		</p>
+		<table class="skjema" style="padding-left: 10px;">
+			<tr><td style="text-align:right"><strong>Navn: </strong></td><td>%fullname%</td></tr>
+			<tr><td style="text-align:right"><strong>Adresse: </strong></td><td>%address%</td></tr>
+			<tr><td style="text-align:right"><strong>Telefon: </strong></td><td>%phone%</td></tr>
+			<tr><td style="text-align:right"><strong>E-post: </strong></td><td>%email%</td></tr>
+			<tr><td style="text-align:right"><strong>Født: </strong></td><td>%born%</td></tr>
+			<tr><td style="text-align:right"><strong>Gruppe: </strong></td><td>%group%</td></tr>
+		</table>	
+
+		<p style="background:#ddd; padding: 2px;">
+			<strong>Informasjon om foresatt 1:</strong> <a href="%url_step2%">[Endre]</a>
+		</p>
+		<table class="skjema" style="padding-left: 10px;">
+			<tr><td style="text-align:right"><strong>Navn: </strong></td><td>%p1_fullname%</td></tr>
+			<tr><td style="text-align:right"><strong>Adresse: </strong></td><td>%p1_address%</td></tr>
+			<tr><td style="text-align:right"><strong>Telefon: </strong></td><td>%p1_phone%</td></tr>
+			<tr><td style="text-align:right"><strong>E-post: </strong></td><td>%p1_email%</td></tr>
+			<tr><td style="text-align:right"><strong>Gruppe: </strong></td><td>%p1_group%</td></tr>
+		</table>	
+		
+		<p style="background:#ddd; padding: 2px;">
+			<strong>Informasjon om foresatt 2:</strong> <a href="%url_step4%">[Endre]</a>
+		</p>
+		<p style="padding-left: 10px; display:%notdisplayforesatt2%;">
+			<i>Ingen informasjon</i>
+		</p>
+		<table class="skjema" style="padding-left: 10px; display:%displayforesatt2%;">
+			<tr><td style="text-align:right"><strong>Navn: </strong></td><td>%p2_fullname%</td></tr>
+			<tr><td style="text-align:right"><strong>Adresse: </strong></td><td>%p2_address%</td></tr>
+			<tr><td style="text-align:right"><strong>Telefon: </strong></td><td>%p2_phone%</td></tr>
+			<tr><td style="text-align:right"><strong>E-post: </strong></td><td>%p2_email%</td></tr>
+			<tr><td style="text-align:right"><strong>Gruppe: </strong></td><td>%p2_group%</td></tr>
+		</table>	
+		
+		<p style="background:#ddd; padding: 2px;">
+			<strong>Bekreft</strong>
+		</p>
+			
+		<label for="bekreft">
+			<input type="checkbox" name="bekreft" id="bekreft" style="float:left;margin-bottom:20px; margin-right:8px;" />
+			Jeg er klar over at speideren driver med utendørsaktiviteter i skog  
+			og mark, og aksepterer at mitt barns deltakelse skjer på eget ansvar.
+		</label>
+		
+		<p>
+			<input type="submit" value="Send registreringen" />
+		</p>
+	
+	</div>
+	<div id="indicator" class="reg_below">
+		4 av 4
+		<div id="indicatorbar" style="width:92%;"></div>
+	</div>
+	
+
+</form>
+
+<script type="text/javascript">
+//<![CDATA[
+	YAHOO.util.Event.onDOMReady(function() {
+		Nifty("div.reg_steg");
+		Nifty("div.reg_below","bottom");
+	});
+//]]>
+</script>

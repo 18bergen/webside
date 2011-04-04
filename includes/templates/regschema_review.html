@@ -1,0 +1,120 @@
+
+<form method="post" action="%formaction%">
+
+	<input type="hidden" name="id" value="%id%" />
+
+	<div id="steg5" class="reg_steg" style="display:block;">
+		
+		<h3><img src="%image_dir%notice.gif" /> Registreringsdetaljer (ID = %id%)</h3>
+
+		<p style="background:#ddd; padding: 2px;">
+			<strong>Informasjon om medlemmet:</strong>  <a href="%url_memberdetails%" style="display:%allowedit%">[Endre]</a>
+		</p>
+		<table class="skjema" style="padding-left: 10px;">
+			<tr><td style="text-align:right"><strong>Navn: </strong></td><td>%fullname%</td></tr>
+			<tr><td style="text-align:right"><strong>Adresse: </strong></td><td>%address%</td></tr>
+			<tr><td style="text-align:right"><strong>Telefon: </strong></td><td>%phone%</td></tr>
+			<tr><td style="text-align:right"><strong>E-post: </strong></td><td>%email%</td></tr>
+			<tr><td style="text-align:right"><strong>Født: </strong></td><td>%born%</td></tr>
+			<tr><td style="text-align:right"><strong>Gruppe: </strong></td><td>%group%</td></tr>
+		</table>	
+		<div style="display:%display_username%; padding-bottom:14px;">
+			%status_username%
+		</div>		
+		
+		<div style="display:%display_foresatte%;">
+			<p style="background:#ddd; padding: 2px;">
+				<strong>Informasjon om foresatt 1:</strong>  <a href="%url_parent1%" style="display:%allowedit%">[Endre]</a>
+			</p>
+			<table class="skjema" style="padding-left: 10px;">
+				<tr><td style="text-align:right"><strong>Navn: </strong></td><td>%p1_fullname%</td></tr>
+				<tr><td style="text-align:right"><strong>Adresse: </strong></td><td>%p1_address%</td></tr>
+				<tr><td style="text-align:right"><strong>Telefon: </strong></td><td>%p1_phone%</td></tr>
+				<tr><td style="text-align:right"><strong>E-post: </strong></td><td>%p1_email%</td></tr>
+				<tr><td style="text-align:right"><strong>Gruppe: </strong></td><td>%p1_group%</td></tr>
+			</table>
+			<div style="display:%p1_display_username%; padding-bottom:14px;">
+				%p1_status_username%
+			</div>		
+			<p style="background:#ddd; padding: 2px;">
+				<strong>Informasjon om foresatt 2:</strong>  <a href="%url_parent2%" style="display:%allowedit%">[Endre]</a>
+			</p>
+			<p style="padding-left: 10px; display:%notdisplayforesatt2%;">
+				<i>Ingen informasjon</i>
+			</p>
+			<table class="skjema" style="padding-left: 10px; display:%displayforesatt2%;">
+				<tr><td style="text-align:right"><strong>Navn: </strong></td><td>%p2_fullname%</td></tr>
+				<tr><td style="text-align:right"><strong>Adresse: </strong></td><td>%p2_address%</td></tr>
+				<tr><td style="text-align:right"><strong>Telefon: </strong></td><td>%p2_phone%</td></tr>
+				<tr><td style="text-align:right"><strong>E-post: </strong></td><td>%p2_email%</td></tr>
+				<tr><td style="text-align:right"><strong>Gruppe: </strong></td><td>%p2_group%</td></tr>
+			</table>	
+			<div style="display:%p2_display_username%; padding-bottom:14px;">
+				%p2_status_username%
+			</div>
+			
+		</div>
+		
+		<div style="display:%display_membership%;">
+			<p style="background:#ddd; padding: 2px;">
+				<strong>Ønsker støttemedlemskap?</strong> <a href="%url_membership%" style="display:%allowedit%">[Endre]</a>
+			</p>
+			<p>
+				%stottemedlemsskap%
+			</p>
+		</div>
+		
+		<div style="display:%display_about%;">
+			<p style="background:#ddd; padding: 2px;">
+				<strong>Litt om det tidligere medlemmet:</strong> <a href="%url_about%" style="display:%allowedit%">[Endre]</a>
+			</p>
+			%about%
+		</div>
+
+		<div style="display:%display_oldfriends%;">
+			<p style="background:#ddd; padding: 2px;">
+				<strong>Gamle speidervenner:</strong> <a href="%url_oldfriends%" style="display:%allowedit%">[Endre]</a>
+			</p>
+			%oldfriends%
+		</div>
+		
+		<div style="display:%display_bekreftelse%;">
+		
+			<p style="background:#ddd; padding: 2px;">
+				<strong>Bekreftelse</strong>
+			</p>
+		
+			<table class="skjema" style="padding-left: 10px;">
+				<tr><td>
+					<img src="%image_dir%true.gif" />
+				</td><td>
+					Jeg er klar over at speideren driver med utendørsaktiviteter i skog  
+					og mark, og aksepterer at mitt barns deltakelse skjer på eget ansvar.</label>
+				</td></tr>
+			</table>
+		</div>
+		
+		<p style="background:#ddd; padding: 2px;">
+			<strong>Status</strong>
+		</p>
+		
+		%status_received%
+		%status_processed%
+	
+	</div>
+	<div id="indicator" class="reg_below">
+		Ferdig!
+		<div id="indicatorbar" style="width:100%;"></div>
+	</div>
+	
+
+</form>
+
+<script type="text/javascript">
+//<![CDATA[
+	YAHOO.util.Event.onDOMReady(function() {
+		Nifty("div.reg_steg");
+		Nifty("div.reg_below","bottom");
+	});
+//]]>
+</script>
