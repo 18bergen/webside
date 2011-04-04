@@ -164,7 +164,7 @@ class TemplateService extends base {
 
 		
 		/* Notifications */
-		$notifications_mail = MailNotifications::getUnread();		
+		$notifications_mail = MailNotifications::getUnread();
 		$notifications_forum = ForumNotifications::getUnread();
 		$notifications = $notifications_mail.$notifications_forum;
 		
@@ -300,7 +300,13 @@ class TemplateService extends base {
 		if (!$this->_allowIndexing) {
 			$mainContent .= '<div style="margin-top:100px;color:#aaa;font-size:10px;text-align:center;">Denne siden indekseres ikke av søkemotorer.</div>';
 		}
-
+		//$this->webmaster_ident == $this->login_identifier && 
+		$options = "";
+		for ($i = 1; $i <= 5; $i++) {
+			$selc = (isset($_SESSION['simulateRightsLevel']) && $_SESSION['simulateRightsLevel'] == $i) ? ' selected="selected"' : '';
+			$options .= "<option value='$i'$selc>$i</option>";
+		}
+		$webmasterTools = '<div id="webmaster_tools" style="z-index:2;width:100%;position:absolute;background:white;opacity:0.5;"><div style="padding:3px;">Simuler rettighetsnivå: <select id="webmasterRightsLevel">'.$options.'</select></div></div>';
 				
 		$this->_documentTitle = $this->_cms->getDocumentTitle();
 		
@@ -325,12 +331,13 @@ class TemplateService extends base {
 		$s1[] = "%infomsg%";			$s2[] = $msg;
 		$s1[] = "%right_col_extras%";	$s2[] = $right_col_extras;
 		$s1[] = "%analytics%";			$s2[] = $googleAnalytics;
-		$s1[] = "%ckfinder_uri%";		$s2[]  = LIB_CKFINDER_URI;
-		$s1[] = "%ckeditor_uri%";		$s2[]  = LIB_CKEDITOR_URI;
-		$s1[] = "%yui_uri%";			$s2[]  = LIB_YUI_URI;
-		$s1[] = "%timestamp%";			$s2[]  = strftime("%A %e. %B %Y, kl. %H:%M",time());
-		//$s1[] = "%landsleir%";			$s2[] = $landsleirSpesial;
-		
+		$s1[] = "%ckfinder_uri%";		$s2[] = LIB_CKFINDER_URI;
+		$s1[] = "%ckeditor_uri%";		$s2[] = LIB_CKEDITOR_URI;
+		$s1[] = "%yui_uri%";			$s2[] = LIB_YUI_URI;
+		$s1[] = "%timestamp%";			$s2[] = strftime("%A %e. %B %Y, kl. %H:%M",time());
+		//$s1[] = "%landsleir%";		$s2[] = $landsleirSpesial;
+		$s1[] = "%webmaster_tools%";	$s2[] = $webmasterTools;		
+
 		$s1[] = "\"/";					$s2[] = '"'.ROOT_DIR.'/';
 		$s1[] = "url(/";				$s2[] = 'url('.ROOT_DIR.'/';
 		

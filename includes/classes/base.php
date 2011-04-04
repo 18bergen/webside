@@ -14,14 +14,16 @@ class base {
     var $_cms;
     public function setCMS($cms) { $this->_cms = $cms; }
 
-	private $dblink;
+	public $dblink;
 	public function setDbLink($dblink) { $this->dblink = $dblink; }
 	public function getDbLink() { return $this->dblink; }
 	
+	public $_eventlog; # public for inheritance..
+	public function setEventlogInstance($eventlog) { $this->_eventlog = $eventlog; }
+	public function getEventlogInstance() { return $this->_eventlog; }
+	
 	var $permission_denied_function;
 	var $error_function;
-	var $errorlog_function;
-	var $eventlog_function;
 	var $login_identifier;
 	var $pathToImages;
 	var $pathToFCKeditor;
@@ -147,7 +149,7 @@ class base {
 		if ($this->dblink) {
 			return $this->dblink->query($str, true, false, $debug);
 		} else {
-			$this->fatalError('base.query: dblink not set at ');		
+			$this->fatalError('base.query: dblink not set');		
 		}
 	}
 	
@@ -155,7 +157,7 @@ class base {
 		if ($this->dblink) {
 			return $this->dblink->affected_rows;
 		} else {
-			$this->fatalError('base.query: dblink not set at ');		
+			$this->fatalError('base.affected_rows: dblink not set');		
 		}
 	}
 	
@@ -461,7 +463,8 @@ class base {
         return '<p class="warning">'.$str.'</p>';
     }
 	
-	function badenPowellSays($str) {
+	# It's time to listen when...
+	function badenPowellSays($str) { 
 		
 		print "
 			<div style='background:url(/bergenvs/images/bp3.gif) no-repeat top left; padding-left: 163px; padding-top: 20px;'>
@@ -513,25 +516,26 @@ class base {
 	function addToChangeLog($str){ $this->logChange($str); }
 	
 	function logError($str) {
-		if (!empty($this->errorlog_function)){
-			$ef = $this->errorlog_function;
-			$ef($str);
-		} else {
-			$elog = new eventLog();
-			$elog->addToErrorLog($str);
-		}	
+		if (empty($this->_eventlog)){
+			$this->_eventlog = new eventLog();
+		}
+		$this->_eventlog->addToErrorLog($str);	
 	}
 	
 	function logActivity($str, $unique = false, $type = "minor"){
-		if (!empty($this->eventlog_function)){
-			$ef = $this->eventlog_function;
-			$ef($str,$unique,$type);
-		} else {
-			$elog = new eventLog();
-			$elog->addToActivityLog($str,$unique,$type);
+		if (empty($this->_eventlog)){
+			$this->_eventlog = new eventLog();
 		}
+		$this->_eventlog->addToActivityLog($str,$unique,$type);		
 	}	
 	
+	function logEvent($event_type, $user_id, $group_id = 0, $field1 = "", $field2 = "", $field3 = "") {
+		if (empty($this->_eventlog)){
+			$this->_eventlog = new eventLog();
+		}
+		$this->_eventlog->logEvent($event_type, $user_id, $group_id, $field1, $field2, $field3);
+	}
+		
 	function logChange($str){
 		// Avoid duplicated
 		if (empty($this->dblink)){
@@ -636,7 +640,7 @@ class base {
 		$this->imginstance->initialize_base();
 		$this->imginstance->coolUrlSplitted = $this->coolUrlSplitted;
 		$this->imginstance->image_dir = $this->image_dir;		
-		$this->imginstance->eventlog_function = $this->eventlog_function;
+		$this->imginstance->setEventlogInstance($this->_eventlog);
 		$this->imginstance->is_allowed = $this->is_allowed;
 	}
 	

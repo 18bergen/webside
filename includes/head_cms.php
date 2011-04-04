@@ -1,9 +1,9 @@
 <?
-
+/*
 function dpeventlogentry($str, $unique = false, $type = "minor"){
 	global $eventLog;
 	$eventLog->addToActivityLog($str, $unique, $type);
-}
+}*/
 function listMembers(){
 	global $memberdb;
 	return $memberdb->members;
@@ -39,11 +39,10 @@ function make_memberlink($id, $customText = "", $customQuery = "") {
 function make_grouplink($id, $customText = "", $customQuery = "") {
 	global $memberdb;
 	$g = $memberdb->getGroupById($id);
-	if (empty($g->slug)) $url = ROOT_DIR.'/medlemsliste/grupper/'.$g->id;
-	else $url = ROOT_DIR.'/medlemsliste/'.$g->slug;
+	$url = $g['Url'];
 	if ($customQuery != "") $url = "$url?$customQuery";
-	if ($customText == "") return "<a href='$url'>$g->caption</a>";
-	else return "<a href='$url'>$customText</a>";
+	if ($customText == "") return '<a href="'.$url.'">'.$g['Caption'].'</a>';
+	else return '<a href="'.$url.'">.'.$customText.'</a>';
 }
 function lookupWebmaster() {
 	global $memberdb;
@@ -87,7 +86,7 @@ $dp0->list_groups = "listGroups";
 $dp0->list_members = "listMembers";
 $dp0->permission_denied_function = "permissionDenied";
 $dp0->prepare_classinstance = "prepareClassInstance";
-$dp0->eventlog_function = "dpeventlogentry";
+$dp0->setEventlogInstance($eventlog);
 $dp0->htmleditdir = ROOT_DIR.'/htmlarea';
 $dp0->preferred_lang = $_SESSION['lang'];
 $dp0->default_lang = 'no';

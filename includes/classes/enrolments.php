@@ -1657,7 +1657,7 @@ class enrolments extends base {
 	
 	private function mailReceipt($enrolment){
 		
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
+		require_once("../www/libs/Rmail/Rmail.php");
 
 		$from_name = $this->mailSenderName; // global options
 		$from_addr = $this->mailSenderAddr; // global options
@@ -1726,7 +1726,7 @@ $server/
 ";
 
 			// Send mail		
-			$mail = new htmlMimeMail5();
+			$mail = new Rmail();
 			$mail->setFrom("$from_name <$from_addr>");
 			$mail->setReturnPath($from_addr);
 			$mail->setSubject("Kvittering for påmelding til ".$this->event_obj['caption']);
@@ -1739,7 +1739,7 @@ $server/
 	
 	private function mailReceiptCancel($enrolment){
 		
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
+		require_once("../www/libs/Rmail/Rmail.php");
 
 		$from_name = $this->mailSenderName; // global options
 		$from_addr = $this->mailSenderAddr; // global options
@@ -1811,7 +1811,7 @@ $server/
 ";
 
 			// Send mail		
-			$mail = new htmlMimeMail5();
+			$mail = new Rmail();
 			$mail->setFrom("$from_name <$from_addr>");
 			$mail->setReturnPath($from_addr);
 			$mail->setSubject("Kvittering for avmelding til ".$this->event_obj['caption']);

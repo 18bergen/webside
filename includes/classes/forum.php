@@ -1056,7 +1056,7 @@ class forum extends base {
 		
 		if (!$this->allow_startthreads) return $this->permissionDenied();
 
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
+		require_once("../www/libs/Rmail/Rmail.php");
 		
 		// Short vars
 		$tt = $this->table_threads;
@@ -1144,7 +1144,7 @@ class forum extends base {
 		$plainBody = str_replace($r1a, $r2a, $template);
 
 		// Send mail		
-		$mail = new htmlMimeMail5();
+		$mail = new Rmail();
 		$mail->setFrom("$from_name <$from_addr>");
 		$mail->setReturnPath($from_addr);
 		$mail->setSubject("[Forum] Varsel om svar på emne - $topic");
@@ -1176,7 +1176,7 @@ class forum extends base {
 		$plainBody = str_replace($r1a, $r2a, $template);
 
 		// Send mail		
-		$mail = new htmlMimeMail5();
+		$mail = new Rmail();
 		$mail->setFrom("$from_name <$from_addr>");
 		$mail->setReturnPath($from_addr);
 		$mail->setSubject("[Forum] Varsel om nytt tema");
@@ -1194,7 +1194,7 @@ class forum extends base {
 			return 0;
 		}
 
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
+		require_once("../www/libs/Rmail/Rmail.php");
 
 		// 1) First fetch and prepare the POST data:
 		

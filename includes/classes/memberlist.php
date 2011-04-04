@@ -1,5 +1,513 @@
 <?
 
+class UserDataCache extends base {
+
+	private $memberImagesDir = 'Medlemsfiler/';
+	
+	// Located in $this->image_dir:
+	private $emptyGroupBanner = 'user4.gif';
+	private $emptyProfilePicture = 'unknown.jpg';
+	private $emptyForumAvatar = 'unknown.jpg';
+	
+	private $users;
+	private $groups;
+
+	function UserDataCache() {
+		$this->users = array();
+	}
+	
+	public function initialize() {
+		$this->fetchGroups();
+	}
+	
+	private function fetchGroups() {
+		$this->groups = array();
+		$res = $this->query("SELECT id,caption,visgruppe,visbilder,position,parent,defaultrights,defaultrang,slug,kategori,gruppesider,banner FROM $this->table_groups ORDER BY position");
+		while ($row = $res->fetch_assoc()){
+			$gid = intval($row['id']);
+			$tmp = array(
+				'Id' => $gid,
+				'Caption' => stripslashes($row['caption']),
+				'Visible' => ($row['visgruppe'] ? true : false),
+				'ShowPhotos' => ($row['visbilder'] ? true : false),
+				'Position' => intval($row['position']),
+				'ParentGroup' => intval($row['parent']),
+				'DefaultRights' => intval($row['defaultrights']),
+				'DefaultRang' => intval($row['defaultrang']),
+				'Slug' => intval($row['slug']),
+				'Category' => intval($row['kategori']),
+				'GroupPages' => $row['gruppesider'],
+				'ChildGroups' => array(),
+				'Banner' => $row['banner']
+			);
+
+			$tmp['Url'] = (empty($tmp['Slug'])) ? '/medlemsliste/grupper/'.$tmp['Id']
+				: '/medlemsliste/'.$tmp['Slug'];
+
+			if (empty($tmp['Banner'])) {
+				$tmp['Banner'] = array(
+					'UploadedPicture' => false,
+					'FileName'        => '',
+					'SmallThumb'      => $this->image_dir.$this->emptyGroupBanner,
+					'MediumThumb'     => $this->image_dir.$this->emptyGroupBanner,
+					'Original'        => $this->image_dir.$this->emptyGroupBanner
+				);
+			} else {
+				$dir = $this->groupImagesDir.$tmp['Id'].'/';
+				$basename = $tmp['Banner'];
+				$tmp['Banner'] = array(
+					'UploadedPicture' => true,
+					'FileName'        => $basename,
+					'SmallThumb'      =>  '/'.$this->userFilesDir.$dir.'_thumbs140/'.$basename,
+					'MediumThumb'     =>  '/'.$this->userFilesDir.$dir.'_thumbs490/'.$basename,
+					'Original'        =>  '/'.$this->userFilesDir.$dir.$basename
+				);
+			}
+			
+			$this->groups[$gid] = $tmp;
+			$this->getGroupMembers($gid);
+
+			//$this->groups[$id]->realmembers = array();
+		}
+		$res->close();
+		
+		foreach ($this->groups as $g){
+			if ($g['ParentGroup'] != 0) {
+				$this->groups[$g['ParentGroup']]['ChildGroups'][] = $g['Id'];
+			}
+		}
+
+	}
+	
+	public function getGroupById($id) {
+		if (isset($this->groups[$id])) {
+			return $this->groups[$id];
+		} else {
+			$this->fatalError("Group $id requested, but does not exist!");
+			return false;
+		}
+	}
+	
+	public function getGroupBySlug($slug) {
+		foreach ($this->groups as $g) {
+			if ($g['Slug'] == $slug) {
+				return $g;
+			}
+		}
+		return false;
+	}
+	
+	public function getAllGroups() {
+		return $this->groups;
+	}
+
+	public function getGroupMembers($gid, $recursive = false) {
+		$gid = intval($gid);
+		if (!isset($this->groups[$gid]['Users'])) {
+			$this->groups[$gid]['Users'] = array();
+			$tg = $this->table_group_memberships;
+			$tm = $this->table_memberlist;
+			$res = $this->query(
+				"SELECT bruker AS user_id FROM $tg WHERE gruppe=$gid AND enddate='0000-00-00'"
+			);
+			while ($row = $res->fetch_assoc()) {
+				$this->groups[$gid]['Users'][] = intval($row['user_id']);
+			}
+		}
+		$count = $this->groups[$gid]['Users'];
+		if ($recursive) {
+			foreach ($this->groups[$gid]['ChildGroups'] as $c) {
+				$count += $this->getGroupMembers($c, true);
+			}
+		}
+		return $count;
+	}
+	
+	/*
+		Example:
+		$d = getUserData([1,2,3],array('FirstName','ProfilePicture'));
+	*/
+	public function getUserData($users,$fields) {
+
+		if (!is_array($fields)) $fields = array($fields);
+
+		// Check if basic data is cached for the users, and add to the cache as necessary
+		$usersNotCached = array();
+		$cachedUsers = array_keys($this->users);
+		if (is_array($users)) {
+			foreach ($users as $user_id) {
+				if (!in_array($user_id,$cachedUsers)) $usersNotCached[]=$user_id;
+			}
+		} else {
+			if (!in_array($users,$cachedUsers)) $usersNotCached[]=$users;		
+		}
+		if (count($usersNotCached) != 0)
+			$this->fetchBasicUserData($usersNotCached);
+
+		if (in_array('All',$fields) or in_array('Memberships',$fields) or in_array('ActiveMemberships',$fields)) {
+			// Check if memberships data is cached for the users, and add to the cache as necessary
+			$usersNotCached = array();
+			$cachedUsers = array();
+			foreach ($this->users as $id => $u) {
+				if (isset($u['Memberships'])) $cachedUsers[] = $id;
+			}
+			if (is_array($users)) {
+				foreach ($users as $user_id) {
+					if (!in_array($user_id,$cachedUsers)) $usersNotCached[]=$user_id;
+				}
+			} else {
+				if (!in_array($users,$cachedUsers)) $usersNotCached[]=$users;		
+			}
+			if (count($usersNotCached) != 0)
+				$this->fetchMemberships($usersNotCached);
+		}
+		
+		if (in_array('All',$fields) or in_array('Verv',$fields) or in_array('AktiveVerv',$fields)) {
+			// Check if verv is cached for the users, and add to the cache as necessary
+			$usersNotCached = array();
+			$cachedUsers = array();
+			foreach ($this->users as $id => $u) {
+				if (isset($u['Verv'])) $cachedUsers[] = $id;
+			}
+			if (is_array($users)) {
+				foreach ($users as $user_id) {
+					if (!in_array($user_id,$cachedUsers)) $usersNotCached[]=$user_id;
+				}
+			} else {
+				if (!in_array($users,$cachedUsers)) $usersNotCached[]=$users;		
+			}
+			if (count($usersNotCached) != 0)
+				$this->fetchVerv($usersNotCached);
+		}
+
+		if (in_array('All',$fields) or in_array('Guardians',$fields) or in_array('Children',$fields)) {
+			// Check if verv is cached for the users, and add to the cache as necessary
+			$usersNotCached = array();
+			$cachedUsers = array();
+			foreach ($this->users as $id => $u) {
+				if (isset($u['Guardians'])) $cachedUsers[] = $id;
+			}
+			if (is_array($users)) {
+				foreach ($users as $user_id) {
+					if (!in_array($user_id,$cachedUsers)) $usersNotCached[]=$user_id;
+				}
+			} else {
+				if (!in_array($users,$cachedUsers)) $usersNotCached[]=$users;		
+			}
+			if (count($usersNotCached) != 0)
+				$this->fetchUserRelationships($usersNotCached);
+		}
+		
+		if (in_array('All',$fields) or in_array('GroupMemberships',$fields) or in_array('ActiveGroupMemberships',$fields)) {
+			// Check if verv is cached for the users, and add to the cache as necessary
+			$usersNotCached = array();
+			$cachedUsers = array();
+			foreach ($this->users as $id => $u) {
+				if (isset($u['GroupMemberships'])) $cachedUsers[] = $id;
+			}
+			if (is_array($users)) {
+				foreach ($users as $user_id) {
+					if (!in_array($user_id,$cachedUsers)) $usersNotCached[]=$user_id;
+				}
+			} else {
+				if (!in_array($users,$cachedUsers)) $usersNotCached[]=$users;		
+			}
+			if (count($usersNotCached) != 0)
+				$this->fetchGroupMemberships($usersNotCached);
+		}
+		
+		if (is_array($users)) {
+			$toReturn = array();
+			foreach ($users as $user_id) {
+				$toReturn[$user_id] = $this->getSingleUserData($user_id, $fields);				
+			}
+			return $toReturn;
+		} else {
+			if (!is_numeric($users)) {
+				$this->fatalError("user_id sent to memberlist:getUserData must be numeric!");
+			}
+			$user_id = $users;
+			$toReturn = $this->getSingleUserData($user_id, $fields);
+			return $toReturn;
+		}
+	}
+
+	private function dumpUserDataCacheKeys() {
+		return implode(',',array_keys($this->users));
+	}
+	
+	private function getSingleUserData($user_id, $fields) {
+		$toReturn = array();
+		if (!isset($this->users[$user_id])) {
+			$this->dumpUserDataCacheKeys();
+			$this->fatalError("[memberlist] User data cache error: User $user_id not cached for use by getSingleUserData.
+				The following users are cached: ".$this->dumpUserDataCacheKeys());	
+		}
+		if ($fields[0] == 'All') {
+			return $this->users[$user_id];
+		}
+		foreach ($fields as $field_name) {
+			if (!isset($this->users[$user_id][$field_name])) {
+				print $this->notSoFatalError("[memberlist] Unknown field &lt;$field_name&gt; for user &lt;$user_id&gt;");
+			}
+			$toReturn[$field_name] = $this->users[$user_id][$field_name];
+		}
+		return $toReturn;
+	}
+
+	private function fetchBasicUserData($users) {
+		if (!is_array($users) || count($users) == 0) {
+			$this->fatalError("Argument to addToUserDataCache should be an array of user id's.");
+		}
+		foreach ($users as $user_id) {
+			if (!is_numeric($user_id)) {
+				$this->fatalError("Argument to addToUserDataCache should be an array of <em>numeric</em> values.");
+			}
+		}
+		$res = $this->query("SELECT 
+				$this->table_memberlist.*, 
+				$this->table_rang.tittel, 
+				$this->table_rang.classname 
+			FROM 
+				$this->table_memberlist, 
+				$this->table_rang 
+			WHERE 
+				$this->table_memberlist.rang = $this->table_rang.id
+			AND ident IN (".implode(',',$users).")"
+		);
+		while ($row = $res->fetch_assoc()) {
+			// Deprecated fields:  msn, profilecreated, mail_newthreads, mail_onreply, lastonforum, myalbum
+			$tmp = array(
+				// Profile data:
+				'FirstName'		=> $row['firstname'],
+				'MiddleName'	=> $row['middlename'],
+				'LastName'		=> $row['lastname'],
+				'NickName'		=> $row['nickname'],
+				'Street'		=> $row['street'],
+				'StreetNo'		=> $row['streetno'],
+				'PostCode'		=> $row['postno'],
+				'City'			=> $row['city'],
+				'State'			=> $row['state'],
+				'Country'		=> $row['country'],
+				'Email'			=> $row['email'],
+				'HomePhone'		=> $row['homephone'],
+				'CellPhone'		=> $row['cellular'],
+				'Birthday'		=> (($row['bday'] == 0) ? 0 : strtotime($row['bday'])),
+				'ProfilePicture'=> $row['profilbilde'],
+				'ForumPicture'	=> $row['forumbilde'],
+				'Notes'			=> $row['notes'],
+				'Slug'			=> $row['slug'],
+				'Title' 		=> $row['tittel'],
+				'Webpage'		=> $row['homepage'],
+				
+				// Account data:
+				'UserId'		=> intval($row['ident']),
+				'AccountClosed' => $row['kontosperret'],
+				'Rights'		=> $row['rights'],
+				'Rang'			=> $row['rang'],
+				'Status'		=> $row['memberstatus'],
+				
+				// Site settings:
+				'Voted'			=> $row['voted']	
+			);
+			
+			// Profile picture
+			if (empty($tmp['ProfilePicture'])) {
+				$tmp['ProfilePicture'] = array(
+					'UploadedPicture' => false,
+					'FileName'        => '',
+					'SmallThumb'      => $this->image_dir.$this->emptyProfilePicture,
+					'MediumThumb'     => $this->image_dir.$this->emptyProfilePicture,
+					'Original'        => $this->image_dir.$this->emptyProfilePicture
+				);
+			} else {
+				$dir = $this->memberImagesDir.$tmp['UserId'].'/';
+				$basename = $tmp['ProfilePicture'];
+				$tmp['ProfilePicture'] = array(
+					'UploadedPicture' => true,
+					'FileName'        => $basename,
+					'SmallThumb'      =>  '/'.$this->userFilesDir.$dir.'_thumbs140/'.$basename,
+					'MediumThumb'     =>  '/'.$this->userFilesDir.$dir.'_thumbs490/'.$basename,
+					'Original'        =>  '/'.$this->userFilesDir.$dir.$basename
+				);
+			}
+			
+			// Forum picture
+			if (empty($tmp['ForumPicture'])) {
+				$tmp['ForumPicture'] = array(
+					'UploadedPicture' => false,
+					'FileName'        => '',
+					'SmallThumb'      => $this->image_dir.$this->emptyForumAvatar,
+					'MediumThumb'     => $this->image_dir.$this->emptyForumAvatar,
+					'Original'        => $this->image_dir.$this->emptyForumAvatar
+				);
+			} else {
+				$dir = $this->memberImagesDir.$tmp['UserId'].'/';
+				$basename = $tmp['ProfilePicture'];
+				$tmp['ForumPicture'] = array(
+					'UploadedPicture' => true,
+					'FileName'        => $basename,
+					'SmallThumb'      =>  '/'.$this->userFilesDir.$dir.'_thumbs140/'.$basename,
+					'MediumThumb'     =>  '/'.$this->userFilesDir.$dir.'_thumbs490/'.$basename,
+					'Original'        =>  '/'.$this->userFilesDir.$dir.$basename
+				);
+			}
+			
+			// Hide names to Google:
+			$useragent = "unknown";
+			if (isset($_SERVER['HTTP_USER_AGENT'])) $useragent = $_SERVER['HTTP_USER_AGENT'];
+			if (isset($_SERVER['USER_AGENT'])) $useragent = $_SERVER['USER_AGENT'];
+			if ((strpos("unknown",$useragent) !== false) || (strpos("Googlebot",$useragent) !== false) || (isset($_GET['simulategoogle']))){
+				$tmp['FirstName'] = $tmp['MiddleName'] = $tmp['LastName'] = "[skjult]";
+			}
+			
+			// Cache full name:
+			$mid = (empty($tmp['MiddleName'])) ? "" : mb_substr($tmp['MiddleName'],0,1,'UTF-8').". ";
+			$tmp['FullName'] = $tmp['FirstName']." $mid".$tmp['LastName'];
+
+			$tmp['ProfileUrl'] = (empty($tmp['Slug'])) ? '/medlemsliste/medlemmer/'.$tmp['UserId']
+				: '/medlemsliste/'.$tmp['Slug'];
+
+			//$tmp['GroupMemberships'] = array();
+
+			//$bday_unix = strtotime($v);
+			//if ($bday_unix < strtotime('1900-01-01')) $bday_unix = 0;
+			//$this->members[$id]->$n = $bday_unix;
+			/* The DateTime class looks promising, but the functionality is limited as 
+			   of PHP 5.2.9. getTimestamp() introduced in 5.3.0, but still no function
+			   like strftime with locale support...
+			*/
+
+			$this->users[intval($row['ident'])] = $tmp;
+		}
+	}
+
+	private function fetchMemberships($users) {
+	
+		foreach ($users as $uid) {
+			$this->users[$uid]['Memberships'] = array();
+			$this->users[$uid]['ActiveMemberships'] = array();
+		}
+	
+		// Fill in memberships
+		$m = $this->table_memberships;
+		$d = $this->table_membershiptypes;
+		$res = $this->query("SELECT $m.user_id, $m.kind, $m.date_from, $m.date_to, $d.description 
+			FROM $m,$d
+			WHERE $m.user_id IN (".implode(',',$users).")
+			AND $m.kind=$d.sid");
+		while ($row = $res->fetch_assoc()) {
+			$uid = intval($row['user_id']);
+			$df = ($row['date_from']==0) ? 0 : strtotime($row['date_from']);
+			$dt = ($row['date_to']==0) ? 0 : strtotime($row['date_to']);
+			$this->users[$uid]['Memberships'][] = array(
+				'Kind' => $row['kind'],
+				'Description' => $row['description'],
+				'StartDate' => $df,
+				'EndDate' => $dt
+			);
+			if ($dt == 0) {
+				$this->users[$uid]['ActiveMemberships'][] = count($this->users[$uid]['Memberships'])-1;
+			}
+		}
+	}
+	
+	private function fetchGroupMemberships($users) {
+
+		foreach ($users as $uid) {
+			$this->users[$uid]['GroupMemberships'] = array();
+			$this->users[$uid]['ActiveGroupMemberships'] = array();
+		}
+		
+		$res = $this->query(
+			"SELECT bruker as user_id, gruppe as group_id, startdate, enddate
+			FROM $this->table_group_memberships
+			WHERE 
+				bruker IN (".implode(',',$users).")
+			ORDER BY startdate"
+		);
+		while ($row = $res->fetch_assoc()){
+			$gid = intval($row['group_id']);
+			$uid = intval($row['user_id']);
+			$df = ($row['startdate']==0) ? 0 : strtotime($row['startdate']);
+			$dt = ($row['enddate']==0) ? 0 : strtotime($row['enddate']);
+			$this->users[$uid]['GroupMemberships'][] = array(
+				'Active' => ($dt != 0),
+				'GroupId' => $gid,
+				'StartDate' => $df,
+				'EndDate' => $dt			
+			);
+			$gid;
+		}
+		if ($dt == 0) {
+			$this->users[$uid]['ActiveGroupMemberships'][] = count($this->users[$uid]['GroupMemberships'])-1;
+		}
+	}
+	
+	private function fetchVerv($users) {
+
+		foreach ($users as $uid) {
+			$this->users[$uid]['Verv'] = array();
+			$this->users[$uid]['AktiveVerv'] = array();
+		}
+		
+		// Fill in verv
+		$tv = $this->table_verv; $th = $this->table_vervhistorie; $tg = $this->table_groups;
+		$rs = $this->query("SELECT 
+			$th.person, $tv.caption,$tv.slug,$th.startdate, $th.enddate, $th.gruppe as group_id, $tg.caption as group_caption 
+			FROM $tv,$th 
+			LEFT JOIN $tg ON $tg.id=$th.gruppe
+			WHERE $th.person IN (".implode(',',$users).") AND $th.verv=$tv.id");
+		if ($rs->num_rows > 0){
+			while ($row = $rs->fetch_assoc()){
+				$uid = intval($row['person']);
+				$df = ($row['startdate']==0) ? 0 : strtotime($row['startdate']);
+				$dt = ($row['enddate']==0) ? 0 : strtotime($row['enddate']);
+				$url = '/verv/'.$row['slug'];
+				if (!empty($row['group_id'])) {
+					$g = $this->getGroupById($row['group_id']);
+					$url .= '/'.$g['Slug'];
+				}
+				
+				$v = array(
+					'StartDate' => $df,
+					'EndDate' => $dt,
+					'Title' => $row['caption'],
+					'Url' => $url
+				);
+				if (!empty($row['group_id'])) {
+					$g = $this->getGroupById($row['group_id']);
+					$v['GroupId'] = $g['Id'];
+					$v['GroupName'] = $g['Caption'];
+				}
+				$this->users[$uid]['Verv'][] = $v;
+				if ($dt == 0) {
+					$this->users[$uid]['AktiveVerv'][] = count($this->users[$uid]['Verv'])-1;
+				}
+			}
+		}
+	}
+	
+	private function fetchUserRelationships($users) {
+
+		foreach ($users as $uid) {
+			$this->users[$uid]['Guardians'] = array();
+			$this->users[$uid]['Children'] = array();
+		}
+		
+		$res = $this->query("SELECT medlem, foresatt FROM $this->table_guardians WHERE medlem IN (".implode(',',$users).") OR foresatt IN (".implode(',',$users).")");
+		while ($row = $res->fetch_assoc()){
+			$c = intval($row['medlem']);
+			$g = intval($row['foresatt']);
+			if (isset($this->users[$c])) $this->users[$c]['Guardians'][] = $g;				
+			if (isset($this->users[$g])) $this->users[$g]['Children'][] = $c;				
+		}
+	}
+	
+}
+
+
+
 class memberlist extends base {
 	
 	var $members;
@@ -14,6 +522,7 @@ class memberlist extends base {
 	var $table_rang = "rang";
 	var $table_groups = "groups";
 	var $table_memberships = "memberships";
+	var $table_group_memberships = "group_memberships";
 	var $table_list_templates = "memberlist_templates";
 	var $table_guardians = "member_guardians";
 	var $table_groupcats = "group_categories";
@@ -28,9 +537,7 @@ class memberlist extends base {
 	var $table_onlineusers = "onlineusers";	
 	var $document_title = '';
 
-	var $memberImagesDir = 'Medlemsfiler/';
-
-	private $userDataCache = array();
+	private $userDataCache;
 	private $activeMembersCache = array();
 	
 	var	$kategoriOrder = array(
@@ -298,6 +805,7 @@ class memberlist extends base {
 		$this->table_rang = DBPREFIX.$this->table_rang;
 		$this->table_groups = DBPREFIX.$this->table_groups;
 		$this->table_memberships = DBPREFIX.$this->table_memberships;
+		$this->table_group_memberships = DBPREFIX.$this->table_group_memberships;
 		$this->table_list_templates = DBPREFIX.$this->table_list_templates;
 		$this->table_guardians = DBPREFIX.$this->table_guardians;
 		$this->table_groupcats = DBPREFIX.$this->table_groupcats;
@@ -311,49 +819,34 @@ class memberlist extends base {
 		$this->table_wordbox = DBPREFIX.$this->table_wordbox;		
 		$this->table_onlineusers = DBPREFIX.$this->table_onlineusers;
 		
-		$this->userDataCache = array();
+		$this->userDataCache = new UserDataCache();
+		$this->userDataCache->table_memberlist = $this->table_memberlist;
+		$this->userDataCache->table_groups = $this->table_groups;
+		$this->userDataCache->table_memberships = $this->table_memberships;
+		$this->userDataCache->table_membershiptypes = $this->table_membershiptypes;
+		$this->userDataCache->table_group_memberships = $this->table_group_memberships;
+		$this->userDataCache->table_guardians = $this->table_guardians;
+		$this->userDataCache->table_rang = $this->table_rang;
+		$this->userDataCache->table_verv = $this->table_verv;
+		$this->userDataCache->table_vervhistorie = $this->table_vervhistorie;
+		$this->userDataCache->table_rights = $this->table_rights;
 	}
 	
-	public function getGroupById($id) {
-		if (isset($this->groups[$id])) {
-			return $this->groups[$id];
-		} else {
-			$this->addToErrorLog("Group $id requested, but does not exist!");
-			return false;
-		}
-	}
-	
-	public function getGroupBySlug($slug) {
-		foreach ($this->groups as $g) {
-			if ($g->slug == $slug) {
-				return $g;
-			}
-		}
-		return false;
-	}
-	
-	public function getAllGroups() {
-		return $this->groups;
-	}
-
 	public function getAllMembers() {
 		return $this->members;
 	}
 	
+	/* Deprecated */
 	public function getProfileImage($id, $size = 'small'){
-		$basename = $this->members[$id]->profilbilde;
-		if (empty($basename)) {
-			return $this->image_dir."unknown.jpg";		
-		}
-		$dir = $this->memberImagesDir.$id.'/';
+		$udata = $this->getUserData($id,'ProfilePicture');
 		switch ($size) {
-			case 'small': return '/'.$this->userFilesDir.$dir.'_thumbs140/'.$basename;
-			case 'medium': return '/'.$this->userFilesDir.$dir.'_thumbs490/'.$basename;
-			default: return '/'.$this->userFilesDir.$dir.$basename;
+			case 'small': return $udata['ProfilePicture']['SmallThumb'];
+			case 'medium': return $udata['ProfilePicture']['MediumThumb'];
+			default: return $udata['ProfilePicture']['Original'];
 		}
 	}
 	
-	
+	/* Deprecated */	
 	function getForumImage($id, $size = 'small'){
 		$basename = $this->members[$id]->forumbilde;
 		if (empty($basename)) {
@@ -377,10 +870,35 @@ class memberlist extends base {
 		<activeMembersCache> is a cache containing just the basic data on all the active members.
 		
 	*/
+
+	public function getGroupById($group_id) {
+		return $this->userDataCache->getGroupById($group_id);
+	}
+
+	public function getGroupBySlug($group_slug) {
+		return $this->userDataCache->getGroupBySlug($group_slug);
+	}
+
+	public function getAllGroups() {
+		return $this->userDataCache->getAllGroups();
+	}
 	
+	public function getUserData($users, $fields) {
+		return $this->userDataCache->getUserData($users, $fields);
+	}
+	
+	public function getActiveGroupMemberships($userId) {
+		$udata = $this->getUserData($userId, 'ActiveGroupMemberships');
+		$groups = array();
+		foreach ($udata['ActiveGroupMemberships'] as $a) {
+			$groups[] = $this->getGroupById($a['GroupId']);
+		}
+	}
+	
+	/* Should be moved to UserDataCache class */
 	private function generateSimpleCache() {
 		$tm = $this->table_memberlist;
-		$tmm = $this->table_memberships;
+		$tmm = $this->table_group_memberships;
 		$tr = $this->table_rang;
 		$res = $this->query("SELECT $tm.ident,$tm.firstname,$tm.middlename,$tm.lastname, $tm.bday, $tm.slug
 			FROM $tm,$tmm,$tr WHERE $tm.ident=$tmm.bruker AND $tmm.enddate=0
@@ -436,169 +954,7 @@ class memberlist extends base {
 		return $this->activeMembersCache;
 	}
 	
-	private function addToUserDataCache($users) {
-		if (!is_array($users) || count($users) == 0) {
-			$this->fatalError("Argument to addToUserDataCache should be an array of user id's.");
-		}
-		foreach ($users as $user_id) {
-			if (!is_numeric($user_id)) {
-				$this->fatalError("Argument to addToUserDataCache should be an array of <em>numeric</em> values.");
-			}
-		}
-		$res = $this->query("SELECT 
-				$this->table_memberlist.*, 
-				$this->table_rang.tittel, 
-				$this->table_rang.classname 
-			FROM 
-				$this->table_memberlist, 
-				$this->table_rang 
-			WHERE 
-				$this->table_memberlist.rang = $this->table_rang.id
-			AND ident IN (".implode(',',$users).")"
-		);
-		while ($row = $res->fetch_assoc()) {
-			// Deprecated fields: homepage, msn, profilecreated, mail_newthreads, mail_onreply, lastonforum, myalbum
-			$tmp = array(
-				// Profile data:
-				'FirstName'		=> $row['firstname'],
-				'MiddleName'	=> $row['middlename'],
-				'LastName'		=> $row['lastname'],
-				'NickName'		=> $row['nickname'],
-				'Street'		=> $row['street'],
-				'StreetNo'		=> $row['streetno'],
-				'PostCode'		=> $row['postno'],
-				'City'			=> $row['city'],
-				'State'			=> $row['state'],
-				'Country'		=> $row['country'],
-				'Email'			=> $row['email'],
-				'HomePhone'		=> $row['homephone'],
-				'CellPhone'		=> $row['cellular'],
-				'Birthday'		=> $row['bday'],
-				'ProfilePicture'=> $row['profilbilde'],
-				'ForumPicture'	=> $row['forumbilde'],
-				'Notes'			=> $row['notes'],
-				'Slug'			=> $row['slug'],
-				
-				// Account data:
-				'UserId'		=> intval($row['ident']),
-				'AccountClosed' => $row['kontosperret'],
-				'Rights'		=> $row['rights'],
-				'Rang'			=> $row['rang'],
-				'Status'		=> $row['memberstatus'],
-				
-				// Site settings:
-				'Voted'			=> $row['voted']	
-			);
-			
-			// Profile picture
-			if (empty($tmp['ProfilePicture'])) {
-				$tmp['ProfilePicture'] = array(
-					'UploadedPicture' => false,
-					'FileName'        => '',
-					'SmallThumb'      => $this->image_dir."unknown.jpg",
-					'MediumThumb'     => $this->image_dir."unknown.jpg",
-					'Original'        => $this->image_dir."unknown.jpg"
-				);
-			} else {
-				$dir = $this->memberImagesDir.$tmp['UserId'].'/';
-				$basename = $tmp['ProfilePicture'];
-				$tmp['ProfilePicture'] = array(
-					'UploadedPicture' => true,
-					'FileName'        => $basename,
-					'SmallThumb'      =>  '/'.$this->userFilesDir.$dir.'_thumbs140/'.$basename,
-					'MediumThumb'     =>  '/'.$this->userFilesDir.$dir.'_thumbs490/'.$basename,
-					'Original'        =>  '/'.$this->userFilesDir.$dir.$basename
-				);
-			}
-			
-			// Forum picture
-			if (empty($tmp['ForumPicture'])) {
-				$tmp['ForumPicture'] = array(
-					'UploadedPicture' => false,
-					'FileName'        => '',
-					'SmallThumb'      => $this->image_dir."unknown.jpg",
-					'MediumThumb'     => $this->image_dir."unknown.jpg",
-					'Original'        => $this->image_dir."unknown.jpg"
-				);
-			} else {
-				$dir = $this->memberImagesDir.$tmp['UserId'].'/';
-				$basename = $tmp['ProfilePicture'];
-				$tmp['ForumPicture'] = array(
-					'UploadedPicture' => true,
-					'FileName'        => $basename,
-					'SmallThumb'      =>  '/'.$this->userFilesDir.$dir.'_thumbs140/'.$basename,
-					'MediumThumb'     =>  '/'.$this->userFilesDir.$dir.'_thumbs490/'.$basename,
-					'Original'        =>  '/'.$this->userFilesDir.$dir.$basename
-				);
-			}
-			
-			// Hide names to Google:
-			$useragent = "unknown";
-			if (isset($_SERVER['HTTP_USER_AGENT'])) $useragent = $_SERVER['HTTP_USER_AGENT'];
-			if (isset($_SERVER['USER_AGENT'])) $useragent = $_SERVER['USER_AGENT'];
-			if ((strpos("unknown",$useragent) !== false) || (strpos("Googlebot",$useragent) !== false) || (isset($_GET['simulategoogle']))){
-				$tmp['FirstName'] = $tmp['MiddleName'] = $tmp['LastName'] = "[skjult]";
-			}
-			
-			// Cache full name:
-			$mid = (empty($tmp['MiddleName'])) ? "" : mb_substr($tmp['MiddleName'],0,1,'UTF-8').". ";
-			$tmp['FullName'] = $tmp['FirstName']." $mid".$tmp['LastName'];
-
-			$tmp['ProfileUrl'] = (empty($tmp['Slug'])) ? '/medlemsliste/medlemmer/'.$tmp['UserId']
-				: '/medlemsliste/'.$tmp['Slug'];
-
-			$tmp['Memberships'] = array();
-			$tmp['Guardians'] = array();
-			$tmp['Children'] = array();
-
-			//$bday_unix = strtotime($v);
-			//if ($bday_unix < strtotime('1900-01-01')) $bday_unix = 0;
-			//$this->members[$id]->$n = $bday_unix;
-			/* The DateTime class looks promising, but the functionality is limited as 
-			   of PHP 5.2.9. getTimestamp() introduced in 5.3.0, but still no function
-			   like strftime with locale support...
-			*/
-
-			$this->userDataCache[intval($row['ident'])] = $tmp;
-
-		}		
-	}
-
-	public function getUserData($users,$fields) {
-		$usersNotCached = array();
-		$cachedUsers = array_keys($this->userDataCache);
-		if (is_array($users)) {
-			foreach ($users as $user_id) {
-				if (!in_array($user_id,$cachedUsers)) $usersNotCached[]=$user_id;
-			}
-		} else {
-			if (!in_array($users,$cachedUsers)) $usersNotCached[]=$users;		
-		}
-		if (count($usersNotCached) != 0)
-			$this->addToUserDataCache($usersNotCached);
-		
-		
-		if (is_array($users)) {
-			$toReturn = array();
-			foreach ($users as $user_id) {
-				$toReturn[$user_id] = array();	
-				foreach ($fields as $field_name) {
-					if (!isset($this->userDataCache[$user_id][$field_name])) {
-						print $this->notSoFatalError("[memberlist] Unknown field &lt;$field_name&gt; for user &lt;$user_id&gt;");
-					}
-					$toReturn[$user_id][$field_name] = $this->userDataCache[$user_id][$field_name];
-				}
-			}
-			return $toReturn;
-		} else {
-			$toReturn = array();	
-			foreach ($fields as $field_name) {
-				$toReturn[$field_name] = $this->userDataCache[$field_name];
-			}
-			return $toReturn;
-		}
-	}
-	
+	/* Deprecated */	
 	public function getMemberById($id) {
 		$id = intval($id);
 		if (isset($this->members[$id])) {
@@ -609,6 +965,9 @@ class memberlist extends base {
 		}
 	}
 	
+	/*
+	Need updating!!	
+	*/
 	public function getUserCategory($id) {
 		$u = $this->members[$id];
 		$memberof = array();
@@ -624,6 +983,9 @@ class memberlist extends base {
 		return $memberShortCategory;
 	}
 
+	/*
+	Need updating!!	
+	*/
 	public function getUserMainMembership($id) {
 		$u = $this->members[$id];
 		$memberof = array();
@@ -672,9 +1034,14 @@ class memberlist extends base {
 		
 	function initialize() {
 		@parent::initialize();	
-		
+        $this->userDataCache->setDbLink($this->getDbLink());
+        $this->userDataCache->image_dir = $this->image_dir; 
+        $this->userDataCache->initialize();
+
+		/* Deprecated */		
 		$this->generateSimpleCache();
-	
+		
+		/* Deprecated */
 		$this->members = array();
 		$res = $this->query("SELECT 
 				$this->table_memberlist.*, 
@@ -693,7 +1060,8 @@ class memberlist extends base {
 		if (isset($_SERVER['HTTP_USER_AGENT'])) $useragent = $_SERVER['HTTP_USER_AGENT'];
 		if (isset($_SERVER['USER_AGENT'])) $useragent = $_SERVER['USER_AGENT'];
 		while ($row = $res->fetch_assoc()){
-			$id = $row['ident'];
+			$id = intval($row['ident']);
+			$this->members[$id] = new stdClass(); # temporary
 			foreach ($row as $n => $v){
 				switch ($n) {
 					case 'firstname':
@@ -734,10 +1102,12 @@ class memberlist extends base {
 		}
 		$res->close();
 		
+		/* Deprecated */
 		$this->groups = array();
 		$res = $this->query("SELECT * FROM $this->table_groups ORDER BY position");
 		while ($row = $res->fetch_assoc()){
-			$id = $row['id'];
+			$id = intval($row['id']);
+			$this->groups[$id] = new stdClass(); # temporary
 			foreach ($row as $n => $v){
 				$this->groups[$id]->$n = stripslashes($v);
 			}
@@ -747,18 +1117,19 @@ class memberlist extends base {
 		}
 		$res->close();
 
+		/* Deprecated */
 		$res = $this->query(
 			"SELECT 
 				$this->table_memberlist.ident,
-				$this->table_memberships.gruppe
+				$this->table_group_memberships.gruppe
 			FROM 
 				$this->table_memberlist, 
-				$this->table_memberships, 
+				$this->table_group_memberships, 
 				$this->table_rang 
 			WHERE 
-				$this->table_memberlist.ident = $this->table_memberships.bruker 
+				$this->table_memberlist.ident = $this->table_group_memberships.bruker 
 				AND $this->table_memberlist.rang = $this->table_rang.id 
-				AND $this->table_memberships.enddate = '0000-00-00' 
+				AND $this->table_group_memberships.enddate = '0000-00-00' 
 			ORDER BY 
 				$this->table_rang.position,
 				$this->table_memberlist.bday"
@@ -774,9 +1145,6 @@ class memberlist extends base {
 			$this->members[$row['ident']]->memberof[] = $row['gruppe'];
 		}
 		$res->close();
-
-
-		
 		foreach ($this->groups as $grp){
 			if ($grp->parent != 0) {
 				$this->groups[$grp->parent]->children[] = $grp->id;
@@ -824,14 +1192,20 @@ class memberlist extends base {
 			return false;
 		}
 	}
+	
+	function vervredigeringInstance() {
+		$vervObj = new vervredigering();
+		$vervObj->setEventlogInstance($this->_eventlog);
+		return $vervObj;
+	}
 
 	function userByTask($task){
-		global $db;		
-		$vervObj = new vervredigering();
+		global $db;
+		$vervObj = $this->vervredigeringInstance();
 		$verv = $vervObj->getVervBySlug($task);
-		if ($verv == false){ ErrorMessageAndExit("Vervoppgaven $task er ikke forbundet med et verv!"); }
+		if ($verv == false){ $this->fatalError("Vervoppgaven $task er ikke forbundet med et verv!"); }
 		$rs = $db->query("SELECT person FROM $this->table_vervhistorie WHERE verv=$verv AND enddate IS NULL");
-		if ($rs->num_rows == 0) ErrorMessageAndExit("Vervet $task er ikke bemannet!");
+		if ($rs->num_rows == 0) $this->fatalError("Vervet $task er ikke bemannet!");
 		$rw = $rs->fetch_array();
 		$rs->close();
 		return $this->members[$rw[0]];
@@ -844,7 +1218,7 @@ class memberlist extends base {
 		global $groups;
 		$leder_i = 0;
 
-		$vervObj = new vervredigering();
+		$vervObj = $this->vervredigeringInstance();
 		$peffverv = $vervObj->getVervBySlug('peff');
 		$assverv = $vervObj->getVervBySlug('ass');
 		if (!$peffverv || !$assverv) return 0;
@@ -873,10 +1247,10 @@ class memberlist extends base {
 	function groupsToStringList($ident){
 		global $db;
 		$res = $db->query("SELECT $this->table_groups.caption ".
-			"FROM $this->table_groups,$this->table_memberships ".
-			"WHERE $this->table_groups.id=$this->table_memberships.gruppe ".
-				"AND $this->table_memberships.bruker=".$ident." ".
-				"AND $this->table_memberships.enddate='0000-00-00'"
+			"FROM $this->table_groups,$this->table_group_memberships ".
+			"WHERE $this->table_groups.id=$this->table_group_memberships.gruppe ".
+				"AND $this->table_group_memberships.bruker=".$ident." ".
+				"AND $this->table_group_memberships.enddate='0000-00-00'"
 		);
 		$igrps = array();
 		while ($row = $res->fetch_assoc()){
@@ -937,7 +1311,7 @@ class memberlist extends base {
 	}
 		
 	
-	
+	/* Deprecated */
 	function cacheGuardians() {
 		$res = $this->query("SELECT medlem, foresatt FROM $this->table_guardians");
 		while ($row = $res->fetch_assoc()){

@@ -3,7 +3,6 @@
 class fileupload extends base {
 
 	var $errors = Array();
-	var $eventlog_function = NULL;
 	var $file_extension;
 	var $directory;
 	var $varname;
@@ -28,7 +27,9 @@ class fileupload extends base {
 		print("$Error\n");
 		print("</td></tr></table>\n");
 		print("</div>\n");
-		$eventLog->addToErrorLog("Det oppstod en feil under opplastingen av en fil:<br />$Error");
+		if (isset($this->_eventlog)){
+			$this->_eventlog->addToErrorLog("Det oppstod en feil under opplastingen av en fil:<br />$Error");
+		}
 		exit;
  	}
 	
@@ -82,9 +83,8 @@ class fileupload extends base {
 				chmod($this->fullpath, 0666);
 				umask($old);
 				*/
-				if (isset($this->eventlog_function)){
-					$ecf = $this->eventlog_function;
-					$ecf("Lastet opp fil '".$_FILES[$this->varname]['name']."'. Lagret som '$this->fullpath' (fileupload.php)");
+				if (isset($this->_eventlog)){
+					$this->_eventlog->addToActivityLog("Lastet opp fil '".$_FILES[$this->varname]['name']."'. Lagret som '$this->fullpath' (fileupload.php)");
 				}
 			} else {
 				array_push($this->errors,"Kunne ikke flytte den opplastede filen \"".$_FILES[$this->varname]['name']."\" til \"".$this->fullpath."\" pga. en ukjent feil. Manglende rettigheter?");
@@ -93,7 +93,7 @@ class fileupload extends base {
 			
 		} else {
 			array_push($this->errors,"Filen \"".$_FILES[$this->varname]['name']."\" ble ikke lastet opp pga. en ukjent feil.");
-			return 0;		
+			return 0;
 		}
 	}
 	

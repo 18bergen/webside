@@ -5,7 +5,9 @@ class innlogging extends base {
 	public $getvars = array("dologin","brukernavn","passord","dologout","sendpwd","passwordsent","loginfailed","sendlogininfo","lost_pass");
 
 	/* PRIVATE */
-	private $memberdb;
+	private $_memberdb_instance;
+	private $_eventlog_instance;
+
 	private $loggedin = false;
 	private $_loggedinUser = array();
 	private $_sessionId = 'c18bg';
@@ -16,8 +18,8 @@ class innlogging extends base {
 	private $_maxPwdLen = 15;
 
 	/* INTERNALS: */
-		var $passwordLengthLimit = 40;
-		var $replaceContent;
+	var $passwordLengthLimit = 40;
+	var $replaceContent;
 	
 	function innlogging() {
 		$this->table_globaloptions = DBPREFIX.$this->table_globaloptions;
@@ -25,7 +27,9 @@ class innlogging extends base {
 		$this->table_members = DBPREFIX.$this->table_members;
 	}
 	
-	public function setMemberDb($memberdb) { $this->memberdb = $memberdb; }
+	public function setEventlogInstance($i) { $this->_eventlog_instance = $i; }
+	public function setMemberDb($i) { $this->_memberdb_instance = $i; }
+	
 	public function isLoggedIn() { return $this->loggedin; }
 	public function getMinPwdLen() { return $this->_minPwdLen; }
 	public function getMaxPwdLen() { return $this->_maxPwdLen; }
@@ -54,9 +58,6 @@ class innlogging extends base {
 			$status = $this->doLogin($_POST['brukernavn'],$_POST['passord'],$rem);
 			$this->localRedirect($status);
 		}
-		if (isset($_GET['dologout'])){
-			$this->doLogout();
-		}
 		if (isset($_GET['sendpwd'])){
 			$this->sendPassword();
 		}
@@ -68,6 +69,10 @@ class innlogging extends base {
 			$this->verifyLogin($_SESSION[$this->_sessionId]);
 		} else if (isset($_COOKIE[$this->_sessionId]) && !empty($_COOKIE[$this->_sessionId])){
 			$this->verifyLogin($_COOKIE[$this->_sessionId]);
+		}
+
+		if (isset($_GET['dologout'])){
+			$this->doLogout();
 		}
 
 		/* Logg ut brukere som ikke har vært aktive på 3 timer */		
@@ -110,7 +115,7 @@ class innlogging extends base {
 				'name' => stripslashes($row['firstname'])." ".$mid.stripslashes($row['lastname']),
 				'rights' => intval($row['rights']),
 				'slug' => stripslashes($row['slug']),
-				'groupcaptions' => $this->memberdb->groupsToStringList($id)
+				'groupcaptions' => $this->_memberdb_instance->groupsToStringList($id)
 			);
 
 			/* Oppdater login_time for å hindre ufrivillig utlogging */
@@ -138,7 +143,7 @@ class innlogging extends base {
 		if ($res->num_rows == 1){
 			$row = $res->fetch_assoc();
 			$ident = intval($row['user_id']);
-			if (count($this->memberdb->getMemberById($ident)->memberof) == 0){
+			if (count($this->_memberdb_instance->getMemberById($ident)->memberof) == 0){
 				return "NO_MEMBERSHIPS";
 			} else if ($row['sperret'] == '1'){
 				return "ACCOUNT_LOCKED";			
@@ -168,6 +173,8 @@ class innlogging extends base {
 						save_login=".($remberLogin?1:0)."
 					WHERE user_id='$ident'");
 					//exit();
+				if (isset($this->_eventlog_instance)) 
+					$this->_eventlog_instance->logEvent('USER_LOGGED_IN', $ident);
 				return "LOGIN_OK";
 			}
 		} else {
@@ -176,6 +183,12 @@ class innlogging extends base {
 	}
 	
 	public function logout() {
+		$user_id = $this->getUserId();
+
+		if (($user_id != 0) && isset($this->_eventlog_instance)) { 
+			$this->_eventlog_instance->logEvent('USER_LOGGED_OUT', $user_id);
+		}
+
 		$sId = '';
 		if (isset($_SESSION[$this->_sessionId]) && !empty($_SESSION[$this->_sessionId])) $sId = $_SESSION[$this->_sessionId];
 		if (isset($_COOKIE[$this->_sessionId]) && !empty($_COOKIE[$this->_sessionId])) $sId = $_COOKIE[$this->_sessionId];
@@ -233,7 +246,7 @@ class innlogging extends base {
 		$row = $rs->fetch_assoc();
 		if ($row['pwd'] == 'NOT_SET') return false;
 
-		$m = $this->memberdb->getMemberById($user_id);
+		$m = $this->_memberdb_instance->getMemberById($user_id);
 		$url_root = "http://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
 		$rcptmail = $m->email;
 		$rcptname = $m->fullname;
@@ -244,8 +257,8 @@ class innlogging extends base {
 		
 		$recipients = array($rcptmail);
 		// Send mail
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-		$mail = new htmlMimeMail5();
+		require_once("../www/libs/Rmail/Rmail.php");
+		$mail = new Rmail();
 		$mail->setFrom("$this->mailSenderName <$this->mailSenderAddr>");
 		$mail->setReturnPath($this->mailSenderAddr);
 		$mail->setSubject("[$this->mailSenderName] Innloggingsopplysninger");
@@ -436,7 +449,6 @@ class innlogging extends base {
 	/* ___________________________ RETRIEVE PASSWORD STEP 1 _____________________________ */
 	
 	function selectUserForm($username){
-		global $memberdb;
 		$def = -1;
 		if (!empty($username)) {
 			$res = $this->query("SELECT user_id FROM $this->table_login WHERE username=\"".addslashes($username)."\"");
@@ -452,7 +464,7 @@ class innlogging extends base {
 			$this->redirect($this->generateURL("lost_pass=$def"));
 			$info = '<input type="hidden" name="lost_pass" value="'.$def.'" />';
 		} else {
-			$info = 'Hvem er du? '.$this->memberdb->generateMemberSelectBox('lost_pass',$def);
+			$info = 'Hvem er du? '.$this->_memberdb_instance->generateMemberSelectBox('lost_pass',$def);
 		}
 		return '
 			<h2>Glemt brukernavn og/eller passord</h2>
@@ -474,8 +486,8 @@ class innlogging extends base {
 			return $this->notSoFatalError('Du må velge et medlem',array('logError'=>false));
 		}
 		if (!is_numeric($id)) $this->fatalError("invalid input .3");
-		if (!$this->memberdb->isUser($id)) $this->fatalError("invalid input .4");
-		$m = $this->memberdb->getMemberById($id);
+		if (!$this->_memberdb_instance->isUser($id)) $this->fatalError("invalid input .4");
+		$m = $this->_memberdb_instance->getMemberById($id);
 		if (!$this->hasUsername($id)){
 			return '
 				<h2>Hjelp til innlogging</h2>
@@ -521,7 +533,7 @@ class innlogging extends base {
 					&nbsp;&nbsp;&nbsp;&nbsp; <input type="radio" name="sendtil" id="egen" value="'.$m->ident.'" checked="checked" /><label for="egen">'.$m->fullname.'</label><br />
 		';
 		foreach ($m->guardians as $g) {
-			$gu = $this->memberdb->getMemberById($g);
+			$gu = $this->_memberdb_instance->getMemberById($g);
 			$output .= "
 					&nbsp;&nbsp;&nbsp;&nbsp; <input type='radio' name='sendtil' id='foresatt$gu->ident' value='$gu->ident' /><label for='foresatt$gu->ident'>$gu->fullname (foresatt)</label><br />
 			";
@@ -559,10 +571,10 @@ class innlogging extends base {
 		if (empty($random)) $this->fatalError("invalid input .2.0");
 		if (!is_numeric($id)) $this->fatalError("invalid input .2.1");
 		if (!is_numeric($sendtil)) $this->fatalError("invalid input .2.2");
-		if (!$this->memberdb->isUser($id)) $this->fatalError("invalid input .3.1");
-		if (!$this->memberdb->isUser($sendtil)) $this->fatalError("invalid input .3.2");
-		$m = $this->memberdb->getMemberById($id);
-		$g = $this->memberdb->getMemberById($sendtil);
+		if (!$this->_memberdb_instance->isUser($id)) $this->fatalError("invalid input .3.1");
+		if (!$this->_memberdb_instance->isUser($sendtil)) $this->fatalError("invalid input .3.2");
+		$m = $this->_memberdb_instance->getMemberById($id);
+		$g = $this->_memberdb_instance->getMemberById($sendtil);
 		
 		if (strtoupper($random) != $_SESSION['stv18bg']) {
 			$this->redirect($this->generateURL("lost_pass=$id"), "Du skrev ikke inn riktig tekst fra kodebildet. Prøv igjen.", "error");
@@ -591,8 +603,8 @@ class innlogging extends base {
 			"\r\n\r\n".
 			"-- \r\nDette er en auto-generert utsendelse.\r\n$url_root";
 		
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-		$mail = new htmlMimeMail5();
+		require_once("../www/libs/Rmail/Rmail.php");
+		$mail = new Rmail();
 		$mail->setFrom("$from_name <$from_addr>");
 		$mail->setReturnPath($from_addr);
 		$mail->setSubject($subject);
@@ -634,7 +646,7 @@ class innlogging extends base {
 		if ( $length > 36 ){ 
 			return "ERROR"; 
 		} else { 
-			$str = md5(mktime()); 
+			$str = md5(time()); 
 			$cutoff = 31 - $length; 
 			$start = rand(0, $cutoff); 
 			return substr($str, $start, $length); 
@@ -706,8 +718,7 @@ class innlogging extends base {
 	}
 
 	function outputLoginField(){
-		global $memberdb;
-		
+	
 		if ($this->loggedin == true){
 			$url = '/medlemsliste/medlemmer/'.$this->_loggedinUser['id'];
 			if (!empty($this->_loggedinUser['slug'])) $url = '/medlemsliste/'.$this->_loggedinUser['slug'];
@@ -715,7 +726,7 @@ class innlogging extends base {
 			$roleStr = in_array($role['role'],array('annet','ukjent')) ? '' : $role['role'];
 			if (in_array($role['roleAbbr'],array('SP','SM'))) {
 				if ($role['group'] > 0) 
-					$grp = "<a href=\"".$memberdb->getGroupUrl($role['group'])."\">".$memberdb->getGroupById($role['group'])->caption."</a>"; 
+					$grp = "<a href=\"".$this->_memberdb_instance->getGroupUrl($role['group'])."\">".$this->_memberdb_instance->getGroupById($role['group'])->caption."</a>"; 
 				else 
 					$grp = "ukjent";
 				$roleStr = "$roleStr i $grp";

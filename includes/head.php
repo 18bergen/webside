@@ -25,7 +25,7 @@ define('BG_LIB_PATH',dirname(dirname(__FILE__)).'/www/libs/');
 
 define('LIB_CKFINDER_URI', '/libs/ckfinder-2.0.1/');
 define('LIB_CKEDITOR_URI', '/libs/ckeditor-3.5/');
-define('LIB_YUI_URI', '/libs/yui2/');
+define('LIB_YUI_URI', '/libs/yui-2.8.0r4/');
 
 /*
  if (($_SERVER['REMOTE_ADDR'] == "::1") || ($_SERVER['REMOTE_ADDR'] == "192.168.2.144") || ($_SERVER['REMOTE_ADDR'] == "192.168.2.194") || ($_SERVER['REMOTE_ADDR'] == "10.24.124.195") || ($_SERVER['REMOTE_ADDR'] == "193.157.195.156") || ($_SERVER['REMOTE_ADDR'] == "84.48.18.118")){
@@ -68,7 +68,7 @@ require_once(BG_INC_PATH.'constants.php');
 require_once(BG_INC_PATH.'whoisonline.php');
 require_once(BG_INC_PATH.'functions/parse_bbcode.php');
 require_once(BG_INC_PATH.'functions/parse_emoticons.php');
-require_once(BG_INC_PATH.'functions/errormessage.php');
+//require_once(BG_INC_PATH.'functions/errormessage.php');
 require_once(BG_INC_PATH.'functions/printr.php');
 
 require_once(BG_CLASS_PATH.'base.php');
@@ -86,7 +86,7 @@ localization::determineLanguage();
 function printError($errStr){
 	print("<div style=\"border: 1px solid #FF0000; color: #FF0000; padding: 5px; margin: 5px;\">$errStr</div>");
 }
- 
+ /*
 function addToEventLog($str){
 	global $eventLog;
 	$eventLog->addToActivityLog($str);
@@ -94,7 +94,7 @@ function addToEventLog($str){
 function addToErrorLog($str){
 	global $eventLog;
 	$eventLog->addToErrorLog($str);
-}
+}*/
 function permissionDenied(){
 	global $login;
 	return $login->printNoAccess();
@@ -111,7 +111,8 @@ $db = new mysqldb();
 $db->image_dir = ROOT_DIR.'/images/';
 unset($dbHost, $dbUser, $dbPass, $dbName, $dbPipe);
 
-$eventLog  = new eventlog();
+$eventlog  = new eventlog();
+$eventlog->setDbInstance($db);
 
 /* Last inn CMS og finn side-tittel */
 require_once(BG_INC_PATH.'head_cms.php'); // defined dp0
@@ -119,9 +120,11 @@ require_once(BG_INC_PATH.'head_cms.php'); // defined dp0
 /* Last inn medlemsliste */
 $memberdb = new memberlist();
 $memberdb->setDbLink($db);
-$memberdb->eventlog_function = "addToEventLog";
+$memberdb->setEventlogInstance($eventlog);
+#$memberdb->eventlog_function = "addToEventLog";
 $memberdb->permission_denied_function = "permissionDenied";
 $memberdb->image_dir = '/images/';
+$eventlog->setMemberlistInstance($memberdb);
 
 $dp0->setClassSpecificOptions($memberdb,$memberlist_class,$memberlist_page);
 $dp0->setGlobalOptions($memberdb);
@@ -131,13 +134,15 @@ $memberdb->initialize();
 /* Last inn login-klasse */
 $login = new innlogging();
 $login->setDbLink($db);
-$login->setMemberDb($memberdb);
 $login->image_dir = ROOT_DIR.'/images/'; 	 // base
-$login->eventlog_function = "addToEventLog"; // base
+$login->setMemberDb($memberdb);
+$login->setEventlogInstance($eventlog);
+#$login->eventlog_function = "addToEventLog"; // base
 $login->useCoolUrls = true;					 // base
 $login->coolUrlPrefix = "";					 // base
 $login->run();
 
+$eventlog->setLoginInstance($login);
 if ($login->isLoggedIn()) $dp0->login_identifier = $login->getUserId();
 
 ?>

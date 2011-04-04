@@ -540,8 +540,6 @@ class imagearchive extends comments {
 	var $shortmonths = array("","jan","feb","mar","apr","mai","jun","jul","aug","sep","okt","nov","des");
 
 	var $calendarlookup_function;
-	var $eventlog_function;
-	var $errorlog_function;
 
 	var $page_no = 1;
 

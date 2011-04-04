@@ -20,7 +20,7 @@ function parse_emoticons ($text) {
 	);
    
     foreach ($smileys as $s) {
-    	$search[] = ":$s:"; $replace[] = "<img src=\"$imagedir/$s.gif\" alt=\"$s\" style=\"vertical-align:middle;\" />";
+    	$search[] = ":$s:"; $replace[] = "<img src=\"$imagedir/$s.gif\" alt=\"\" />";
     }
     
     $search[] = ":)"; $replace[] = "<img src=\"$imagedir/smiley.gif\" alt=\"\" />";

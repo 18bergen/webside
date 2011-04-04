@@ -1103,7 +1103,7 @@ class regschema extends base {
 	
 	function submitConfirm() {
 
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
+		require_once("../www/libs/Rmail/Rmail.php");
 
 		
 		$id = $_POST['id'];
@@ -1145,7 +1145,7 @@ http://".$_SERVER['SERVER_NAME']."$url
 		$recipients = array($reg_behandler->email);
 
 		// Send mail
-		$mail = new htmlMimeMail5();
+		$mail = new Rmail();
 		$mail->setFrom("$this->mailSenderName <$this->mailSenderAddr>");
 		$mail->setReturnPath($this->mailSenderAddr);
 		$mail->setSubject("[$this->mailSenderName] Registrering av nytt medlem");
@@ -1449,7 +1449,8 @@ http://".$_SERVER['SERVER_NAME']."$url
  		require_once("memberlist_actions.php");
 		$memberdb = new memberlist_actions($db);
 		$memberdb->login_identifier = $login->getUserId;
-		$memberdb->eventlog_function = "addToEventLog";
+		$memberdb->setEventlogInstance($this->_eventlog);	// base
+		#$memberdb->eventlog_function = "addToEventLog";
 		$memberdb->permission_denied_function = "permissionDenied";
 		$memberdb->image_dir = ROOT_DIR.'/images';
 		$memberdb->initialize();
@@ -1477,7 +1478,7 @@ http://".$_SERVER['SERVER_NAME']."$url
 	}
 	
 	function processRegistration($id) {
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
+		require_once("../www/libs/Rmail/Rmail.php");
 	
 		if (!$this->allow_acceptregistrations) return $this->permissionDenied(); 
 		if (!is_numeric($id)) return $this->notSoFatalError("Registreringen eksisterer ikke (1)"); 
@@ -1565,7 +1566,7 @@ http://".$_SERVER['SERVER_NAME']."$url
 					'kategori'		=> 'FO',
 					'memberstatus'  => 'foresatt'
 				));				 
-				$memberdb->addGuardian($scout_ident,$parent1_ident);				
+				$memberdb->registerGuardian($scout_ident,$parent1_ident);				
 				if (!empty($email)) $recipients[] = $email;
 				$q .= ", p1_ident='$parent1_ident'";
 				
@@ -1594,7 +1595,7 @@ http://".$_SERVER['SERVER_NAME']."$url
 						'kategori'		=> 'FO',
 						'memberstatus'  => 'foresatt'
 					));								
-					$memberdb->addGuardian($scout_ident,$parent2_ident);					
+					$memberdb->registerGuardian($scout_ident,$parent2_ident);					
 					if (!empty($email)) $recipients[] = $email;
 					$q .= ", p2_ident='$parent2_ident'";	
 				}
@@ -1612,7 +1613,7 @@ http://".$_SERVER['SERVER_NAME']."$url
 					"http://".$_SERVER['SERVER_NAME']."$url\n\n";
 	
 				// Send mail		
-				$mail = new htmlMimeMail5();
+				$mail = new Rmail();
 				$mail->setFrom("$this->mailSenderName <$this->mailSenderAddr>");
 				$mail->setReturnPath($this->mailSenderAddr);
 				$mail->setSubject("[$this->mailSenderName] Registrering av nytt medlem");
@@ -1638,7 +1639,7 @@ http://".$_SERVER['SERVER_NAME']."$url
 					"http://".$_SERVER['SERVER_NAME']."$url\n\n";
 	
 				// Send mail		
-				$mail = new htmlMimeMail5();
+				$mail = new Rmail();
 				$mail->setFrom("$this->mailSenderName <$this->mailSenderAddr>");
 				$mail->setReturnPath($this->mailSenderAddr);
 				$mail->setSubject("[$this->mailSenderName] Registrering av nytt medlem");

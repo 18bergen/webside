@@ -402,7 +402,7 @@ class noteboard extends comments {
 		$r1a[] = "%url%"; 				$r2a[] = $this->generateCoolUrl("/%id%");
 		$r1a[] = "%id%";				$r2a[] = $row['id'];
         $r1a[] = "%author%";			$r2a[] =  '<a href="'.$u['ProfileUrl'].'">'.$u['FirstName'].'</a>';
-		$r1a[] = "%subject%";			$r2a[] = ($this->use_subject ? $row['subject'] : $dateStr );
+		$r1a[] = "%subject%";			$r2a[] = ($this->use_subject ? htmlspecialchars(stripslashes($row['subject'])) : $dateStr );
 		if ($row['version'] == 1) {
 			$r1a[] = "%body%";				$r2a[] = $this->prepare($row['body']);
 		} else {
@@ -543,7 +543,7 @@ class noteboard extends comments {
 			);
 			if ($res->num_rows != 1){ $this->fatalError("entry doesn't exist"); }
 			$row = $res->fetch_assoc();
-			$default_subject = $this->use_subject ? stripslashes($row["subject"]) : "";
+			$default_subject = $this->use_subject ? htmlspecialchars(stripslashes($row["subject"])) : "";
 			$version = $row['version'];
 			$default_body = ($version == 1) ? $this->prepare($row['body']) : stripslashes($row["body"]); // str_replace("<br />","\r\n",
 			$default_image = stripslashes($row['lead_image']);
@@ -571,7 +571,7 @@ class noteboard extends comments {
 		);
 		
 		$subject = $this->use_subject ? 
-			"<input name='subject' id='subject' style=\"width:".$this->FCKeditorWidth."px; font-weight:normal; font-size:160%; color:#1B0431; border:1px solid #aaa; margin-top:3px; margin-bottom:8px;\" value=\"".htmlspecialchars($default_subject)."\" /><br />" : "";
+			"<input name='subject' id='subject' style=\"width:".$this->FCKeditorWidth."px; font-weight:normal; font-size:160%; color:#1B0431; border:1px solid #aaa; margin-top:3px; margin-bottom:8px;\" value=\"".$default_subject."\" /><br />" : "";
 		
 		
 		$body = "<textarea name='editor_body' id='editor_body' rows='10' cols='40' style='width:".$this->FCKeditorWidth."px;'>".$default_body."</textarea>";
@@ -802,6 +802,7 @@ class noteboard extends comments {
 			$id = $this->insert_id();
 			$tsubject = empty($subject) ? "<em style='color:#aaa;'>Uten tittel</em>":$subject;
 			$this->addToActivityLog('skrev nyheten <a href="'.$this->generateCoolURL("/$id").'">'.$tsubject.'</a>',false,'major');
+			$this->logEvent('ADDED_NEWS_ENTRY', $this->login_identifier, 0, '<a href="'.$this->generateCoolURL("/$id").'">'.$tsubject.'</a>');
 			
 			/*
 			if ($image_is_uploaded) {
@@ -950,7 +951,7 @@ class noteboard extends comments {
 		}
 		
 		if ($this->use_subject) 
-			call_user_func($this->add_to_breadcrumb, '<a href="'.$this->generateCoolURL("/$id").'">'.$row['subject'].'</a>');
+			call_user_func($this->add_to_breadcrumb, '<a href="'.$this->generateCoolURL("/$id").'">'.htmlspecialchars(stripslashes($row['subject'])).'</a>');
 		else
 			call_user_func($this->add_to_breadcrumb, '<a href="'.$this->generateCoolURL("/$id").'">Oppslag '.$id.'</a>');
 		

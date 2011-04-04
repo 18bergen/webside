@@ -29,7 +29,7 @@ if ($dp0->pagenotfound) {
 $dp0->checkIfSpecialUrl();
 
 function myErrorHandler($errno, $errstr, $errfile, $errline){
-	 global $login;
+	 global $login, $eventlog;
 	 $errType = "E_UNKNOWN";
 	 switch ($errno) {
 		case E_USER_ERROR:
@@ -50,11 +50,12 @@ function myErrorHandler($errno, $errstr, $errfile, $errline){
 			$errType = $errno; break;
 	}
 	if ($errType != "E_STRICT"){
-		addToErrorLog("[$errType] $errstr. Line $errline of file $errfile.");
+		$eventlog->addToErrorLog("[$errType] $errstr. Line $errline of file $errfile.");
 		if (($login->isLoggedIn()) && ($login->getUserId() == 1)){
 			printError("<b>Debug info for webmaster:</b><br />[$errType][$errno] $errstr. Line $errline of file $errfile.");
 		}
 	}
+	return false; # to log the error to file
 }
 set_error_handler("myErrorHandler");
 

@@ -14,8 +14,9 @@ class birthdays extends base {
 			$output .= '<div style="padding:1px;">';
 			if ($daystring == $today) {				
 				$output .= '
-					<a class="icn" style="background-image:url(/images/icns/cake.png);">
+					<span class="icn" style="background-image:url(/images/icns/cake.png);">
 						<strong>I dag: </strong>'.$p.'
+					</span>
 				';			
 			} else {
 				$output .= $daystring.': '.$p;

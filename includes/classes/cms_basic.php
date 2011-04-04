@@ -951,8 +951,9 @@ class cms_basic extends base {
 		$instance->parent_dir = $parent;
 		
 		$instance->error_function = $this->error_function; // base
-		$instance->eventlog_function = $this->eventlog_function; // base
-		$instance->errorlog_function = $this->errorlog_function; // base
+		$instance->setEventlogInstance($this->_eventlog);	// base
+		#$instance->eventlog_function = $this->eventlog_function; // base
+		#$instance->errorlog_function = $this->errorlog_function; // base
 		$instance->permission_denied_function = $this->permission_denied_function; // base
 		
 		return true;

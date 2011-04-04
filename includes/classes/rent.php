@@ -466,8 +466,8 @@ $server
 ";
 
 		// Send mail		
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-		$mail = new htmlMimeMail5();
+		require_once("../www/libs/Rmail/Rmail.php");
+		$mail = new Rmail();
 		$mail->setFrom("$from_name <$from_addr>");
 		$mail->setReturnPath($from_addr);
 		$mail->setSubject("$this->site_name - Søknad behandlet");
@@ -506,8 +506,8 @@ $server
 ";
 
 		// Send mail		
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-		$mail = new htmlMimeMail5();
+		require_once("../www/libs/Rmail/Rmail.php");
+		$mail = new Rmail();
 		$mail->setFrom("$from_name <$from_addr>");
 		$mail->setReturnPath($from_addr);
 		$mail->setSubject("$this->site_name - Søknad om leie av lokale");

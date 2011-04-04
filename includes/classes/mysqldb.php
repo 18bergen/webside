@@ -48,11 +48,11 @@ class mysqldb extends mysqli {
 	}
 
 	function query($str,$logError = true, $silentErrors = false, $debug = false){
-		global $eventLog, $stime;
-		if (isset($eventLog)){ 
+		global $eventlog, $stime;
+		if (isset($eventlog)){ 
 			$time_string2 = explode(" ", microtime());
 			$etime = $time_string2[1] . substr($time_string2[0], 1, strlen($time_string2[0]));
-			$eventLog->addToQueryLog(substr($etime - $stime, 0, 8).": ".$str);
+			$eventlog->addToQueryLog(substr($etime - $stime, 0, 8).": ".$str);
 		}
 		global $queryCount;
 		$queryCount++;
@@ -63,7 +63,7 @@ class mysqldb extends mysqli {
 	}
 
 	function onError($Query, $Error, $logError = true, $silentErrors = false){
-		global $eventLog, $login;
+		global $eventlog, $login;
 		if ($silentErrors) return;
 		if ($logError == true){
 			if (isset($login) && $login->isLoggedIn() && $login->getUserId() == 1){	
@@ -105,8 +105,8 @@ class mysqldb extends mysqli {
 				</div>
 				";
 			}
-			if (isset($eventLog)){
-				$eventLog->addToErrorLog("MySQL Error<br />\nQuery: $Query<br />\nResult: $Error");
+			if (isset($eventlog)){
+				$eventlog->addToErrorLog("MySQL Error<br />\nQuery: $Query<br />\nResult: $Error");
 			}
 		} else {
 			print "

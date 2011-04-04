@@ -57,12 +57,7 @@ class calendar_basic extends comments {
 	var $use_log = true;
 	var $log;
 	var $log_instance;
-		
-	var $table_memberships = "";			
-	var $table_memberships_field_user="bruker";
-	var $table_memberships_field_group="gruppe";
-	var $table_memberships_field_enddate="til";
-
+	
 	var $imagelookup_function;
 
 	var $subject_caption = "Subject:";

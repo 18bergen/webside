@@ -43,7 +43,7 @@ class newsletters extends base {
 	}
 	
 	function initialize(){
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
+		require_once("../www/libs/Rmail/Rmail.php");
 		$this->initialize_base();
 	}
 
@@ -423,7 +423,7 @@ class newsletters extends base {
 		
 		// Send nyhetsbrev
 		foreach ($newsletter['to_list'] as $ident => $udata){
-			$mail = new htmlMimeMail5();
+			$mail = new Rmail();
 			$mail->setFrom("$from_name <$from_addr>");
 			$mail->setReturnPath($from_addr);
 			$mail->setSubject($this->subject_prefix.' '.$newsletter['subject']);

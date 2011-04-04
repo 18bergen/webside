@@ -25,7 +25,9 @@ $this	-> groups : Array	-> members : Array
 
 class memberlist_actions extends memberlist {
 
-	var $getvars = array("reviewprofile","viewprofile","editprofile","saveprofile","edituser",
+	var $getvars = array('action', 'mlvisning', 'showhidden', 'cropForumImage','foresattil','guardian_id');
+	/*
+	"reviewprofile","viewprofile","editprofile","saveprofile","edituser",
 		"showhidden","errs","deleteuser","dodeleteuser", "resendwelcomemail", "doresendwelcomemail",
 		"fixrights","mlvisning","editmemberships","membership","membershipedit","membershipsave","editrights",
 		"saverights","edittitle","savetitle","editpeff","savepeff","editass",
@@ -34,7 +36,7 @@ class memberlist_actions extends memberlist {
 		"addforesatt","saveforesatt","foresatte","removeforesatt","ac","savepwd","pwdsaved","sendmail","addgroup","doaddgroup",
 		"sendlogindetails","dosendlogindetails","history","history_iframe","history_xml",
 		"crop_profileimage","docrop_profileimage","crop_forumimage","docrop_forumimage","editmembershiptype","savemembershiptype","makemembershiplist","images");
-	
+	*/
 	/* ACCESS CONTROL VARS BEGIN */
 	
 	var $allow_viewlist				= false;
@@ -250,7 +252,7 @@ class memberlist_actions extends memberlist {
 		} else { 
 			$this->showHiddenGroups = 0;
 		}
-
+		/*
 		if (isset($_GET['history'])) $this->run_action = 'history';
 		if (isset($_GET['history_iframe'])) $this->run_action = 'history_iframe';
 		if (isset($_GET['history_xml'])) $this->run_action = 'history_xml';
@@ -322,6 +324,7 @@ class memberlist_actions extends memberlist {
 		else if (isset($_GET['docrop_profileimage'])) $this->run_action = "docrop_profileimage";
 		else if (isset($_GET['crop_forumimage'])) $this->run_action = "crop_forumimage";
 		else if (isset($_GET['docrop_forumimage'])) $this->run_action = "docrop_forumimage";
+		*/
 		
 		if (!empty($this->login_identifier)){
 		
@@ -420,7 +423,7 @@ class memberlist_actions extends memberlist {
 					$this->current_medlem
 				)
 			);
-			
+			/*
 			switch ($this->run_action){
 
 				case 'makemembershiplist':
@@ -571,7 +574,7 @@ class memberlist_actions extends memberlist {
 				default:
 					return $this->viewProfile($this->current_medlem);
 					break;
-			}
+			}*/
 		
 		} else if (!empty($this->current_gruppe)){
 			
@@ -581,44 +584,10 @@ class memberlist_actions extends memberlist {
 					$this->make_grouplink, 
 					$this->current_gruppe
 				)
-			);
-
-			switch ($this->run_action){
-				case "editpeff":
-					return $this->editPeffForm($this->current_gruppe);
-					break;
-				case "savepeff":
-					return $this->savePeff($this->current_gruppe);
-					break;
-				case "editass":
-					return $this->editAssForm($this->current_gruppe);
-					break;
-				case "saveass":
-					return $this->saveAss($this->current_gruppe);
-				case "savegroupsettings":
-					return $this->saveGroupSettings($this->current_gruppe);
-					break;
-				case "addmember":
-					return $this->newMemberForm($this->current_gruppe);
-					break;
-				case "savenewmember":
-					return $this->newMember($this->current_gruppe);
-					break;
-				case "history":
-					return $this->printGroupHistory($this->current_gruppe);
-					break;
-				case "history_iframe":
-					return $this->printGroupHistoryIframe($this->current_gruppe);
-					break;
-				case "history_xml":
-					return $this->printGroupHistoryXML($this->current_gruppe);
-					break;
-				default:
-					return $this->printGroupDetails($this->current_gruppe);
-					break;
-			}
+			);			
 		
 		} else {
+			/*
 			switch ($this->run_action){
 				case "editgrouppositions":
 					return $this->editGroupPositionsForm();
@@ -645,9 +614,57 @@ class memberlist_actions extends memberlist {
 					return $this->printMemberList();
 					break;
 			}
+			*/
 		}
 
+
+		/* 
+		##	Determine and execute requested action
+		*/
+		$memberActions = array(
+			'viewUserProfile', 'editUserProfile', 'saveUserProfile', 'userOverview', 
+			'deleteUser', 'deleteUserDo',
+			'resendWelcomeMail', 'resendWelcomeMailDo', 'fixRights', 'fixRightsDo', 
+			'editUserRights', 'saveUserRights', 'editMembershipType', 'saveMembershipType',
+			'editUserTitle', 'saveUserTitle', 'memberAdded', 'assignUsername', 'saveUsername',
+			'releaseUsername', 'releaseUsernameDo', 
+			
+			'viewGuardians', 'addGuardian', 'addGuardianDo', 'removeGuardian', 'removeGuardianDo', 
+			
+			'moveUser', 'moveUserDo', 'sendLoginDetails', 'sendLoginDetailsDo', 
+			'cropProfileImage', 'cropProfileImageDo', 'cropForumImage', 'cropForumImageDo',
+			'viewUserPhotos',
+			
+			'ajaxEditMemberships'
+		);
+		
+		$groupActions = array(
+			'editPeff', 'savePeff', 'editAss', 'saveAss', 'saveGroupSettings', 'addMember',
+			'addMemberDo', 'history', 'history_iframe', 'history_xml', 'viewGroup',
+			'editGroupPositions', 'editGroupPositionsDo'
+		);
+		
+		$generalActions = array(
+			'activateAccount', 'assignUserPassword', 'userPasswordAssigned', 'addGroup', 'addGroupDo',
+			'viewMemberlist', 'search'
+		);
+		
+		$action = isset($_GET['action']) ? $_GET['action'] : '';
+		if (isset($_GET['view_log'])) { $this->current_log = intval($_GET['view_log']); $action = "expandShortUrl"; }
+		if (!empty($this->current_medlem)){
+			if (!in_array($action,$memberActions)) $action = 'viewUserProfile';
+		} else if (!empty($this->current_gruppe)){
+			if (!in_array($action,$groupActions)) $action = 'viewGroup';
+		} else {
+			if (!in_array($action,$generalActions)) $action = 'viewMemberlist';
+		}
+		return call_user_func(array($this,$action));
+
 	}
+
+	/*******************************************************************************************
+		 Utility functions                                                       
+		 **************************************************************************************/
 
 	function generateTimeStamp($d,$m,$y, $h,$i){
 		// int mktime ( [int hour [, int minute [, int second [, int month [, int day [, int year [, int is_dst]]]]]]] )
@@ -783,8 +800,8 @@ class memberlist_actions extends memberlist {
 
 	function setRights($medlem, $level){
 		global $db;
-		if (!is_numeric($level)) ErrorMessageAndExit("variable level not integer!");
-		if (!is_numeric($medlem)) ErrorMessageAndExit("variable medlem not integer!");
+		if (!is_numeric($level)) $this->fatalError("variable level not integer!");
+		if (!is_numeric($medlem)) $this->fatalError("variable medlem not integer!");
 		$db->query("UPDATE $this->table_memberlist SET rights=$level WHERE ident=$medlem");
 		$this->addToActivityLog("satt rettigheter for ".$this->makeMemberLink($medlem)." til $level.");
 	}
@@ -810,6 +827,67 @@ class memberlist_actions extends memberlist {
 			}
 		}
 	}
+
+	function isForesatt($id){
+		$m = $this->members[$id];
+		foreach ($m->memberof as $g) {
+			if ($this->groups[$g]->kategori == "FO") return true;
+		}
+		return false;
+	}
+
+	function foresatteTil($medlem){
+		return $this->members[$medlem]->guardians;
+	}
+
+	function foresattFor($foresatt){
+		return $this->members[$foresatt]->guarded_by;
+	}
+
+	function peff_i($gruppe){
+		global $db;
+		$vervObj = $this->vervredigeringInstance();
+		$peffverv = $vervObj->getVervBySlug('peff');
+		$res = $db->query("SELECT $this->table_memberlist.ident ".
+			"FROM $this->table_verv,$this->table_vervhistorie,$this->table_memberlist ".
+			"WHERE $this->table_verv.id=$peffverv ".
+				"AND $this->table_vervhistorie.verv=$this->table_verv.id ".
+				"AND $this->table_vervhistorie.gruppe=$gruppe ".
+				"AND $this->table_vervhistorie.enddate='0000-00-00' ".
+				"AND $this->table_vervhistorie.person=$this->table_memberlist.ident");
+		if ($res->num_rows == 1){
+			$row = $res->fetch_assoc();
+			return $row['ident'];
+		} else {
+			return -1;
+		}	
+	}
+
+	function ass_i($gruppe){
+		global $db;
+		$vervObj = $this->vervredigeringInstance();
+		$assverv = $vervObj->getVervBySlug('ass');
+		$res = $db->query("SELECT $this->table_memberlist.ident ".
+			"FROM $this->table_verv,$this->table_vervhistorie,$this->table_memberlist ".
+			"WHERE $this->table_verv.id=$assverv ".
+				"AND $this->table_vervhistorie.verv=$this->table_verv.id ".
+				"AND $this->table_vervhistorie.gruppe=$gruppe ".
+				"AND $this->table_vervhistorie.enddate='0000-00-00' ".
+				"AND $this->table_vervhistorie.person=$this->table_memberlist.ident");
+		if ($res->num_rows == 1){
+			$row = $res->fetch_assoc();
+			return $row['ident'];
+		} else {
+			return -1;
+		}	
+	}
+
+	function isRover($member){
+		foreach ($this->members[$member]->memberof as $g){
+			if ($this->groups[$g]->kategori == "RO") return true;
+		}
+		return false;
+	}
 	
 	/* Sjekk om innlogget bruker er peff/ass i gruppen(e) $grupper eller har rettighetsnivå 2. 
 	   $grupper kan enten være en streng eller en array                                        */
@@ -834,207 +912,171 @@ class memberlist_actions extends memberlist {
 		return $myndighet;		
 	}
 
-	function printMemberList(){
-	
-		if (!$this->allow_viewlist) return $this->permissionDenied();
+	function setGroupOptions($id,$data) {
+				
+		$query = "UPDATE $this->table_groups SET id=id";
 		
-		$output = "";
-		$output .= "
-		<script type=\"text/javascript\">
-	
-			var allGroups = new Array();
-	
-			function expandAll() {
-				for (var n = 0; n < allGroups.length; n++) {
-					var id = allGroups[n];
-					if (Element.getStyle('gruppe'+id,'display') == 'none') {
-						Element.toggle('gruppe'+id);
-						Element.toggle('indicator_c'+id);
-						Element.toggle('indicator_o'+id);
-					}
-				}
-			}
-			function collapseAll() {
-				for (var n = 0; n < allGroups.length; n++) {
-					var id = allGroups[n];
-					if (Element.getStyle('gruppe'+id,'display') != 'none') {
-						Element.toggle('gruppe'+id);
-						Element.toggle('indicator_c'+id);
-						Element.toggle('indicator_o'+id);
-					}
-				}				
-			}
+		if (isset($data['caption'])) $query .= ", caption='".addslashes($data['caption'])."'";
+		if (isset($data['parent'])) $query .= ", parent='".addslashes($data['parent'])."'";
+		if (isset($data['position'])) $query .= ", position='".addslashes($data['position'])."'";
+		if (isset($data['visgruppe'])) $query .= ", visgruppe='".addslashes($data['visgruppe'])."'";
+		if (isset($data['defaultrights'])) $query .= ", defaultrights='".addslashes($data['defaultrights'])."'";
+		if (isset($data['defaultrang'])) $query .= ", defaultrang='".addslashes($data['defaultrang'])."'";
+		if (isset($data['slug'])) $query .= ", slug='".addslashes($data['slug'])."'";
+		if (isset($data['kategori'])) $query .= ", kategori='".addslashes($data['kategori'])."'";
+		if (isset($data['gruppesider'])) $query .= ", gruppesider='".addslashes($data['gruppesider'])."'";
 		
-			function toggleGroup(id) {
-				new Effect.toggle('gruppe'+id, 'slide', {  
-					duration: .4,
-					afterFinish: function(obj){
-						Element.toggle('indicator_c'+id);
-						Element.toggle('indicator_o'+id);
-					}
-				});
-			}
+		$query .= " WHERE id='$id'";
 		
-		</script>
-		
-		";
-		
-		$url_editposition = $this->generateURL("editgrouppositions");
-		$url_addgroup = $this->generateURL("addgroup");
-		$url_registrations = "/registrering/?reglist";
-		$output .= '<p class="hidefromprint">';
-		if (!empty($this->login_identifier)) {
-			$output .= '<a href="'.$this->getMemberUrl($this->login_identifier).'?editprofile" class="icn" style="background-image:url(/images/icns/vcard_edit.png);">Rediger min medlemsprofil</a>';
-		}
-		if ($this->allow_addgroup){
-			$output .= ' <a href="'.$url_addgroup.'" class="icn" style="background-image:url(/images/icns/group_add.png);">Opprett gruppe</a> 
-			<a href="'.$url_registrations.'" class="icn" style="background-image:url(/images/icns/report.png);">Vis registreringer</a>';
-		} 
-		$output .= "</p>";
-		if (($this->visning == "tabell1") || ($this->visning == "tabell2") || ($this->visning == "tabell3") || ($this->visning == "tabell4") || ($this->visning == "tabell5")){
-			if (empty($this->login_identifier)){
-				$output .= '<p class="cal_notice">Du må logge inn for å se på den valgte visningen. Viser normalvisning isteden</p>';
-				$this->visning = "outline";
-			}
-		}
-		$options = "";
-		$res = $this->query("SELECT 
-				id, identifier, title, show_emptygroups, 
-				listheader, listfooter, 
-				groupheader, groupfooter, 
-				before_members, member, after_members,
-				db_criteria, pagebreak_after, pagebreak_item, sortby
-			FROM 
-				$this->table_list_templates"
-		);
-		while ($row = $res->fetch_assoc()) {
-			$identifier = $row['identifier'];
-			$d = ($identifier == $this->visning) ? " selected='selected'" : "";
-			$title = $row['title'];
-			$options .= "<option value='$identifier'$d>$title</option>";
-			if ($identifier == $this->visning) 
-				$this->current_template = $row;
-		}
-
-		$output .= '
-			<p class="hidefromprint">
-			Visning:
-			<select name="mlvisning" onchange=\'location = "'.($this->showHiddenGroups ? $this->generateURL("showhidden=$this->showHiddenGroups")."&amp;" : $this->generateURL('').'?').'mlvisning="+this.options[this.selectedIndex].value;\'>
-				'.$options.'
-			</select>
-		
-		';
-		/*
-						<option value='normal' ".(($this->visning == "normal")?"selected":"").">Normal</option>
-				<option value='bilder' ".(($this->visning == "bilder")?"selected":"").">Bilder</option>
-				<option value='epost' ".(($this->visning == "tabell1")?"selected":"").">E-postliste</option>
-				<option value='kontaktinfo' ".(($this->visning == "tabell2")?"selected":"").">Kontaktinformasjon</option>
-				<option value='foresatt' ".(($this->visning == "tabell3")?"selected":"").">Foresatt-relasjoner</option>
-				<option value='brukerinfo' ".(($this->visning == "tabell4")?"selected":"").">Bruker-tabell</option>
-				<option value='rettigheter' ".(($this->visning == "tabell5")?"selected":"").">Rettighets-oversikt</option>
-				<option value='betalende' ".(($this->visning == "tabell5")?"selected":"").">Betalende medlemmer</option>
-*/
-		
-		if ($this->allow_viewhiddengroups){
-			$output .= " Vis skjulte grupper: ";
-			$output .= "
-				<select name='showhidden' onchange=\"location = '".$this->generateURL("mlvisning=$this->visning")."&amp;showhidden='+this.options[this.selectedIndex].value\">
-					<option value='1'".(($this->showHiddenGroups)?" selected=\"selected\"":"").">Ja</option>
-					<option value='0'".((!$this->showHiddenGroups)?" selected=\"selected\"":"").">Nei</option>
-				</select>
-			";
-		} else {
-			$output .= " <i> Logg inn for flere valg</i>";
-		}
-		
-
-		$output .= "</p>\n";
-		$output .= "\n";
-
-		$res = $this->query("SELECT memberid FROM $this->table_onlineusers WHERE sessionid != '' ORDER BY timestamp DESC");
-		$onlineusers = array();
-		while($record = $res->fetch_assoc()){
-			array_push($onlineusers,$record['memberid']);
-		}
-		
-		if (empty($this->current_template)) {
-			return $this->notSoFatalError("Malen eksisterer ikke.");
-		}
-		
-		$res = $this->query("SELECT sid, description FROM $this->table_membershiptypes");
-		$this->mtypedescs = array();
-		while ($row = $res->fetch_assoc()) {
-			$this->mtypedescs[$row['sid']] = $row['description'];
-		}
-
-		
-		$theList = stripslashes($this->current_template['listheader']);
-
-		$classNo = 1;
-		
-		$membersprinted = array();
-		$this->memberCount = array('LE' => 0, 'RO' => 0, 'SP' => 0, 'SM' => 0);
-		if (!empty($this->current_template['sortby'])) {
-			
-			if (empty($this->current_template['db_criteria'])) {
-				$members = $this->members;
-			} else {
-				$db_criteria = $this->current_template['db_criteria'];
-				$res = $this->query("SELECT ident FROM $this->table_memberlist WHERE $db_criteria");
-				$members = array();
-				while ($row = $res->fetch_assoc()) {
-					$ident = $row['ident'];
-					if ($this->isUser($ident) && count($this->members[$ident]->memberof) > 0) {
-						$members[] = $this->members[$ident];
-					}
-				}
-			}
-			if ($this->current_template['sortby'] == 'lastname') {
-				usort($members, array("memberlist_actions", "sortMembersByLastname"));
-			} else if ($this->current_template['sortby'] == 'firstname') {
-				usort($members, array("memberlist_actions", "sortMembersByFirstname"));			
-			} else if ($this->current_template['sortby'] == 'address_id') {
-				usort($members, array("memberlist_actions", "sortMembersByAddressId"));			
-			} else {
-				$this->notSoFatalError('Unknown sort criteria '.$this->current_template['sortby'].' (in printMemberList)');
-			}
-			foreach ($members as $m){
-				if (count($m->memberof) > 0) {
-					$theList .= $this->printMemberListMember($m->ident,0,1,1,0);
-					$membersprinted[] = $m->ident;
-					if (!empty($this->current_template['pagebreak_after'])) {
-						$t = count($membersprinted)/$this->current_template['pagebreak_after'];
-						if ($t == round($t)) $theList .= $this->current_template['pagebreak_item'];
-					}
-				}
-			}
-			
-			if ($this->current_template['identifier'] == "nsf") {
-				$tmp = array();
-				foreach ($this->memberCount as $code => $count) {
-					$tmp[] = $count.' '.strtolower($this->getCategoryByAbbr($code))." ($code)";
-				}
-				$tmp = "<p>Totalt ".implode(', ',$tmp)."</p>";
-				$theList = $tmp.$theList;
-			}
-		} else {
-			
-			foreach ($this->groups as $g) {
-				if ($g->parent == 0) {
-					list($tmp,$membersprinted) = $this->print_group($g->id,0,$membersprinted);
-					$theList .= $tmp;
-				}
-			}
-			
-		}	
-		$theList .= $this->current_template['listfooter'];
-		
-		$theList .= "<p>&nbsp;</p>";
-		
-		$output .= $theList;
-		return $output;
+		$this->query($query);
 	}
 	
+	// Send welcome-mail with username and instructions on password-creation to new users
+	function sendWelcomeMail($id, $isReminder = false, $preview = false){
+		global $login;
+
+		if ($this->isLoggedIn()) {
+			if (!$this->allow_addmember) return $this->permissionDenied();
+		}
+
+		if (!$this->isUser($id)){ $this->fatalError("Brukeren ".strip_tags($id)." eksisterer ikke!"); }
+		$usr = $this->members[$id];
+		$rcptmail = $usr->email;
+		
+		if ($isReminder)
+			$template = file_get_contents($this->template_dir.$this->template_activationreminder);
+		else
+			$template = file_get_contents($this->template_dir.$this->template_welcome);
+		
+		$r1a = array(); $r2a = array();
+		$r1a[] = '%username%';			$r2a[] = $login->getUsername($id);
+		$r1a[] = '%recipient_name%';	$r2a[] = $usr->fullname;
+		$r1a[] = '%sender_name%';		$r2a[] = $this->members[$this->login_identifier]->fullname;
+		if ($preview) {
+			$r1a[] = '%activation_url%';	$r2a[] = "[[URL vises ikke i forhåndsvisning]]";		
+		} else {
+			$r1a[] = '%activation_url%';	$r2a[] = $this->activation_url.$login->getUniqueString($id);
+		}
+		$plainBody = str_replace($r1a, $r2a, $template);
+		
+		if ($preview) return $plainBody;
+		
+		require_once("../www/libs/Rmail/Rmail.php");
+		// Send mail		
+		$mail = new Rmail();
+		$mail->setFrom("$this->mailSenderName <$this->mailSenderAddr>");
+		$mail->setReturnPath($this->mailSenderAddr);
+		if ($isReminder)
+			$mail->setSubject("Påminnelse om brukerkonto hos $this->mailSenderName");
+		else
+			$mail->setSubject("Velkommen til $this->mailSenderName");
+		$mail->setText($plainBody);
+		$recipients = array("$rcptmail");
+		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
+		$mail->send($recipients,$type = 'smtp');		
+		
+		if ($isReminder) 
+			$this->addToActivityLog("sendte påminnelse om aktivering av brukernavn til ".$usr->fullname);
+			$this->logEvent('ACCOUNT_REMINDER_SENT', $id);
+
+		//else
+		//	$this->addToActivityLog("Velkomstmail sendt til ".$usr->fullname);
+		
+		return $rcptmail;
+	}
+	
+
+	function createMemberOfRegExp($ident){
+		$regexp = "(";
+		foreach ($this->members[$ident]->memberof as $g){
+			if ($regexp != "(") $regexp .= "|";
+			$regexp .= "^$g\$|^$g,|,$g,|,$g\$";
+
+		}
+		$regexp .= ")";
+		return $regexp;
+	}
+	
+	function getPathToImage($user_id, $directory, $filename = '', $size = 'original') {
+		$baseUrl = BG_WWW_PATH.$this->userFilesDir."Medlemsfiler/$user_id/";
+		switch ($size) {
+			case 'small': return $baseUrl.'_thumbs140/'.$directory.'/'.$filename;
+			case 'medium': return $baseUrl.'_thumbs490/'.$directory.'/'.$filename;
+			default: return $baseUrl.$directory.'/'.$filename;
+		}
+	}
+	
+	function checkUserImageDir($user_id) {
+		
+		// Check if dir exists "physically":
+		$dirs = array(
+			$this->path_to_www.'/'.$this->userFilesDir.$this->memberImagesDir,
+			$this->path_to_www.'/'.$this->userFilesDir.$this->memberImagesDir.$user_id,
+			$this->path_to_www.'/'.$this->userFilesDir.$this->memberImagesDir.$user_id.'/Bilder',
+			$this->path_to_www.'/'.$this->userFilesDir.$this->memberImagesDir.$user_id.'/_thumbs140',
+			$this->path_to_www.'/'.$this->userFilesDir.$this->memberImagesDir.$user_id.'/_thumbs490'
+		);
+		foreach ($dirs as $d) { if (!file_exists($d)) if (!mkdir($d)) {
+			print $this->notSoFatalError("Uh oh. Kunne ikke opprettet mappen: ".$d);
+		}}
+
+		// Check if dir exists in db:
+		$res = $this->query("SELECT id FROM $this->table_pages WHERE fullslug=\"brukerfiler/Medlemsfiler/$user_id\"");
+		if ($res->num_rows == 0) {
+
+			// Get id of "Medlemsfiler":
+			$res = $this->query("SELECT id,owner,ownergroup FROM $this->table_pages WHERE fullslug=\"brukerfiler/Medlemsfiler\"");
+			$row = $res->fetch_assoc();
+			$parentDirId = intval($row['id']);
+			$owner = intval($row['owner']);
+			$ownerGroup = intval($row['ownergroup']);
+
+			// Insert new entry:
+			$this->query("INSERT INTO $this->table_pages 
+				(parent,class,pageslug,fullslug,owner,ownergroup,created,lastmodified) 
+				VALUES($parentDirId,1,\"$user_id\",\"brukerfiler/Medlemsfiler/$user_id\",$owner,$ownerGroup,".time().",".time().")");
+			if ($this->affected_rows() != 1) {
+				$this->fatalError("Could not create user dir in db!");
+			}
+			$userfolder_id = intval($this->insert_id());
+			
+		} else {
+			$row = $res->fetch_assoc();
+			$userfolder_id = intval($row['id']);
+		}
+		
+		// Check if images dir exists in db:
+		$res = $this->query("SELECT id FROM $this->table_pages WHERE fullslug=\"brukerfiler/Medlemsfiler/$user_id/Bilder\"");
+		if ($res->num_rows == 0) {
+
+			// Insert new entry:
+			$this->query("INSERT INTO $this->table_pages 
+				(parent,class,pageslug,fullslug,owner,ownergroup,created,lastmodified) 
+				VALUES($userfolder_id,1,\"Bilder\",\"brukerfiler/Medlemsfiler/$user_id/Bilder\",$owner,$ownerGroup,".time().",".time().")");
+			if ($this->affected_rows() != 1) {
+				$this->fatalError("Could not create user image dir in db!");
+			}
+			
+		}
+		
+	}
+	
+	function initializeImageArchive() {
+		$this->iarchive_instance = new imagearchive(); 
+		call_user_func($this->prepare_classinstance, $this->iarchive_instance, $this->imagearchive);
+	}
+
+
+	function simpleDate($d) {
+		if ($d == 0) return '';
+		$d = getdate($d);
+		return $d['mday'].". ".$this->months[$d['mon']-1]." ".$d['year'];
+	}
+
+	/*******************************************************************************************
+		 Memberlist view utility functions                                                       
+		 **************************************************************************************/
+
 	function sortMembersByLastname($a, $b) {
 		return strcmp($a->lastname, $b->lastname);
 	}
@@ -1278,9 +1320,322 @@ class memberlist_actions extends memberlist {
 		return str_replace($r1a, $r2a, $this->current_template['member']);
 	}
 	
-	function activateUserAccount($unique){
+
+	/*******************************************************************************************
+		 General actions                                                       
+		 **************************************************************************************/
+	
+	function search() {
+		if (empty($_POST) || !isset($_POST['json'])) {
+			print "invalid json request";
+			exit();
+		}
+		$json = json_decode($_POST['json']);
+		
+		$gids = array();
+		$uids = array();
+		
+		if (isset($json->freetext)) {
+			if (preg_match('/rights=([0-9])/', $json->freetext, $matches)) {
+				$uids = $this->findAllUsersWithRights($matches[1]);
+			} else if (preg_match('/email=([\w@._\-]*)/', $json->freetext, $matches)) {
+				$uids = $this->findAllUsersWithEmail($matches[1]);
+			} else {
+				$uids = $this->freeTextUserSearch($json->freetext);
+				$gids = $this->freeTextGroupSearch($json->freetext);
+			}
+		}
+
+
+		$ud = $this->getUserData($uids, array('UserId','FullName','ProfileUrl','ProfilePicture','Memberships','ActiveMemberships','Verv','AktiveVerv'));
+		$users = array();
+		foreach ($ud as $id => $u) {
+			foreach ($u['Memberships'] as &$m) {
+				$m['StartDate'] = strftime('%e. %B %Y',$m['StartDate']);
+				$m['EndDate'] = strftime('%e. %B %Y',$m['EndDate']);
+			}
+			$users[] = $u;
+		}
+		usort($users, array("memberlist_actions", "sortSearchResultsUsers"));
+		
+		$groups = array();
+		foreach ($gids as $gid) {
+			$groups[] = $this->getGroupById($gid);
+		}
+		
+		header("Content-Type: text/xml; charset=utf-8");
+		print json_encode(array(
+			'groups' => $groups,
+			'users' => $users
+		));
+		exit();
+	}
+	
+	function findAllUsersWithRights($r) {
+		$r = intval($r);
+		$res = $this->query('SELECT ident FROM '.$this->table_memberlist.' WHERE rights='.$r);
+		$ids = array();
+		while ($row = $res->fetch_assoc()) {
+			$ids[] = intval($row['ident']);
+		}
+		return $ids;		
+	}
+	
+	function findAllUsersWithEmail($e) {
+		$e = addslashes($e);
+		if (empty($e)) {
+			$res = $this->query('SELECT ident FROM '.$this->table_memberlist.' WHERE email=""');
+		} else {
+			$res = $this->query('SELECT ident FROM '.$this->table_memberlist.' WHERE email LIKE "%'.$e.'%"');
+		}
+		$ids = array();
+		while ($row = $res->fetch_assoc()) {
+			$ids[] = intval($row['ident']);
+		}
+		return $ids;		
+	}
+	
+	function freeTextGroupSearch($q) {
+		$q = addslashes($q);		
+		$res = $this->query('SELECT id FROM '.$this->table_groups.' WHERE caption LIKE "'.$q.'%"');
+		$ids = array();
+		while ($row = $res->fetch_assoc()) {
+			$ids[] = intval($row['id']);
+		}
+		return $ids;
+	}
+	
+	function freeTextUserSearch($q) {
+		$q = addslashes($q);		
+		$res = $this->query('SELECT ident FROM '.$this->table_memberlist.' 
+			WHERE CONCAT(firstname," ",middlename," ",lastname) LIKE "'.$q.'%"
+			OR CONCAT(firstname," ",lastname) LIKE "'.$q.'%"
+			OR lastname LIKE "'.$q.'%"
+		');
+		$ids = array();
+		while ($row = $res->fetch_assoc()) {
+			$ids[] = intval($row['ident']);
+		}
+		return $ids;		
+	}
+	
+	function sortSearchResultsUsers($a,$b) {
+		if (count($a['ActiveMemberships']) == count($b['ActiveMemberships'])) {
+			return strcmp($a['FullName'],$b['FullName']);		
+		}
+		return (count($a['ActiveMemberships']) > count($b['ActiveMemberships'])) ? -1 : 1;
+	}
+	
+	function viewMemberList(){
+	
+		if (!$this->allow_viewlist) return $this->permissionDenied();
+		
+		$output = "
+		<script type=\"text/javascript\">
+	
+			var allGroups = new Array();
+	
+			function expandAll() {
+				for (var n = 0; n < allGroups.length; n++) {
+					var id = allGroups[n];
+					if (Element.getStyle('gruppe'+id,'display') == 'none') {
+						Element.toggle('gruppe'+id);
+						Element.toggle('indicator_c'+id);
+						Element.toggle('indicator_o'+id);
+					}
+				}
+			}
+			function collapseAll() {
+				for (var n = 0; n < allGroups.length; n++) {
+					var id = allGroups[n];
+					if (Element.getStyle('gruppe'+id,'display') != 'none') {
+						Element.toggle('gruppe'+id);
+						Element.toggle('indicator_c'+id);
+						Element.toggle('indicator_o'+id);
+					}
+				}				
+			}
+		
+			function toggleGroup(id) {
+				new Effect.toggle('gruppe'+id, 'slide', {  
+					duration: .4,
+					afterFinish: function(obj){
+						Element.toggle('indicator_c'+id);
+						Element.toggle('indicator_o'+id);
+					}
+				});
+			}
+		
+		</script>
+		
+		";
+		
+		// Toolbar:
+		$output .= '<p class="hidefromprint">';
+		if ($this->isLoggedIn()){
+			$output .= '
+				<a href="'.$this->getMemberUrl($this->login_identifier).'?action=editUserProfile" class="icn" 
+				style="background-image:url(/images/icns/vcard_edit.png);background-color:#ffffdd;">Rediger min medlemsprofil</a>';
+		}
+		if ($this->allow_addgroup){
+			$output .= ' 
+				<a href="'.$this->generateURL('action=addGroup').'" class="icn" 
+					style="background-image:url(/images/icns/group_add.png);">Opprett gruppe</a> 
+				<a href="/registrering/?reglist" class="icn" 
+					style="background-image:url(/images/icns/report.png);">Vis registreringer</a>';
+		} 
+		$output .= '</p>';
+		
+		if (($this->visning == "tabell1") || ($this->visning == "tabell2") || ($this->visning == "tabell3") || ($this->visning == "tabell4") || ($this->visning == "tabell5")){
+			if (!$this->isLoggedIn()){
+				$output .= '<p class="cal_notice">Du må logge inn for å se på den valgte visningen. Viser normalvisning isteden</p>';
+				$this->visning = "outline";
+			}
+		}
+		$options = "";
+		$res = $this->query("SELECT 
+				id, identifier, title, show_emptygroups, 
+				listheader, listfooter, 
+				groupheader, groupfooter, 
+				before_members, member, after_members,
+				db_criteria, pagebreak_after, pagebreak_item, sortby
+			FROM 
+				$this->table_list_templates"
+		);
+		while ($row = $res->fetch_assoc()) {
+			$identifier = $row['identifier'];
+			$d = ($identifier == $this->visning) ? " selected='selected'" : "";
+			$title = $row['title'];
+			$options .= "<option value='$identifier'$d>$title</option>";
+			if ($identifier == $this->visning) 
+				$this->current_template = $row;
+		}
+
+		$output .= '
+			<p class="hidefromprint">
+			Visning:
+			<select name="mlvisning" onchange=\'location = "'.($this->showHiddenGroups ? $this->generateURL("showhidden=$this->showHiddenGroups")."&amp;" : $this->generateURL('').'?').'mlvisning="+this.options[this.selectedIndex].value;\'>
+				'.$options.'
+			</select>
+		
+		';
+		/*
+						<option value='normal' ".(($this->visning == "normal")?"selected":"").">Normal</option>
+				<option value='bilder' ".(($this->visning == "bilder")?"selected":"").">Bilder</option>
+				<option value='epost' ".(($this->visning == "tabell1")?"selected":"").">E-postliste</option>
+				<option value='kontaktinfo' ".(($this->visning == "tabell2")?"selected":"").">Kontaktinformasjon</option>
+				<option value='foresatt' ".(($this->visning == "tabell3")?"selected":"").">Foresatt-relasjoner</option>
+				<option value='brukerinfo' ".(($this->visning == "tabell4")?"selected":"").">Bruker-tabell</option>
+				<option value='rettigheter' ".(($this->visning == "tabell5")?"selected":"").">Rettighets-oversikt</option>
+				<option value='betalende' ".(($this->visning == "tabell5")?"selected":"").">Betalende medlemmer</option>
+*/
+		
+		if ($this->allow_viewhiddengroups){
+			$output .= " Vis skjulte grupper: ";
+			$output .= "
+				<select name='showhidden' onchange=\"location = '".$this->generateURL("mlvisning=$this->visning")."&amp;showhidden='+this.options[this.selectedIndex].value\">
+					<option value='1'".(($this->showHiddenGroups)?" selected=\"selected\"":"").">Ja</option>
+					<option value='0'".((!$this->showHiddenGroups)?" selected=\"selected\"":"").">Nei</option>
+				</select>
+			";
+		} else {
+			$output .= " <i> Logg inn for flere valg</i>";
+		}
+		
+
+		$output .= "</p>\n";
+		$output .= "\n";
+		
+		// Online users:
+		$res = $this->query("SELECT memberid FROM $this->table_onlineusers WHERE sessionid != '' ORDER BY timestamp DESC");
+		$onlineusers = array();
+		while($record = $res->fetch_assoc()){
+			array_push($onlineusers,$record['memberid']);
+		}
+		
+		if (empty($this->current_template)) {
+			return $this->notSoFatalError("Malen eksisterer ikke.");
+		}
+		
+		$res = $this->query("SELECT sid, description FROM $this->table_membershiptypes");
+		$this->mtypedescs = array();
+		while ($row = $res->fetch_assoc()) {
+			$this->mtypedescs[$row['sid']] = $row['description'];
+		}
+
+		
+		$theList = stripslashes($this->current_template['listheader']);
+
+		$classNo = 1;
+		
+		$membersprinted = array();
+		$this->memberCount = array('LE' => 0, 'RO' => 0, 'SP' => 0, 'SM' => 0);
+		if (!empty($this->current_template['sortby'])) {
+			
+			if (empty($this->current_template['db_criteria'])) {
+				$members = $this->members;
+			} else {
+				$db_criteria = $this->current_template['db_criteria'];
+				$res = $this->query("SELECT ident FROM $this->table_memberlist WHERE $db_criteria");
+				$members = array();
+				while ($row = $res->fetch_assoc()) {
+					$ident = $row['ident'];
+					if ($this->isUser($ident) && count($this->members[$ident]->memberof) > 0) {
+						$members[] = $this->members[$ident];
+					}
+				}
+			}
+			if ($this->current_template['sortby'] == 'lastname') {
+				usort($members, array("memberlist_actions", "sortMembersByLastname"));
+			} else if ($this->current_template['sortby'] == 'firstname') {
+				usort($members, array("memberlist_actions", "sortMembersByFirstname"));			
+			} else if ($this->current_template['sortby'] == 'address_id') {
+				usort($members, array("memberlist_actions", "sortMembersByAddressId"));			
+			} else {
+				$this->notSoFatalError('Unknown sort criteria '.$this->current_template['sortby'].' (in printMemberList)');
+			}
+			foreach ($members as $m){
+				if (count($m->memberof) > 0) {
+					$theList .= $this->printMemberListMember($m->ident,0,1,1,0);
+					$membersprinted[] = $m->ident;
+					if (!empty($this->current_template['pagebreak_after'])) {
+						$t = count($membersprinted)/$this->current_template['pagebreak_after'];
+						if ($t == round($t)) $theList .= $this->current_template['pagebreak_item'];
+					}
+				}
+			}
+			
+			if ($this->current_template['identifier'] == "nsf") {
+				$tmp = array();
+				foreach ($this->memberCount as $code => $count) {
+					$tmp[] = $count.' '.strtolower($this->getCategoryByAbbr($code))." ($code)";
+				}
+				$tmp = "<p>Totalt ".implode(', ',$tmp)."</p>";
+				$theList = $tmp.$theList;
+			}
+		} else {
+			
+			foreach ($this->groups as $g) {
+				if ($g->parent == 0) {
+					list($tmp,$membersprinted) = $this->print_group($g->id,0,$membersprinted);
+					$theList .= $tmp;
+				}
+			}
+			
+		}	
+		$theList .= $this->current_template['listfooter'];
+		
+		$theList .= "<p>&nbsp;</p>";
+		
+		$output .= $theList;
+		return $output;
+	}
+	
+
+	function activateUserAccount(){
 		global $login;
 		
+		$unique = $this->activateNewUserStr;		
 		$u = $login->getUserIdFromUniqueString($unique);
 		if ($u === false){
 			return $this->notSoFatalError("Fant ikke noen brukerkonto tilknyttet denne adressen. Er du sikker på at du fikk med hele adressen?");
@@ -1294,7 +1649,7 @@ class memberlist_actions extends memberlist {
 			return $this->notSoFatalError("Denne kontoen er allerede aktivert.");
 		}
 
-		$url_post = $this->generateURL(array("noprint=true","savepwd"));
+		$url_post = $this->generateURL('action=assignUserPassword');
 		
 		$errors = '';
 		if (isset($_SESSION['errors'])) {
@@ -1323,8 +1678,10 @@ class memberlist_actions extends memberlist {
 		';
 	}
 
-	function saveNewUserPwd($unique){
+	function assignUserPassword(){
 		global $login;
+
+		$unique = $this->activateNewUserStr;		
 
 		$id = $login->getUserIdFromUniqueString($unique);
 
@@ -1343,23 +1700,24 @@ class memberlist_actions extends memberlist {
 
 		if ($_POST["nyttpassord1"] <> $_POST["nyttpassord2"]){
 			$_SESSION['errors'] = 'Du skrev ikke passordet likt begge gangene.'; 
-			$this->redirect($this->generateURL(''));
+			$this->redirect($this->generateURL('',true));
 		}
 		
 		$errors = $login->setPassword($id,$_POST["nyttpassord1"]);
 		if (count($errors) > 0) {
 			$_SESSION['errors'] = array_unique($errors); 
-			$this->redirect($this->generateURL(''));
+			$this->redirect($this->generateURL('',true));
 		}
 
 		// Activitylog
 		$this->addToActivityLog("lagret passord / aktiverte brukerkonto for ".$this->makeMemberLink($id));
+		$this->logEvent('ACCOUNT_ACTIVATED', $id);
 		
-		$this->redirect($this->generateCoolURL('/','pwdsaved'));
+		$this->redirect($this->generateCoolURL('/','action=userPasswordAssigned'));
 
 	}
 
-	function pwdSaved(){
+	function userPasswordAssigned(){
 		if (!$this->isLoggedIn()){
 			return "
 				<h3>Passord lagret</h3>
@@ -1376,25 +1734,35 @@ class memberlist_actions extends memberlist {
 			inn, så vi kan holde kontakten med deg. Kontaktinformasjon blir kun vist for innloggede brukere.
 			</p>
 			<p>
-				<a href="/medlemsliste/medlemmer/'.$this->login_identifier.'?editprofile">Trykk her for å oppdatere medlemsprofilen din</a>
+				<a href="'.$this->getMemberUrl($this->login_identifier).'?action=editUserProfile">Trykk her for å oppdatere medlemsprofilen din</a>
 			</p>
 			';			
 		}
 	}
+
+	/*******************************************************************************************
+		 User actions                                                       
+		 **************************************************************************************/
 	
-	function viewProfile($id){
-		global $db,$login;
-		$profile = $this->members[$id];
+	function viewUserProfile(){
+		global $login;
+		
+		$uid = $this->current_medlem;
+		$u = $this->getUserData($uid, 'All');
 		
 		$output = "";
 
 		$importantinfo = "";
-		if (count($profile->memberof) == 0){
+		if (count($u['ActiveMemberships']) == 0){
 			$importantinfo = str_replace("%warningimage%",$this->image_dir."warning.gif",$this->nomemberships_template);
-			$memberof = "<i>Ikke medlem av noen grupper</i>";
-		} else {
+			$memberof = "<i>Denne personen har for tiden ingen aktive medlemsskap.</i>";
+		}
+		
+		
+		$memberof = "lalala";
+		/*
 			$memberoftmp = array();
-			foreach ($profile->memberof as $g){
+			foreach ($u->memberof as $g){
 				if ($this->isLoggedIn()) {
 					$memberoftmp[] = call_user_func($this->make_grouplink,$g);
 				} else {
@@ -1410,29 +1778,55 @@ class memberlist_actions extends memberlist {
 				$memberof .= " og ".$memberoftmp[count($memberoftmp)-1];
 			}
 		}
+		*/
+		
+		
 		if ($this->isLoggedIn()) {
 			$output .= "<p class='headerLinks'>";
 			
 			if ($this->allow_editprofile)
-				$output .= '  <a href="'.$this->generateURL("editprofile").'" class="edit">Rediger brukerprofil</a>';
+				$output .= '  <a href="'.$this->generateURL('action=editUserProfile').'" class="edit">Rediger brukerprofil</a>';
 				
 			if ($this->allow_viewmemberdetails) 
-				$output .= '  <a href="'.$this->generateURL("edituser").'" class="edit">Rediger brukerinnstillinger</a>';
+				$output .= '  <a href="'.$this->generateURL('action=userOverview').'" class="edit">Rediger brukerinnstillinger</a>';
 			
 			$output .= '
 				</p>
 			';
 		}
+		
+		/* Verv */
+		$verv = array();
+		$shortVerv = array();
+		if (count($u['Verv']) > 0) {
+			foreach ($u['Verv'] as $v) {
+				$r1a   = array(); 		$r2a   = array();
+				$r1a[] = "%post%";		$r2a[] = '<a href="'.$v['Url'].'">'.$v['Title'].'</a>';
+				$r1a[] = "%from%"; 		$r2a[] = '<abbr title="'.strftime("%d.%m.%Y",$v['StartDate']).'">'.strftime("%B %Y",$v['StartDate']).'</abbr>';
+				$r1a[] = "%to%"; 		$r2a[] = '<abbr title="'.strftime("%d.%m.%Y",$v['EndDate']).'">'.strftime("%B %Y",$v['EndDate']).'</abbr>';
+				//$r1a[] = "%group%"; 	$r2a[] = $v['group_caption'];
+				if ($v['EndDate'] == 0){
+					$verv[] = "<li class='star'>".str_replace($r1a,$r2a,$this->label_post_since)."</li>\n";
+					$shortVerv[] = $v['Title'];
+				} else {
+					$verv[] = "<li class='star'>".str_replace($r1a,$r2a,$this->label_post_fromto)."</li>\n";
+				}
+			}
+		}
+
+/*		$shortVerv = implode(",",$shortVerv);
+		$shortVerv = $profile->tittel;
+		if (strlen($shortVerv) > 0) $shortVerv = $shortVerv . ". ";		
 
 
 		/**** VERV ****/
-		
+		/*
 		$verv = array();
 		$shortVerv = array();
 		$tv = $this->table_verv;
 		$th = $this->table_vervhistorie;
 		$tg = $this->table_groups;
-		$rs = $db->query("SELECT 
+		$rs = $this->query("SELECT 
 			$tv.caption,$tv.slug,$th.startdate, $th.enddate, $th.gruppe as group_id, $tg.caption as group_caption 
 			FROM $tv,$th 
 			LEFT JOIN $tg ON $tg.id=$th.gruppe
@@ -1464,26 +1858,54 @@ class memberlist_actions extends memberlist {
 					'printed' => false
 				);
 			}
-		}	
+		}	*/
 
 /*		$shortVerv = implode(",",$shortVerv);
 		$shortVerv = $profile->tittel;
 		if (strlen($shortVerv) > 0) $shortVerv = $shortVerv . ". ";
 */		
-		/**** MEDLEMSKAP ****/
+
+
 		
+		/* Group memberships */
 		$membershipStart = time(); // Første tilknytning til gruppen
-		
-		$tm = $this->table_memberships;
-		$tg = $this->table_groups;
-		$rs = $db->query("SELECT 
-			$tm.startdate, $tm.enddate, $tg.id as group_id
-			FROM $tm,$tg 
-			WHERE $tm.bruker=".$profile->ident." 
-				AND $tm.gruppe=$tg.id 
-			ORDER BY $tm.startdate");
-		//$medlemskap = "$this->label_memberships:\n";
 		$medlemskap = array();
+		foreach ($u['Memberships'] as $m) {
+			$group_verv = array();
+			foreach ($u['Verv'] as $v) {
+				if (isset($v['GroupId']) && ($v['GroupId'] == $m['GroupId'])) {
+					if ((($v['StartDate']) >= $m['StartDate']-86400) && ($v['EndDate'] <= ($m['EndDate']+86400) || $row['EndDate'] == 0)) {
+						$r1a   = array(); 		$r2a   = array();
+						$r1a[] = "%post%";		$r2a[] = '<a href="'.$v['Url'].'">'.$v['Title'].'</a>';
+						$r1a[] = "%from%"; 		$r2a[] = '<abbr title="'.strftime("%d.%m.%Y",$v['StartDate']).'">'.strftime("%B %Y",$row['StartDate']).'</abbr>';
+						$r1a[] = "%to%"; 		$r2a[] = '<abbr title="'.strftime("%d.%m.%Y",$v['EndDate']).'">'.strftime("%B %Y",$row['EndDate']).'</abbr>';
+						//$r1a[] = "%group%"; 	$r2a[] = $g['Caption'];
+						if ($row['enddate'] == 0){
+							$group_verv[] = "<li class='star'>".str_replace($r1a,$r2a,$this->label_post_since)."</li>\n";
+							$shortVerv[] = $v['Title'];
+						} else {
+							$group_verv[] = "<li class='star'>".str_replace($r1a,$r2a,$this->label_post_fromto)."</li>\n";
+						}
+
+						$group_verv[] = '<li class="star">'.str_replace($r1a,$r2a,$this->label_post_fromto)."</li>\n";
+					}
+				}
+			}
+			$verv_item = '';
+			if (count($group_verv) > 0) {
+				$verv_item = '<ul class="custom_icons">'.implode(" ",$group_verv).'</ul>';
+			}
+			if ($m['EndDate'] == 0){
+				$r1a[] = "%from%"; 		$r2a[] = '<abbr title="'.strftime("%d.%m.%Y",$m['StartDate']).'">'.strftime("%Y",$m['StartDate']).'</abbr>';
+				$medlemskap[] = "<li class='group'>".str_replace($r1a,$r2a,$this->label_memberof_since).$verv_item."</li>\n";
+			} else {
+				$r1a[] = "%from%"; 		$r2a[] = '<abbr title="'.strftime("%d.%m.%Y",$m['StartDate']).'">'.strftime("%Y",$m['StartDate']).'</abbr>';
+				$r1a[] = "%to%"; 		$r2a[] = '<abbr title="'.strftime("%d.%m.%Y",$m['EndDate']).'">'.strftime("%Y",$m['EndDate']).'</abbr>';
+				$medlemskap[] = "<li class='group'>".str_replace($r1a,$r2a,$this->label_memberof_fromto).$verv_item."</li>\n";
+			}
+		}
+		
+		/*
 		while ($row = $rs->fetch_assoc()){
 			$row['startdate'] = strtotime($row['startdate']);
 			$row['enddate'] = ($row['enddate']=='0000-00-00') ? 0 : strtotime($row['enddate']);
@@ -1518,20 +1940,16 @@ class memberlist_actions extends memberlist {
 				$r1a[] = "%to%"; 		$r2a[] = '<abbr title="'.strftime("%d.%m.%Y",$row['enddate']).'">'.strftime("%Y",$row['enddate']).'</abbr>';
 				$medlemskap[] = "<li class='group'>".str_replace($r1a,$r2a,$this->label_memberof_fromto).$verv_item."</li>\n";
 			}
-		}
+		}*/
 		
 		$medlemskapOgVerv = "<ul class='custom_icons'>\n";
-
-		foreach ($verv as &$v) {
-			if (!$v['printed']) $medlemskapOgVerv .= $v['list_item'];
-		}
-		$medlemskapOgVerv .= implode($medlemskap);
-		
+		$medlemskapOgVerv .= implode($verv);
+		$medlemskapOgVerv .= implode($medlemskap);		
 		$medlemskapOgVerv .= "</ul>\n";
-		$membershipLength = date("Y",$membershipStart);		
 
+		$membershipLength = date("Y",$membershipStart);
 
-		$res = $this->query("SELECT body FROM $this->table_memberlistlocal WHERE id='$id' AND lang='$this->preferred_lang'");
+		$res = $this->query("SELECT body FROM $this->table_memberlistlocal WHERE id='$uid' AND lang='$this->preferred_lang'");
 		if ($res->num_rows == 1) {
 			$row = $res->fetch_row(); 
 			$notes = stripslashes($row[0]);
@@ -1539,79 +1957,68 @@ class memberlist_actions extends memberlist {
 			$notes = "";
 		}
 
-		$res = $this->query("SELECT count(id) FROM $this->table_news WHERE creator='$id'");
+		$res = $this->query("SELECT count(id) FROM $this->table_news WHERE creator='$uid'");
 		$row = $res->fetch_row(); 
 		$news_count = $row[0];
 
-		$res = $this->query("SELECT count(id) FROM $this->table_comments WHERE author_id='$id'");
+		$res = $this->query("SELECT count(id) FROM $this->table_comments WHERE author_id='$uid'");
 		$row = $res->fetch_row(); 
 		$comment_count = $row[0];
 		
-		$res = $this->query("SELECT count(id) FROM $this->table_forumposts WHERE author='$id'");
+		$res = $this->query("SELECT count(id) FROM $this->table_forumposts WHERE author='$uid'");
 		$row = $res->fetch_row(); 
 		$forumpost_count = $row[0];
 
-		$res = $this->query("SELECT count(id) FROM bg_imgarchive_files WHERE uploadedby='$id'");
+		$res = $this->query("SELECT count(id) FROM bg_imgarchive_files WHERE uploadedby='$uid'");
 		$row = $res->fetch_row(); 
 		$photo_count = $row[0];
 		
 		if ($this->use_wordbox) {
-			$rs = $this->query("SELECT count(id) FROM $this->table_wordbox WHERE author='$id'");
+			$rs = $this->query("SELECT count(id) FROM $this->table_wordbox WHERE author='$uid'");
 			$shout_count = $rs->fetch_row(); $shout_count = $shout_count[0];
 		} else {
 			$shout_count = "N/A";
 		}
-		
-		if ($this->use_imagearchive) {
-			$this->initializeImageArchive();
-		 	$this->iarchive_instance->str_before_imagethumbs = '<h4>Fra bildearkivet:</h4><div>';
-			$this->iarchive_instance->str_after_imagethumbs = '</div>
-				<p style="clear:both;padding-top:30px;"><a href="'.$this->generateURL("images").'" class="icn" style="background-image:url(/images/icns/photos.png);">Vis alle bilder med '.$profile->firstname.' (Totalt %count% stk.)</a></p>';
-		/* 	$this->iarchive_instance->str_before_imagethumbs = '<div style="float:right; width:170px; border-left:1px solid #ccc; padding-left:5px;margin-left:5px; margin-bottom:10px;"><h4 style="margin:0px;padding:0px; text-align:center;">Fra bildearkivet:</h4><div>
-		 	';
-			$this->iarchive_instance->str_after_imagethumbs = '</div><p style="text-align:center; font-size:80%"><a href="'.$this->generateURL("images").'">Vis alle bilder med '.$profile->firstname.' (Totalt %count% stk.)</a></p></div>
-			';
-			*/
-			$i_images = $this->iarchive_instance->getRandomMemberImages($id, 3);
-		} else {
-			$i_images = "";
-		}
-		
+				
 		$res = $this->query("SELECT sid, description FROM $this->table_membershiptypes");
 		$mtypedescs = array();
 		while ($row = $res->fetch_assoc()) {
 			$mtypedescs[$row['sid']] = $row['description'];
 		}
-		if (in_array($profile->memberstatus, $mtypedescs)) 
+		
+		
+		/*
+		if (in_array($u->memberstatus, $mtypedescs)) 
 			$membershiptype = $mtypedescs[$profile->memberstatus];
 		else
 			$membershiptype = "<span style='color:#f00;'>Ukjent</span>";
 
+		*/
 
 		if ($this->isLoggedIn()) {
 
-			$home_address = ($profile->street == "") ? 
-				'<em>Mangler adresse</em>' : 
-				$profile->street.' '.$profile->streetno.'<br />'.$profile->postno.' '.$profile->city;
-			if ($profile->country != 'no') {
-				if (!empty($profile->state)) $home_address .= '<br />'.$profile->state.', '.$this->countries[strtoupper($profile->country)];
-				else $home_address .= '<br />'.$this->countries[strtoupper($profile->country)];
+			$home_address = ($u['Street'] == "") 
+				? '<em>Mangler adresse</em>' 
+				: $u['Street'].' '.$u['StreetNo'].'<br />'.$u['PostCode'].' '.$u['City'];
+			if ($u['Country'] != 'no') {
+				if (!empty($u['State'])) $home_address .= '<br />'.$u['State'].', '.$this->countries[strtoupper($u['Country'])];
+				else $home_address .= '<br />'.$this->countries[strtoupper($u['Country'])];
 			}
-			if (empty($profile->homephone) && empty($profile->cellular)) $phone = '<em>Mangler telefonnr.</em>';
-			else if (empty($profile->homephone)) $phone = $profile->cellular;
-			else if (empty($profile->cellular)) $phone = $profile->homephone;
-			else $phone = $profile->homephone.' / '.$profile->cellular;
-			$email = empty($profile->email) ? 
+			if (empty($u['HomePhone']) && empty($u['CellPhone'])) $phone = '<em>Mangler telefonnr.</em>';
+			else if (empty($u['HomePhone'])) $phone = $u['CellPhone'];
+			else if (empty($u['CellPhone'])) $phone = $u['HomePhone'];
+			else $phone = $u['HomePhone'].' / '.$u['CellPhone'];
+			$email = empty($u['Email']) ? 
 				'<em>Mangler epost</em>' : 
-				'<a href="%sendmsgurl%">'.$profile->email.'</a>';
+				'<a href="%sendmsgurl%">'.$u['Email'].'</a>';
 		} else {
 			$home_address = '<em>Vises kun for innloggede brukere</em>'; 
 			$phone = '<em>Vises kun for innloggede brukere</em>'; 
 			$email = '<a href="%sendmsgurl%">Send melding</a>';	
 		}
-			$www = empty($profile->homepage) ? '' : 
+			$www = empty($u['Webpage']) ? '' : 
 				"<div style='background:url(/images/icns/world.png) no-repeat top left;padding:2px 20px;'>
-					<a href=\"".$profile->homepage."\">".$profile->homepage."</a>
+					<a href=\"".$u['Webpage']."\">".$u['Webpage']."</a>
 				</div>";
 
 			$activity = array();
@@ -1634,7 +2041,7 @@ class memberlist_actions extends memberlist {
 			}
 
 			
-			$lastlogin = $login->getLoginTime($id);
+			$lastlogin = $login->getLoginTime($uid);
 			$ldiff = floor((mktime(23,59,59)-$lastlogin)/86400);
 			if ($ldiff < 1) $ldiff = 'i dag';
 			else if ($ldiff == 1) $ldiff = 'i går';
@@ -1666,8 +2073,8 @@ class memberlist_actions extends memberlist {
 		</table>
 */		
 		
-		$fullname = $profile->firstname." ".$profile->middlename." ".$profile->lastname;
-		switch (strtolower($profile->tittel)) {
+		$fullname = $u['FirstName'].' '.$u['MiddleName'].' '.$u['LastName'];
+		switch (strtolower($u['Title'])) {
 			case 'pensjonert':
 				$title_fullname = "$fullname (pensjonert speider)";
 				break;
@@ -1675,29 +2082,29 @@ class memberlist_actions extends memberlist {
 				$title_fullname = "$fullname (foresatt)";
 				break;
 			default:
-				$title_fullname = "$profile->tittel $fullname";			
+				$title_fullname = $u['Title']." $fullname";			
 		}
 		
-		$this->document_title = $profile->firstname." ".$profile->middlename." ".$profile->lastname;
+		$this->document_title = $fullname;
 		$r1a = array();							$r2a = array();
-		$r1a[] = '%id%';						$r2a[] = $profile->ident;
+		$r1a[] = '%id%';						$r2a[] = $uid;
 		$r1a[] = '%contactinfo%';				$r2a[] = $contactinfo; 
-		$r1a[] = '%firstname%';					$r2a[] = $profile->firstname;
-		$r1a[] = '%lastname%';					$r2a[] = $profile->lastname;
-		$r1a[] = '%fullname%';					$r2a[] = $profile->firstname." ".$profile->middlename." ".$profile->lastname;
+		$r1a[] = '%firstname%';					$r2a[] = $u['FirstName'];
+		$r1a[] = '%lastname%';					$r2a[] = $u['LastName'];
+		$r1a[] = '%fullname%';					$r2a[] = $fullname;
 		$r1a[] = '%title_fullname%';			$r2a[] = $title_fullname;
-		$r1a[] = '%nickname%';					$r2a[] = $profile->nickname;
-		$r1a[] = '%address_id%';				$r2a[] = $profile->address_id;
+		$r1a[] = '%nickname%';					$r2a[] = $u['NickName'];
+		//$r1a[] = '%address_id%';				$r2a[] = $profile->address_id;
 		$r1a[] = '%mapurl%';					$r2a[] = str_replace($r1a, $r2a, $this->mapurl_template);
-		$r1a[] = '%email%';						$r2a[] = ($profile->email == "")		? "<i>Ikke oppgitt</i>" : $profile->email;
-		$r1a[] = '%birthday%';					$r2a[] = ($this->validDate($profile->bday) ? strftime('%d.%m.%Y',$profile->bday) : '<em>Ikke oppgitt</em>');
-		$r1a[] = '%alder%';						$r2a[] = ($this->validDate($profile->bday) ? strftime("%Y",time()-$profile->bday)-1970 : '<em>Ikke oppgitt</em>');
-		$r1a[] = '%homepage%';					$r2a[] = ($profile->homepage != "")		? '<a href="'.$profile->homepage.'" target="blank">Klikk for å åpne</a>' : '';
+		$r1a[] = '%email%';						$r2a[] = empty($u['Email']) ? "<em>Ikke oppgitt</em>" : $u['Email'];
+		$r1a[] = '%birthday%';					$r2a[] = ($this->validDate($u['Birthday']) ? strftime('%d.%m.%Y',$u['Birthday']) : '<em>Ikke oppgitt</em>');
+		$r1a[] = '%alder%';						$r2a[] = ($this->validDate($u['Birthday']) ? strftime("%Y",time()-$u['Birthday'])-1970 : '<em>Ikke oppgitt</em>');
+		$r1a[] = '%homepage%';					$r2a[] = ($u['Webpage'] != "") ? '<a href="'.$u['Webpage'].'" target="blank">Klikk for å åpne</a>' : '';
 		$r1a[] = '%notes%';						$r2a[] = $notes;
-		$r1a[] = '%src%';						$r2a[] = $this->getProfileImage($id);
+		$r1a[] = '%src%';						$r2a[] = $this->getProfileImage($uid,'small');
 		$r1a[] = '%imagewidth%';				$r2a[] = $this->profile_image_width;
 		$r1a[] = '%imageheight%';				$r2a[] = $this->profile_image_height;
-		$r1a[] = '%sendmsgurl%';				$r2a[] = $this->messageUrl."?recipients=".$profile->ident;
+		$r1a[] = '%sendmsgurl%';				$r2a[] = $this->messageUrl."?recipients=".$uid;
 		$r1a[] = '%memberof%';					$r2a[] = $memberof;
 		$r1a[] = '%importantinfo%';				$r2a[] = $importantinfo;
 
@@ -1720,7 +2127,7 @@ class memberlist_actions extends memberlist {
 		$r1a[] = '%membership_length%';			$r2a[] = $membershipLength;		
 		$r1a[] = '%image_dir%';					$r2a[] = $this->image_dir;
 //		$r1a[] = '%imgarchive_imgs%';			$r2a[] = $i_images;
-		$r1a[] = '%membershiptype%';			$r2a[] = $membershiptype;
+		//$r1a[] = '%membershiptype%';			$r2a[] = $membershiptype;
 
 
 /*
@@ -1743,6 +2150,24 @@ class memberlist_actions extends memberlist {
 	<br /><br />
 		<img src="%image_dir%mail.gif" alt="Epost" /> <a href="%sendmsgurl%">Send epost</a>
 		*/
+		
+		$updates = '';
+		$events = $this->_eventlog->getLatestUserEvents($uid, 10); # base
+		$cday = '';
+		foreach ($events as $event) {
+			if (strftime('%Y',$event['timestamp']) != strftime('%Y',time())) 
+				$eday = strftime('%e. %B %Y',$event['timestamp']);
+			else
+				$eday = strftime('%e. %B',$event['timestamp']);
+			if ($cday != $eday) {
+				$cday = $eday;
+				$updates .= '<div style="font-size:10px;font-weight:bold;padding:3px;color:#686;">'.strftime('%e. %B %Y',$event['timestamp']).'</div>';
+			}
+			$updates .= '<div style="background:url(/images/icns/'.$event['icon'].'.png) top left no-repeat;padding: 1px 3px 3px 20px; margin:2px;">
+			'.$event['text'].'
+			</div>';
+		}
+
 		$template = '
 		%importantinfo%
 		
@@ -1779,11 +2204,43 @@ class memberlist_actions extends memberlist {
 		';
 
 		$output .= str_replace($r1a, $r2a, $template);
+
+
+		$output .= "<div style='clear:both;'><!-- --></div>";
+		$output .= "<table><tr><td width='50%' valign='top'>";
+
+			$output .= "<h4>Oppdateringer:</h4>\n";
+			if ($this->isLoggedIn()) {	
+				$output .= $updates;
+			} else {
+				$output .= "<em>Vises kun for innloggede brukere</em>";
+			}
+
+		$output .= "</td><td width='50%' valign='top'>";
+		if ($this->use_imagearchive) {
+			$this->initializeImageArchive();
+		 	$this->iarchive_instance->str_before_imagethumbs = '<h4>Fra bildearkivet:</h4><div>';
+			$this->iarchive_instance->str_after_imagethumbs = '</div>
+				<p style="clear:both;padding-top:30px;"><a href="'.$this->generateURL('action=viewUserPhotos').'" class="icn" style="background-image:url(/images/icns/photos.png);">Vis alle bilder med '.$u['FirstName'].' (Totalt %count% stk.)</a></p>';
+		/* 	$this->iarchive_instance->str_before_imagethumbs = '<div style="float:right; width:170px; border-left:1px solid #ccc; padding-left:5px;margin-left:5px; margin-bottom:10px;"><h4 style="margin:0px;padding:0px; text-align:center;">Fra bildearkivet:</h4><div>
+		 	';
+			$this->iarchive_instance->str_after_imagethumbs = '</div><p style="text-align:center; font-size:80%"><a href="'.$this->generateURL("images").'">Vis alle bilder med '.$profile->firstname.' (Totalt %count% stk.)</a></p></div>
+			';
+			*/
+			$i_images = $this->iarchive_instance->getRandomMemberImages($uid, 3);
+		} else {
+			$i_images = "";
+		}
+		$output .= $i_images;
+		$output .= "</td></tr></table>";
+		$output .= "<div style='clear:both;'><!-- --></div>";
+		
+		
 		
 		$output .= "<h4>$this->label_membershipsandposts:</h4>\n";
 		$output .= $medlemskapOgVerv;
 		
-		$foresatte = $this->foresatteTil($id);
+		$foresatte = $this->foresatteTil($uid);
 		if (count($foresatte) > 0){
 			$output .= "
 				<h4>Foresatt(e):</h4>
@@ -1794,15 +2251,18 @@ class memberlist_actions extends memberlist {
 					<ul class='custom_icons'>
 				";
 				foreach ($foresatte as $f){
-					$output .= '<li class="annet"><a href="'.$this->generateCoolURL("/medlemmer/$f").'">'.$this->members[$f]->fullname.'</a></li>';
+					$output .= '<li class="annet"><a href="'.$this->getMemberUrl($f).'">'.$this->members[$f]->fullname.'</a></li>';
 				}
 				$output .= "</ul>";
 			} else {
 				$output .= str_replace('%label_onlyforloggedin%', $this->label_onlyforloggedin, $this->hidecontactinfo_template);
 			}
 		}
+		
+
+	
 				
-		$foresatte = $this->foresattFor($id);
+		$foresatte = $this->foresattFor($uid);
 		if (count($foresatte) > 0){
 			$output .= "
 				<h4>Foresatt for:</h4>
@@ -1812,7 +2272,7 @@ class memberlist_actions extends memberlist {
 					<ul class='custom_icons'>
 				";
 				foreach ($foresatte as $f){
-					$output .= '<li class="annet"><a href="'.$this->generateCoolURL("/medlemmer/$f").'">'.$this->members[$f]->fullname.'</a></li>';
+					$output .= '<li class="annet"><a href="'.$this->getMemberUrl($f).'">'.$this->members[$f]->fullname.'</a></li>';
 				}
 				$output .= "</ul>";
 			} else {
@@ -1820,27 +2280,27 @@ class memberlist_actions extends memberlist {
 			}
 		}
 
-		$output .= "<div style='clear:both;'><!-- --></div>";
 		
-		$output .= $i_images;
-
+		
 		return $output;
 	}
 	
-	function viewImages($id) {
+	function viewUserPhotos() {
 
 		call_user_func(
 			$this->add_to_breadcrumb,
-			'<a href="'.$this->generateURL("images").'">Bilder</a>'
+			'<a href="'.$this->generateURL('action=viewUserPhotos').'">Bilder</a>'
 		);
+		
+		$id = $this->current_medlem;
 	
-		if (empty($this->login_identifier)) return $this->permissionDenied();
+		if (!$this->isLoggedIn()) return $this->permissionDenied();
 
 		$member = $this->members[$id];
 		$this->document_title = 'Bilder av '.$member->firstname;
 		if ($this->use_imagearchive) {
 			$this->initializeImageArchive();
-		 	$this->iarchive_instance->str_before_imagethumbs = '<h3>Bilder av '.$member->firstname.' (%count% stk.)</h3><p><a href="'.$this->generateURL("").'">Tilbake til medlemsprofil</a></p><div>
+		 	$this->iarchive_instance->str_before_imagethumbs = '<h3>Bilder av '.$member->firstname.' (%count% stk.)</h3><p><a href="'.$this->generateURL('').'">Tilbake til medlemsprofil</a></p><div>
 		 	';
 			$this->iarchive_instance->str_after_imagethumbs = '</div>';
 			$i_images = $this->iarchive_instance->getRandomMemberImages($id, 999);
@@ -1852,7 +2312,7 @@ class memberlist_actions extends memberlist {
 			<div style="float:right; width: '.($this->profile_image_width/2+20).'px;">
 				<div class="alpha-shadow noframe">
 					<div class="inner_div">
-						<img src="'.$this->getProfileImage($id).'" style="width: '.($this->profile_image_width/2).'px; height: '.($this->profile_image_height/2).'px;" alt="'.$member->fullname.'" />
+						<img src="'.$this->getProfileImage($id,'small').'" style="width: '.($this->profile_image_width/2).'px; height: '.($this->profile_image_height/2).'px;" alt="'.$member->fullname.'" />
 					</div>
 				</div>
 			</div>
@@ -1862,21 +2322,11 @@ class memberlist_actions extends memberlist {
 
 	}
 	
-	function initializeImageArchive() {
-		$this->iarchive_instance = new imagearchive(); 
-		call_user_func($this->prepare_classinstance, $this->iarchive_instance, $this->imagearchive);
-	}
-
-
-	function simpleDate($d) {
-		if ($d == 0) return '';
-		$d = getdate($d);
-		return $d['mday'].". ".$this->months[$d['mon']-1]." ".$d['year'];
-	}
-
-	function editProfileForm($id){
+	function editUserProfile(){
 	
 		global $login;
+		
+		$id = $this->current_medlem;
 	
 		if (!is_numeric($id)){ $this->fatalError("Ugyldig inn-data!"); }
 		if (!$this->isUser($id)) return $this->noSoFatalError("Brukeren ".strip_tags($id)." eksisterer ikke!");
@@ -2026,7 +2476,7 @@ class memberlist_actions extends memberlist {
 			
 		$memberships = $this->membershipOverview();
 		$memberships = $memberships['html'];
-		$post_url  = $this->generateURL(array("saveprofile","noprint=true"));
+		$post_url  = $this->generateURL('action=saveUserProfile');
 		
 		$r1a = array(); 						$r2a = array();
 		$r1a[] = '%editpassword%';				$r2a[] = $this->allow_editpassword ? $editpwdcode : '<em>'.$this->label_pwdChangeNotAllowed.'</em>';
@@ -2080,8 +2530,10 @@ class memberlist_actions extends memberlist {
 
 	}
 
-	function saveProfile($id){
+	function saveUserProfile(){
 		global $login;
+		
+		$id = $this->current_medlem;
 			
 		$profile = $this->members[$id];
 
@@ -2127,41 +2579,77 @@ class memberlist_actions extends memberlist {
 				
 		$updates = array();
 
-		$old = $this->members[$id]->firstname.$this->members[$id]->middlename.$this->members[$id]->lastname;
-		$new = $_POST['firstname'].$_POST['middlename'].$_POST['lastname'];
-		if ($old != $new) $updates[] = "navn";
+		$old = trim($this->members[$id]->firstname.' '.$this->members[$id]->middlename.' '.$this->members[$id]->lastname,' ,');
+		$new = trim($_POST['firstname'].' '.$_POST['middlename'].' '.$_POST['lastname'],' ,');
+		if ($old != $new) {
+			$this->logEvent('USER_PROFILE_NAME_UPDATED', $id, 0, $old, $new);
+			$updates['navn'] = true;
+		}
+		
+		$old = $this->members[$id]->street.' '.$this->members[$id]->streetno.', '.$this->members[$id]->postno.' '.$this->members[$id]->city;
+			if (!empty($this->members[$id]->state)) $old .= ', '.$this->members[$id]->state;
+			if ($this->members[$id]->country != 'no') $old .= ', '.$this->countries[strtoupper($this->members[$id]->country)];
+			$old = trim($old,', ');
+		$new = $_POST['street'].' '.$_POST['streetno'].', '.$_POST['postno'].' '.$_POST['city'];
+			if (!empty($_POST['state'])) $new .= ', '.$_POST['state'];
+			if (strtolower($_POST['country']) != 'no') $new .= ', '.$this->countries[strtoupper($_POST['country'])];
+			$new = trim($new,', ');
+		if ($old != $new) {
+			$updates['hjemmeadresse'] = true;
+			if (empty($old)) $this->logEvent('USER_PROFILE_ADDRESS_ADDED', $id, 0, $new);
+			else $this->logEvent('USER_PROFILE_ADDRESS_UPDATED', $id, 0, $old, $new);
+		}
 
-		$old = $this->members[$id]->street.$this->members[$id]->streetno.$this->members[$id]->postno.$this->members[$id]->city.$this->members[$id]->state.$this->members[$id]->country;
-		$new = $_POST['street'].$_POST['streetno'].$_POST['postno'].$_POST['city'].$_POST['state'].strtolower($_POST['country']);
-		if ($old != $new) $updates[] = "adresse";
+		$old = trim($this->members[$id]->homephone);
+		$new = trim($_POST['homephone']);
+		if ($old != $new) {
+			$updates['telefonnumre'] = true;
+			if (empty($old)) $this->logEvent('USER_PROFILE_PHONE_ADDED', $id, 0, $new);
+			else if (empty($new)) $this->logEvent('USER_PROFILE_PHONE_REMOVED', $id, 0, $old);
+			else $this->logEvent('USER_PROFILE_PHONE_UPDATED', $id, 0, $old, $new);	
+		}
 
-		$old = $this->members[$id]->homephone.$this->members[$id]->cellular;
-		$new = $_POST['homephone'].$_POST['cellular'];
-		if ($old != $new) $updates[] = "telefon";
+		$old = trim($this->members[$id]->cellular);
+		$new = trim($_POST['cellular']);
+		if ($old != $new) {
+			$updates['telefonnumre'] = true;
+			if (empty($old)) $this->logEvent('USER_PROFILE_PHONE_ADDED', $id, 0, $new);
+			else if (empty($new)) $this->logEvent('USER_PROFILE_PHONE_REMOVED', $id, 0, $old);
+			else $this->logEvent('USER_PROFILE_PHONE_UPDATED', $id, 0, $old, $new);
+		}
 
 		$old = $this->validDate($this->members[$id]->bday) ? strftime('%Y-%m-%d',$this->members[$id]->bday) : '0000-00-00';
 		$new = $_POST['birthday'];
-		if ($old != $new) $updates[] = "bursdag";
+		if ($old != $new) $updates['fødselsdato'] = true;
 
 		$old = $this->members[$id]->email;
 		$new = $_POST['email'];
-		if ($old != $new) $updates[] = "e-postadresse";
-
+		if ($old != $new) {
+			$this->logEvent('USER_PROFILE_EMAIL_UPDATED', $id, 0, $old, $new);
+			$updates['epostadresse'] = true;
+		}
 		if (isset($_POST['slug'])) {
 			$old = $this->members[$id]->slug;
 			$new = $_POST['slug'];
-			if ($old != $new) $updates[] = "profil-URL";
+			if ($old != $new) $updates['profil-URL'] = true;
 		}
 
 		if (isset($_POST['nickname'])) {
 			$old = $this->members[$id]->nickname;
 			$new = $_POST['nickname'];
-			if ($old != $new) $updates[] = "kallenavn";
+			if ($old != $new) {
+				$updates['kallenavn'] = true;
+			}
 		}
 		if (isset($_POST['homepage'])) {
 			$old = $this->members[$id]->homepage;
 			$new = $_POST['homepage'];
-			if ($old != $new) $updates[] = "hjemmeside";
+			if ($old != $new) {
+				$updates['nettside'] = true;
+				if (empty($old)) $this->logEvent('USER_PROFILE_WWW_ADDED', $id, 0, $new);
+				else if (empty($new)) $this->logEvent('USER_PROFILE_WWW_REMOVED', $id, 0, $old);
+				else $this->logEvent('USER_PROFILE_WWW_UPDATED', $id, 0, $old, $new);
+			}
 		}
 		if (isset($_POST['notes'])) {
 			$res = $this->query("SELECT body FROM $this->table_memberlistlocal WHERE id='$id' AND lang='$this->preferred_lang'");
@@ -2175,8 +2663,10 @@ class memberlist_actions extends memberlist {
 			$old = str_replace(array("\r","\n"," "),array("","",""),$old); 
 			$new = trim(strip_tags($_POST['notes']));
 			$new = str_replace(array("\r","\n"," "),array("","",""),$new); 
-			if ($old != $new) $updates[] = "beskrivelse";
-		}				
+			if ($old != $new) {
+				$updates['beskrivelse'] = true;
+			}
+		}
 		
 		$query = array();
 		
@@ -2187,12 +2677,14 @@ class memberlist_actions extends memberlist {
 			if (ROOT_DIR != '') $profileimage = substr($profileimage,strlen(ROOT_DIR));
 			$dir = '/'.$this->userFilesDir.$this->memberImagesDir.$id.'/';
 			$profileimage = substr($profileimage,strlen($dir));
-			if (!file_exists($this->path_to_www.$dir.$profileimage)) {
-				$this->fatalError("Bildet $this->path_to_www$dir$profileimage finnes ikke!");
+			$fullpath = $this->path_to_www.$dir.$profileimage;
+			$thumbpath = $dir.'_thumbs140/'.$profileimage;
+			if (!file_exists($fullpath)) {
+				$this->fatalError("Bildet $fullpath finnes ikke!");
 			}
-
-			$updates[] = "profilbilde";	
-			$query[] = "crop_profileimage";
+			$updates['profilbilde'] = true;	
+			$query[] = "action=cropProfileImage";
+			$this->logEvent('USER_PROFILE_PHOTO_UPDATED', $id, 0, $thumbpath);
 		}
 		
 		// Lastet opp nytt forumbilde?	
@@ -2202,18 +2694,25 @@ class memberlist_actions extends memberlist {
 			if (ROOT_DIR != '') $forumimage = substr($forumimage,strlen(ROOT_DIR));
 			$dir = '/'.$this->userFilesDir.$this->memberImagesDir.$id.'/';
 			$forumimage = substr($forumimage,strlen($dir));
-			if (!file_exists($this->path_to_www.$dir.$forumimage)) {
-				$this->fatalError("Bildet $this->path_to_www$dir$forumimage finnes ikke!");
+			$fullpath = $this->path_to_www.$dir.$forumimage;
+			$thumbpath = $dir.'_thumbs140/'.$forumimage;
+			if (!file_exists($fullpath)) {
+				$this->fatalError("Bildet $fullpath finnes ikke!");
 			}
 
-			$updates[] = "forumbilde";	
-			$query[] = "crop_forumimage";
+			$this->logEvent('USER_FORUM_AVATAR_UPDATED', $id, 0, $thumbpath);
+			$updates['forumavatar'] = true;	
+			if (empty($query)) {
+				$query[] = "action=cropForumImage";
+			} else {
+				$query[] = "cropForumImage";			
+			}
 		}
 		
 		if (count($errors) > 0) {
 			$_SESSION['errors'] = array_unique($errors);
 			$_SESSION['postdata'] = $_POST;
-			$this->redirect($this->generateURL("editprofile"),"Profilen ble ikke lagret pga. en eller flere feil. Sjekk verdien/-e i feltet/-ene markert med rødt og prøv å lagre igjen.");
+			$this->redirect($this->generateURL('action=editUserProfile',true),"Profilen ble ikke lagret pga. en eller flere feil. Sjekk verdien/-e i feltet/-ene markert med rødt og prøv å lagre igjen.");
 		}
 		
 		
@@ -2243,12 +2742,13 @@ class memberlist_actions extends memberlist {
 		if (isset($_POST['notes'])) $this->updateProfileNotes($id,$_POST['notes']);				
 		
 		if (!empty($updates)) {
-			$lastupdt = array_pop($updates);
-			$updates = (count($updates) > 0) ? implode(", ",$updates)." og ".$lastupdt : $lastupdt;
+			$keys = array_keys($updates);
+			$lastupdt = array_pop($keys);
+			$update_keys = (count($keys) > 0) ? implode(", ",$keys)." og ".$lastupdt : $lastupdt;
 			if ($this->login_identifier == $id) {
-				$this->addToActivityLog("oppdaterte $updates i <a href=\"".$this->generateURL("")."\">medlemsprofilen sin</a>",true);
+				$this->addToActivityLog("oppdaterte $update_keys i <a href=\"".$this->generateURL('')."\">medlemsprofilen sin</a>",true);
 			} else {
-				$this->addToActivityLog("oppdaterte $updates i <a href=\"".$this->generateURL("")."\">".$this->members[$id]->fullname."s medlemsprofil</a>",true);
+				$this->addToActivityLog("oppdaterte $update_keys i <a href=\"".$this->generateURL('')."\">".$this->members[$id]->fullname."s medlemsprofil</a>",true);
 			}
 		}
 
@@ -2280,7 +2780,7 @@ class memberlist_actions extends memberlist {
 
 						$_SESSION['errors'] = array_unique($errors);
 						$_SESSION['postdata'] = $_POST;
-						$this->redirect($this->generateURL("editprofile"),"Passordet ble ikke endret på grunn av følgende:");
+						$this->redirect($this->generateURL('action=editUserProfile',true),"Passordet ble ikke endret på grunn av følgende:");
 
 					}
 					
@@ -2301,75 +2801,19 @@ class memberlist_actions extends memberlist {
 		
 	}
 	
-	function checkUserImageDir($user_id) {
-		
-		// Check if dir exists "physically":
-		$dirs = array(
-			$this->path_to_www.'/'.$this->userFilesDir.$this->memberImagesDir,
-			$this->path_to_www.'/'.$this->userFilesDir.$this->memberImagesDir.$user_id,
-			$this->path_to_www.'/'.$this->userFilesDir.$this->memberImagesDir.$user_id.'/Bilder',
-			$this->path_to_www.'/'.$this->userFilesDir.$this->memberImagesDir.$user_id.'/_thumbs140',
-			$this->path_to_www.'/'.$this->userFilesDir.$this->memberImagesDir.$user_id.'/_thumbs490'
-		);
-		foreach ($dirs as $d) { if (!file_exists($d)) if (!mkdir($d)) {
-			print $this->notSoFatalError("Uh oh. Kunne ikke opprettet mappen: ".$d);
-		}}
 
-		// Check if dir exists in db:
-		$res = $this->query("SELECT id FROM $this->table_pages WHERE fullslug=\"brukerfiler/Medlemsfiler/$user_id\"");
-		if ($res->num_rows == 0) {
-
-			// Get id of "Medlemsfiler":
-			$res = $this->query("SELECT id,owner,ownergroup FROM $this->table_pages WHERE fullslug=\"brukerfiler/Medlemsfiler\"");
-			$row = $res->fetch_assoc();
-			$parentDirId = intval($row['id']);
-			$owner = intval($row['owner']);
-			$ownerGroup = intval($row['ownergroup']);
-
-			// Insert new entry:
-			$this->query("INSERT INTO $this->table_pages 
-				(parent,class,pageslug,fullslug,owner,ownergroup,created,lastmodified) 
-				VALUES($parentDirId,1,\"$user_id\",\"brukerfiler/Medlemsfiler/$user_id\",$owner,$ownerGroup,".time().",".time().")");
-			if ($this->affected_rows() != 1) {
-				$this->fatalError("Could not create user dir in db!");
-			}
-			$userfolder_id = intval($this->insert_id());
-			
-		} else {
-			$row = $res->fetch_assoc();
-			$userfolder_id = intval($row['id']);
-		}
-		
-		// Check if images dir exists in db:
-		$res = $this->query("SELECT id FROM $this->table_pages WHERE fullslug=\"brukerfiler/Medlemsfiler/$user_id/Bilder\"");
-		if ($res->num_rows == 0) {
-
-			// Insert new entry:
-			$this->query("INSERT INTO $this->table_pages 
-				(parent,class,pageslug,fullslug,owner,ownergroup,created,lastmodified) 
-				VALUES($userfolder_id,1,\"Bilder\",\"brukerfiler/Medlemsfiler/$user_id/Bilder\",$owner,$ownerGroup,".time().",".time().")");
-			if ($this->affected_rows() != 1) {
-				$this->fatalError("Could not create user image dir in db!");
-			}
-			
-		}
-		
-	}
-	
-	function cropProfileImageForm($user_id) {
+	function cropProfileImage() {
 	
 		if (!$this->allow_editprofile) return $this->permissionDenied();
+
+		$user_id = $this->current_medlem;
 		
 		$this->checkUserImageDir($user_id);
 		$this->initializeImagesInstance();
 
-        if (empty($this->members[$user_id]->profilbilde)) {
-            return '<h3>Profilbilde ble ikke lastet opp</h3>
-                <p>Det oppstod en (ukjent) feil under opplasting av profilbilde.</p>';
-        }
+		$q = array('action=cropProfileImageDo');
+		if (isset($_GET['cropForumImage'])) $q[] = "cropForumImage";
 
-        $q = array("noprint=true","docrop_profileimage");
-        if (isset($_GET['crop_forumimage'])) $q[] = "crop_forumimage";
         $img = $this->getProfileImage($user_id,'original');
         $img_id = $this->imginstance->getImageId($img);
 
@@ -2393,18 +2837,11 @@ class memberlist_actions extends memberlist {
 		';	
 	}
 
-	function getPathToImage($user_id, $directory, $filename = '', $size = 'original') {
-		$baseUrl = BG_WWW_PATH.$this->userFilesDir."Medlemsfiler/$user_id/";
-		switch ($size) {
-			case 'small': return $baseUrl.'_thumbs140/'.$directory.'/'.$filename;
-			case 'medium': return $baseUrl.'_thumbs490/'.$directory.'/'.$filename;
-			default: return $baseUrl.$directory.'/'.$filename;
-		}
-	}
-	
-	function cropProfileImage($user_id) {
+	function cropProfileImageDo() {
 	
 		if (!$this->allow_editprofile) return $this->permissionDenied();
+
+		$user_id = $this->current_medlem;
 		
 		if (!isset($_POST['crop_x']) || !isset($_POST['crop_x'])) $this->fatalError('invalid input .1');
 		if (!isset($_POST['crop_y']) || !isset($_POST['crop_y'])) $this->fatalError('invalid input .2');
@@ -2432,17 +2869,20 @@ class memberlist_actions extends memberlist {
 		//$this->imginstance->createThumbnail($img_id,true,100,100,"_thumb100");
 		//$this->imginstance->createThumbnail($img_id,true,500,-1,"_thumb490");
 		
-		if (isset($_GET['crop_forumimage'])) {
-			$this->redirect($this->generateURL("crop_forumimage"));
+		if (isset($_GET['cropForumImage'])) {
+			$this->redirect($this->generateURL('action=cropForumImage',true));
 		} else {
-			$this->redirect($this->generateURL(""),"Profilen er lagret. Det kan være du må laste siden på nytt for å se det nye bildet du har lastet opp!");
+			$this->redirect($this->generateURL('',true),"Profilen er lagret. Det kan være du må laste siden på nytt for å se det nye bildet du har lastet opp!");
 		}
 		
 	}
 
-	function cropForumImageForm($user_id) {
+	function cropForumImage() {
 	
 		if (!$this->allow_editprofile) return $this->permissionDenied();
+
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 	
 		$this->checkUserImageDir($user_id);
 		$this->initializeImagesInstance();
@@ -2452,15 +2892,16 @@ class memberlist_actions extends memberlist {
 		// Aspect ratio: 100/100 = 1
 		return '
 			<h3>Beskjær opplastet forumbilde</h3>
-			<form method="post" action="'.$this->generateURL(array("noprint=true","docrop_forumimage")).'">
+			<form method="post" action="'.$this->generateURL('action=cropForumImageDo').'">
 			'.$this->imginstance->outputCropForm($img_id, 1).'
 			</form>
 		';			
 	}
 	
-	function cropForumImage($user_id) {
+	function cropForumImageDo() {
 	
 		if (!$this->allow_editprofile) return $this->permissionDenied();
+		$user_id = $this->current_medlem;
 				
 		if (!isset($_POST['crop_x']) || !isset($_POST['crop_x'])) $this->fatalError('invalid input .1');
 		if (!isset($_POST['crop_y']) || !isset($_POST['crop_y'])) $this->fatalError('invalid input .2');
@@ -2488,11 +2929,12 @@ class memberlist_actions extends memberlist {
 		//$this->imginstance->createThumbnail($img_id,true,100,100,"_thumb100");
 		//$this->imginstance->createThumbnail($img_id,true,500,-1,"_thumb490");
 		
-		$this->redirect($this->generateURL(""),"Profilen er lagret. Det kan være du må laste siden på nytt for å se det nye bildet du har lastet opp!");
+		$this->redirect($this->generateURL('',true),"Profilen er lagret. Det kan være du må laste siden på nytt for å se det nye bildet du har lastet opp!");
 		
 	}
 	
-	/* Flytter gruppen $gruppe en posisjon opp */
+	/* 
+	//Flytter gruppen $gruppe en posisjon opp
 	function moveGroupUp($gruppe){
 
 		if (!$this->allow_addgroup) return $this->permissionDenied();
@@ -2515,7 +2957,7 @@ class memberlist_actions extends memberlist {
 		return "";
 	}
 
-	/* Flytter gruppen $gruppe en posisjon opp */
+	// Flytter gruppen $gruppe en posisjon opp 
 	function moveGroupDown($gruppe){
 
 		if (!$this->allow_addgroup) return $this->permissionDenied();
@@ -2539,222 +2981,111 @@ class memberlist_actions extends memberlist {
 		$this->addToActivityLog("Flyttet gruppen ".$this->groups[$gruppe]->caption." et hakk ned.");
 
 		return "";
-	}
+	}*/
 
-	function peff_i($gruppe){
-		global $db;
-		$vervObj = new vervredigering();
-		$peffverv = $vervObj->getVervBySlug('peff');
-		$res = $db->query("SELECT $this->table_memberlist.ident ".
-			"FROM $this->table_verv,$this->table_vervhistorie,$this->table_memberlist ".
-			"WHERE $this->table_verv.id=$peffverv ".
-				"AND $this->table_vervhistorie.verv=$this->table_verv.id ".
-				"AND $this->table_vervhistorie.gruppe=$gruppe ".
-				"AND $this->table_vervhistorie.enddate='0000-00-00' ".
-				"AND $this->table_vervhistorie.person=$this->table_memberlist.ident");
-		if ($res->num_rows == 1){
-			$row = $res->fetch_assoc();
-			return $row['ident'];
-		} else {
-			return -1;
-		}	
-	}
 
-	function ass_i($gruppe){
-		global $db;
-		$vervObj = new vervredigering();
-		$assverv = $vervObj->getVervBySlug('ass');
-		$res = $db->query("SELECT $this->table_memberlist.ident ".
-			"FROM $this->table_verv,$this->table_vervhistorie,$this->table_memberlist ".
-			"WHERE $this->table_verv.id=$assverv ".
-				"AND $this->table_vervhistorie.verv=$this->table_verv.id ".
-				"AND $this->table_vervhistorie.gruppe=$gruppe ".
-				"AND $this->table_vervhistorie.enddate='0000-00-00' ".
-				"AND $this->table_vervhistorie.person=$this->table_memberlist.ident");
-		if ($res->num_rows == 1){
-			$row = $res->fetch_assoc();
-			return $row['ident'];
-		} else {
-			return -1;
-		}	
-	}
-
+	/*
 	function deleteGroup($id){
 		global $db;
 
 		if (!$this->allow_deletegroup){
-			$this->permissionDenied();
+			print $this->permissionDenied();
 			return 0;
 		}
 
 		$db->query("DELETE FROM $this->table_groups WHERE id='$id'");
 		$this->addToActivityLog("slettet gruppen ".$this->groups[$id]->caption);
-	}
+	}*/
 
-	function printDeleteUserForm($id){
-
+	function deleteUser(){
+		
 		if (!$this->allow_deletemember) return $this->permissionDenied();
 
-		$m = $this->members[$id];
-		if (!($this->myndighet_i($m->memberof))){ ErrorMessageAndExit("Manglende rettigheter til å slette brukeren!"); }
-		$r1a[0] = "%id%";			$r2a[0] = $id;
-		$r1a[1] = "%name%";			$r2a[1] = $m->fullname;
-		$r1a[2] = "%referer%";		$r2a[2] = $_SERVER['HTTP_REFERER'];
-		$r1a[3] = "%posturl%";		$r2a[3] = ($this->useCoolUrls ? 
-			$this->generateURL(array("noprint=true","dodeleteuser")) :
-			$this->generateURL(array("noprint=true","dodeleteuser","medlem=$id"))
-		);
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
+
+		if (!($this->myndighet_i($m->memberof))){ $this->fatalError("Manglende rettigheter til å slette brukeren!"); }
+		$r1a   = array();			$r2a   = array();
+		$r1a[] = "%id%";			$r2a[] = $user_id;
+		$r1a[] = "%name%";			$r2a[] = $user_obj->fullname;
+		$r1a[] = "%referer%";		$r2a[] = $_SERVER['HTTP_REFERER'];
+		$r1a[] = "%posturl%";		$r2a[] = $this->generateURL('action=deleteUserDo');
 		return str_replace($r1a, $r2a, $this->deleteuser_template);
 	}
 
-	function deleteUser($id){
+	function deleteUserDo(){
 
 		if (!$this->allow_deletemember) return $this->permissionDenied();
 
-		$m = $this->members[$id];
-		if (!($this->myndighet_i($m->memberof))){ ErrorMessageAndExit("Manglende rettigheter til å slette brukeren!"); }
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 
-		$this->query("DELETE FROM $this->table_guardians WHERE medlem='$id'");
-		$this->query("DELETE FROM $this->table_guardians WHERE foresatt='$id'");
-		$this->addToActivityLog("slettet foresattrelasjoner for ".$m->fullname);
+		if (!($this->myndighet_i($m->memberof))){ $this->fatalError("Manglende rettigheter til å slette brukeren!"); }
 
-		$this->query("DELETE FROM $this->table_memberships WHERE bruker='$id'");
-		$this->addToActivityLog("slettet medlemskap for ".$m->fullname);
+		$this->query("DELETE FROM $this->table_guardians WHERE medlem=$user_id");
+		$this->query("DELETE FROM $this->table_guardians WHERE foresatt=$user_id");
+		$this->addToActivityLog("slettet foresattrelasjoner for ".$user_obj->fullname);
 
-		$this->query("DELETE FROM $this->table_memberlist WHERE ident='$id'");
-		$this->addToActivityLog("slettet medlemmet ".$m->fullname);
+		$this->query("DELETE FROM $this->table_group_memberships WHERE bruker=$user_id");
+		$this->addToActivityLog("slettet medlemskap for ".$user_obj->fullname);
+
+		$this->query("DELETE FROM $this->table_memberlist WHERE ident=$user_id");
+		$this->addToActivityLog("slettet medlemmet ".$user_obj->fullname);
 		
 		$this->redirect($this->generateCoolURL("/"));
 
 	}
-
-	function setGroupOptions($id,$data) {
-				
-		$query = "UPDATE $this->table_groups SET id=id";
-		
-		if (isset($data['caption'])) $query .= ", caption='".addslashes($data['caption'])."'";
-		if (isset($data['parent'])) $query .= ", parent='".addslashes($data['parent'])."'";
-		if (isset($data['position'])) $query .= ", position='".addslashes($data['position'])."'";
-		if (isset($data['visgruppe'])) $query .= ", visgruppe='".addslashes($data['visgruppe'])."'";
-		if (isset($data['defaultrights'])) $query .= ", defaultrights='".addslashes($data['defaultrights'])."'";
-		if (isset($data['defaultrang'])) $query .= ", defaultrang='".addslashes($data['defaultrang'])."'";
-		if (isset($data['slug'])) $query .= ", slug='".addslashes($data['slug'])."'";
-		if (isset($data['kategori'])) $query .= ", kategori='".addslashes($data['kategori'])."'";
-		if (isset($data['gruppesider'])) $query .= ", gruppesider='".addslashes($data['gruppesider'])."'";
-		
-		$query .= " WHERE id='$id'";
-		
-		$this->query($query);
-	}
-
-	function createMemberOfRegExp($ident){
-		$regexp = "(";
-		foreach ($this->members[$ident]->memberof as $g){
-			if ($regexp != "(") $regexp .= "|";
-			$regexp .= "^$g\$|^$g,|,$g,|,$g\$";
-
-		}
-		$regexp .= ")";
-		return $regexp;
-	}
 	
-	// Send welcome-mail with username and instructions on password-creation to new users
-	function sendWelcomeMail($id, $isReminder = false, $preview = false){
+
+	function resendWelcomeMail(){
 		global $login;
+		
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 
 		if ($this->isLoggedIn()) {
 			if (!$this->allow_addmember) return $this->permissionDenied();
 		}
 
-		if (!$this->isUser($id)){ $this->fatalError("Brukeren ".strip_tags($id)." eksisterer ikke!"); }
-		$usr = $this->members[$id];
-		$rcptmail = $usr->email;
-		
-		if ($isReminder)
-			$template = file_get_contents($this->template_dir.$this->template_activationreminder);
-		else
-			$template = file_get_contents($this->template_dir.$this->template_welcome);
-		
-		$r1a = array(); $r2a = array();
-		$r1a[] = '%username%';			$r2a[] = $login->getUsername($id);
-		$r1a[] = '%recipient_name%';	$r2a[] = $usr->fullname;
-		$r1a[] = '%sender_name%';		$r2a[] = $this->members[$this->login_identifier]->fullname;
-		if ($preview) {
-			$r1a[] = '%activation_url%';	$r2a[] = "[[URL vises ikke i forhåndsvisning]]";		
-		} else {
-			$r1a[] = '%activation_url%';	$r2a[] = $this->activation_url.$login->getUniqueString($id);
-		}
-		$plainBody = str_replace($r1a, $r2a, $template);
-		
-		if ($preview) return $plainBody;
-		
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-		// Send mail		
-		$mail = new htmlMimeMail5();
-		$mail->setFrom("$this->mailSenderName <$this->mailSenderAddr>");
-		$mail->setReturnPath($this->mailSenderAddr);
-		if ($isReminder)
-			$mail->setSubject("Påminnelse om brukerkonto hos $this->mailSenderName");
-		else
-			$mail->setSubject("Velkommen til $this->mailSenderName");
-		$mail->setText($plainBody);
-		$recipients = array("$rcptmail");
-		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-		$mail->send($recipients,$type = 'smtp');		
-		
-		if ($isReminder) 
-			$this->addToActivityLog("sendte påminnelse om aktivering av brukernavn til ".$usr->fullname);
-		//else
-		//	$this->addToActivityLog("Velkomstmail sendt til ".$usr->fullname);
-		
-		return $rcptmail;
-	}
-	
-	function printResendWelcomeMailForm($id){
-		global $login;
-		
-		$m = $this->members[$id];
-		if ($this->isLoggedIn()) {
-			if (!$this->allow_addmember) return $this->permissionDenied();
-		}
-
-		if ($login->hasPassword($id)) {
+		if ($login->hasPassword($user_id)) {
 			return $this->notSoFatalError("Brukeren har allerede opprettet passord");
 		}
 
 		$r1a = array(); $r2a = array();
-		$r1a[] = "%userid%";		$r2a[] = $id;
-		$r1a[] = "%name%";			$r2a[] = $m->fullname;
+		$r1a[] = "%userid%";		$r2a[] = $user_id;
+		$r1a[] = "%name%";			$r2a[] = $user_obj->fullname;
 		$r1a[] = "%referer%";		$r2a[] = $_SERVER['HTTP_REFERER'];
-		$r1a[] = "%posturl%";		$r2a[] = $this->generateURL(array("noprint=true","doresendwelcomemail"));
+		$r1a[] = "%posturl%";		$r2a[] = $this->generateURL('action=resendWelcomeMailDo');
 		if ($this->isLoggedIn()) {
-			$r1a[] = "%mail_preview%";	$r2a[] = $this->sendWelcomeMail($id,true,true);
+			$r1a[] = "%mail_preview%";	$r2a[] = $this->sendWelcomeMail($user_id,true,true);
 		} else {
 			$r1a[] = "%mail_preview%";	$r2a[] = "Ved å trykke \"Send e-post\" sendes en e-post til din e-postadresse\nmed instruksjoner for å opprette ditt eget passord.\nDette er nødvendig for å bekrefte din identitet.";		
 		}
 		return str_replace($r1a, $r2a, $this->resendwelcomemail_template);
 	}
 	
-	function resendWelcomeMail($id){
+	function resendWelcomeMailDo(){
 		global $login;
+
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 		
-		if ($login->hasPassword($id)) {
+		if ($login->hasPassword($user_id)) {
 			if ($this->isLoggedIn()) {
-				$this->redirect($this->generateURL("edituser"),"Brukeren har allerede opprettet passord.");
+				$this->redirect($this->generateURL('action=userOverview'),'Brukeren har allerede opprettet passord.');
 			} else {
-				$this->redirect('/',"Du har allerede opprettet passord.");		
+				$this->redirect('/','Du har allerede opprettet passord.');
 			}		
 		}
 	
-		$m = $this->members[$id];
 		if ($this->isLoggedIn()) {
 			if (!$this->allow_addmember) return $this->permissionDenied();
 		}
 	
-		$email = $this->sendWelcomeMail($id,true);
+		$email = $this->sendWelcomeMail($user_id,true);
 
 		if ($this->isLoggedIn()) {
-			$this->redirect($this->generateURL("edituser"),"Registrerings-epost er sendt til brukeren.");
+			$this->redirect($this->generateURL('action=userOverview',true),"Registrerings-epost er sendt til brukeren.");
 		} else {
 			$this->redirect('/',"En e-post er nå sendt til ".$email." med videre instruksjoner.");		
 		}
@@ -2762,52 +3093,45 @@ class memberlist_actions extends memberlist {
 
 	}
 	
-	function sendLoginDetailsForm($member){
+	function sendLoginDetails(){
 	
 		if (!$this->allow_editprofile) return $this->permissionDenied();
 
-		$m = $this->members[$member];
-
-		$url_post = ($this->useCoolUrls ? 
-			$this->generateURL(array("noprint=true","dosendlogindetails")) : 
-			$this->generateURL(array("noprint=true","medlem=$id","dosendlogindetails"))
-		);
-		$url_back = ($this->useCoolUrls ? 
-			$this->generateURL(array("edituser")) : 
-			$this->generateURL(array("medlem=$member","edituser"))
-		);
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 		
 		return '
-			<h3>'.$m->fullname.': Send innloggingsdetaljer</h3>
-			<form method="post action="'.$url_post.'">
-				Vil du sende medlemmets innlogginsdetaljer til '.$m->email.'?
+			<h3>'.$user_obj->fullname.': Send innloggingsdetaljer</h3>
+			<form method="post action="'.$this->generateURL('action=sendLoginDetailsDo').'">
+				Vil du sende medlemmets innlogginsdetaljer til '.$user_obj->email.'?
 				<br /><br />
 			
-				<input type="button" value="Avbryt" onclick="window.location=\''.$url_back.'\'" /> 
+				<input type="button" value="Avbryt" onclick="window.location=\''.$this->generateURL('action=userOverview',true).'\'" /> 
 				<input type="submit" value="Send" />
 			</form>
 		';
 		
 	}
 	
-	function sendLoginDetails($member){
+	function sendLoginDetailsDo(){
 		global $login;
+
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
+
 		if (!$this->allow_editprofile) return $this->permissionDenied();
-		$url_back = $this->generateURL(array("edituser"));
-		if (!$login->sendLoginDetails($member)) {
+		if (!$login->sendLoginDetails($user_id)) {
 			$this->redirect($url_back,'Medlemmet har ikke opprettet passord!','error');
 		}
-		$this->addToActivityLog("sendte innloggingsdetaljer til ".$this->makeMemberLink($m->ident));
-		$this->redirect($url_back,"Innlogginsdetaljer ble sendt til medlemmet!");		
+		$this->addToActivityLog("sendte innloggingsdetaljer til ".$this->makeMemberLink($user_id));
+		$this->redirect($this->generateURL('action=userOverview',true),"Innlogginsdetaljer ble sendt til medlemmet!");		
 	}
 	
-	function editMembershipTypeForm($member) {
+	function editMembershipType() {
 		if (!$this->allow_editmembershiptype) return $this->permissionDenied();
 		
-		$m = $this->members[$member];
-
-		$url_post = $this->generateURL(array("noprint=true","savemembershiptype"));
-		$url_back = $this->generateURL(array("edituser"));
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 
 		$inputs = "";
 		$res = $this->query("SELECT sid, description FROM $this->table_membershiptypes");
@@ -2815,7 +3139,7 @@ class memberlist_actions extends memberlist {
 			$ms = $row['sid'];
 			$description = $row['description'];
 			if (!empty($ms)) {
-				$d = ($ms == $m->memberstatus) ? " checked='checked'" : "";
+				$d = ($ms == $user_obj->memberstatus) ? " checked='checked'" : "";
 				$inputs .= " 
 					<input type='radio' name='medlemsstatus' id='medlemsstatus_$ms' value='$ms'$d />
 					<label for='medlemsstatus_$ms'>$description</label><br />
@@ -2824,49 +3148,50 @@ class memberlist_actions extends memberlist {
 		}
 		
 		return '
-			<h3>'.$m->fullname.': Medlemskapsstatus</h3>
-			<form method="post" action="'.$url_post.'">
+			<h3>'.$user_obj->fullname.': Medlemskapsstatus</h3>
+			<form method="post" action="'.$this->generateURL('action=saveMembershipType').'">
 				<p>
 					'.$inputs.'
 				</p>
 				<p>
-					<input type="button" value="Avbryt" onclick="window.location=\''.$url_back.'\'" /> 
+					<input type="button" value="Avbryt" onclick="window.location=\''.$this->generateURL('action=userOverview',true).'\'" /> 
 					<input type="submit" value="Lagre" />
 				</p>
 			</form>
 		';
 	}
 	
-	function saveMembershipType($member){
+	function saveMembershipType(){
 
 		if (!$this->allow_editmembershiptype) return $this->permissionDenied();
 
 		if (!isset($_POST['medlemsstatus'])) $this->fatalError("invalid input!");
 		$ms = $_POST['medlemsstatus'];
 		
-		
-		$oldms = $this->members[$member]->memberstatus;
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
+
+		$oldms = $user_obj->memberstatus;
 		if ($oldms != $ms){
-			$this->query("UPDATE $this->table_memberlist SET memberstatus='$ms' WHERE ident='$member' LIMIT 1");
-			$this->addToActivityLog("endret medlemskapsstatus for ".$this->members[$member]->fullname." fra $oldms til $ms.");
+			$this->query("UPDATE $this->table_memberlist SET memberstatus=\"$ms\" WHERE ident=".$user_id." LIMIT 1");
+			$this->addToActivityLog("endret medlemskapsstatus for ".$user_obj->fullname." fra $oldms til $ms.");
 		}
-		$this->redirect($this->generateURL("edituser",true));
+		$this->redirect($this->generateURL('action=userOverview',true));
 	}
 
-	function editRightsForm($member){
+	function editUserRights(){
 
 		if (!$this->allow_editrights) return $this->permissionDenied();
 
-		$m = $this->members[$member];
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 
-		$url_post = $this->generateURL(array("noprint=true","saverights"));
-		$url_back = $this->generateURL(array("edituser"));
 		$inputs = "";					
 		$res = $this->query("SELECT level, shortdesc, longdesc FROM $this->table_rights ORDER BY level");
 		while ($row = $res->fetch_assoc()) {
 			$level = $row['level'];
 			$shortdesc = stripslashes($row['shortdesc']);
-			$d =  ($level == $m->rights) ? " checked='checked'" : "";
+			$d =  ($level == $user_obj->rights) ? " checked='checked'" : "";
 			$inputs .= " 
 				<input type='radio' name='rettigheter' id='rettigheter$level' value='$level'$d />
 				<label for='rettigheter$level'>$level ($shortdesc)</label><br />
@@ -2874,103 +3199,89 @@ class memberlist_actions extends memberlist {
 		}
 		
 		return '
-			<h3>'.$m->fullname.': Tilgangsnivå</h3>
-			<form method="post" action="'.$url_post.'">
+			<h3>'.$user_obj->fullname.': Tilgangsnivå</h3>
+			<form method="post" action="'.$this->generateURL('action=saveUserRights').'">
 				<p>
 					'.$inputs.'
 				</p>
 				<p>
-					<input type="button" value="Avbryt" onclick="window.location=\''.$url_back.'\'" /> 
+					<input type="button" value="Avbryt" onclick="window.location=\''.$this->generateURL('action=userOverview',true).'\'" /> 
 					<input type="submit" value="Lagre" />
 				</p>
 			</form>
 		';
 	}
 
-	function saveRights($member){
+	function saveUserRights(){
 
 		if (!$this->allow_editrights) return $this->permissionDenied();
+
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 
 		if (!isset($_POST['rettigheter'])) $this->fatalError("invalid input!");
 		$rights = $_POST['rettigheter'];
 		if (!is_numeric($rights)){ $this->fatalError("invalid input .2"); }
-		$oldrights = $this->members[$member]->rights;
+		$oldrights = $user_obj->rights;
 		if ($oldrights != $rights){
-			$this->query("UPDATE $this->table_memberlist SET rights='$rights' WHERE ident='$member' LIMIT 1");
-			$this->addToActivityLog("endret tilgangsnivå for ".$this->members[$member]->fullname." fra $oldrights til $rights.");
+			$this->query("UPDATE $this->table_memberlist SET rights='$rights' WHERE ident='$user_id' LIMIT 1");
+			$this->addToActivityLog("endret tilgangsnivå for ".$user_obj->fullname." fra $oldrights til $rights.");
 		}
-		$this->redirect($this->generateURL("edituser",true));
+		$this->redirect($this->generateURL('action=userOverview',true));
 	}
 
-	function printFixRightsForm($id){
+	function fixRights(){
 
 		if (!$this->allow_editrights) return $this->permissionDenied();
 
-		$m = $this->members[$id];
-		if (!($this->myndighet_i($m->memberof))){ 
-			ErrorMessageAndExit("Manglende rettigheter til å arbeide med denne brukeren"); 
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
+
+		if (!($this->myndighet_i($user_obj->memberof))){ 
+			$this->fatalError("Manglende rettigheter til å arbeide med denne brukeren"); 
 		}
-		$r1a[0] = "%userid%";		$r2a[0] = $id;
-		$r1a[1] = "%name%";			$r2a[1] = $m->fullname;
-		$r1a[2] = "%referer%";		$r2a[2] = $_SERVER['HTTP_REFERER'];
-		$r1a[3] = "%posturl%";		$r2a[3] = ($this->useCoolUrls ? 
-			$this->generateURL(array("noprint=true","dofixrights")) :
-			$this->generateURL(array("noprint=true","dofixrights","medlem=$id"))
-		);
+		$r1a = array(); $r2a = array();
+		$r1a[] = "%userid%";		$r2a[] = $user_id;
+		$r1a[] = "%name%";			$r2a[] = $user_obj->fullname;
+		$r1a[] = "%referer%";		$r2a[] = $_SERVER['HTTP_REFERER'];
+		$r1a[] = "%posturl%";		$r2a[] = $this->generateURL('action=fixRightsDo');
 		return str_replace($r1a, $r2a, $this->fixrights_template);
 
 	}
 
-	function fixRights($id){
+	function fixRightsDo(){
+
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 
 		if (!$this->allow_editrights){
 			$this->permissionDenied();
 			return 0;
 		}
 		
-		$m = $this->members[$id];
-		if (!($this->myndighet_i($m->memberof))){ 
-			ErrorMessageAndExit("Manglende rettigheter til å arbeide med denne brukeren"); 
+		if (!($this->myndighet_i($user_obj->memberof))){ 
+			$this->fatalError("Manglende rettigheter til å arbeide med denne brukeren"); 
 		}
 	
-		$this->resetRights($id);
+		$this->resetRights($user_id);
 		
 		// Redirect
-		header("Location: ".($this->useCoolUrls ? 
-			$this->generateURL("edituser") :
-			$this->generateURL(array("medlem=$id","edituser"))
-		)."\n\n"); 
-		exit;
+		$this->redirect($this->generateURL('action=userOverview',true));
 
 	}
 
-	function isRover($member){
-		foreach ($this->members[$member]->memberof as $g){
-			if ($this->groups[$g]->kategori == "RO") return true;
-		}
-		return false;
-	}
-
-	function editTitleForm($member){
+	function editUserTitle(){
 
 		if (!$this->allow_edittitles){
 			$this->permissionDenied();
 			return 0;
 		}
 
-		$m = $this->members[$member];
-
-		$url_post = ($this->useCoolUrls ? 
-			$this->generateURL(array("noprint=true","savetitle")) : 
-			$this->generateURL(array("noprint=true","medlem=$id","savetitle"))
-		);
-		$url_back = ($this->useCoolUrls ? 
-			$this->generateURL(array("edituser")) : 
-			$this->generateURL(array("medlem=$id","edituser"))
-		);
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 
 		$kat = array();
-		foreach ($this->members[$member]->memberof as $g){
+		foreach ($user_obj->memberof as $g){
 			if (!in_array($this->groups[$g]->kategori,$kat)) $kat[] = $this->groups[$g]->kategori;
 		}
 		$whereQ = "kategori='".$kat[0]."'";
@@ -2995,7 +3306,7 @@ class memberlist_actions extends memberlist {
 		while ($row = $res->fetch_assoc()){
 			$id = $row['id'];
 			$caption = stripslashes($row['tittel']);
-			$selectList .= "<div><input type='radio' name='titulering' id='titulering$id' value='$id' ".(($row['tittel']==$m->tittel)?"checked='checked'":"")." />
+			$selectList .= "<div><input type='radio' name='titulering' id='titulering$id' value='$id' ".(($row['tittel']==$user_obj->tittel)?"checked='checked'":"")." />
 				<label for='titulering$id'>$caption</label></div>";
 
 		}
@@ -3003,19 +3314,22 @@ class memberlist_actions extends memberlist {
 				<input type='text' name='nytittelvalue' size='30'/></div>";
 		
 		return '
-			<h3>'.$m->fullname.': Rolle</h3>
-			<form method="post" action="'.$url_post.'">
+			<h3>'.$user_obj->fullname.': Rolle</h3>
+			<form method="post" action="'.$this->generateURL('action=saveUserTitle').'">
 				'.$selectList.'
 				<br />
-				<input type="button" value="Avbryt" onclick="window.location=\''.$url_back.'\'" /> 
+				<input type="button" value="Avbryt" onclick="window.location=\''.$this->generateURL('action=userOverview').'\'" /> 
 				<input type="submit" value="Lagre" />
 			</form>
 		';
 	}
 
-	function saveTitle($member){
+	function saveUserTitle(){
 
 		if (!$this->allow_edittitles) return $this->permissionDenied();
+
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 
 		if (!isset($_POST['titulering'])) $this->fatalError("invalid input!");
 		$rang = addslashes($_POST['titulering']);
@@ -3024,7 +3338,7 @@ class memberlist_actions extends memberlist {
 			$nytittel = addslashes($_POST['nytittelvalue']);
 			
 			$kat = array();
-			foreach ($this->members[$member]->memberof as $g){
+			foreach ($user_obj->memberof as $g){
 				if (!in_array($this->groups[$g]->kategori,$kat)) $kat[] = $this->groups[$g]->kategori;
 			}
 			$firstkat = $kat[0];
@@ -3048,41 +3362,35 @@ class memberlist_actions extends memberlist {
 		if (!is_numeric($rang)){ $this->fatalError("invalid input .2"); }
 
 		$this->setRang($member, $rang);
-		$this->redirect($this->generateURL("edituser"),"Rolle for medlemmet ble lagret");
+		$this->redirect($this->generateURL('action=userOverview',true),"Rolle for medlemmet ble lagret");
 	}
 
-	function foresatteTil($medlem){
-		return $this->members[$medlem]->guardians;
-	}
-
-	function foresattFor($foresatt){
-		return $this->members[$foresatt]->guarded_by;
-	}
-
-	function editUser($id){
+	function userOverview(){
 		global $login;
 
 		if (!$this->allow_viewmemberdetails) return $this->permissionDenied();
 
-		$m = $this->members[$id];
-		if (!$this->myndighet_i($m->memberof)) return $this->permissionDenied(); 
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 
-		$username = $login->getUsername($id);
+		if (!$this->myndighet_i($user_obj->memberof)) return $this->permissionDenied(); 
+
+		$username = $login->getUsername($user_id);
 		$hasUser = ($username != false);
-		$hasPass = $login->hasPassword($id);
-		$loginTime = $login->getLoginTime($id);
+		$hasPass = $login->hasPassword($user_id);
+		$loginTime = $login->getLoginTime($user_id);
 		
 		if ($hasUser) {
-			$info_username = $login->getUsername($id);
+			$info_username = $login->getUsername($user_id);
 		} else {
 			$info_username = "<em>ikke tildelt</em>";
 		}
 
 		$info_memberof = "";
-		if (count($m->memberof) == 0){ 
+		if (count($user_obj->memberof) == 0){ 
 			$info_memberof = "<i>Ingen grupper</i>";
 		} else {
-			foreach ($m->memberof as $g){
+			foreach ($user_obj->memberof as $g){
 				$info_memberof .= '<img src="'.$this->image_dir.'group5.gif" border="0" /> '.call_user_func($this->make_grouplink,$g).'<br />';
 			}
 		}
@@ -3094,23 +3402,23 @@ class memberlist_actions extends memberlist {
 		$groupListSelect .= "</select>\n";
 		
 		$info_pwd = $hasPass ? "Ja" : "Nei";
-		$info_profile = (($m->profilecreated == 1) ? "Opprettet" : "Ikke opprettet");
-		$info_tittel = $m->tittel;
+		$info_profile = (($user_obj->profilecreated == 1) ? "Opprettet" : "Ikke opprettet");
+		$info_tittel = $user_obj->tittel;
 	
-		$vervobj = new vervredigering();
-		$verv = $vervobj->vervForMember($id);
+		$vervobj = $this->vervredigeringInstance();
+		$verv = $vervobj->vervForMember($user_id);
 		$info_verv = ((count($verv) > 0) ? implode("<br />",$verv) : "<i>Ingen verv</i>");
 		unset($vervobj);
 
 		$info_foresatte = "";
-		$foresatte = $this->foresatteTil($id);
+		$foresatte = $this->foresatteTil($user_id);
 		foreach ($foresatte as $f){
 			$info_foresatte .= '<div style="background:url('.$this->image_dir.'person.gif) left no-repeat;padding-left:14px;"><a href="'.$this->generateCoolURL("/medlemmer/$f").'">'.$this->members[$f]->fullname.'</a></div>';	
 		}
 		if (empty($info_foresatte)) $info_foresatte = "<i>Ingen</i>";
 
 		$info_foresattil = "";
-		$barn = $this->foresattFor($id);
+		$barn = $this->foresattFor($user_id);
 		foreach ($barn as $f){
 			$info_foresattil .= '<div style="background:url('.$this->image_dir.'person.gif) left no-repeat;padding-left:14px;"><a href="'.$this->generateCoolURL("/medlemmer/$f").'">'.$this->members[$f]->fullname.'</a></div>';	
 		}
@@ -3119,7 +3427,7 @@ class memberlist_actions extends memberlist {
 		if (!$hasUser) {
 			$info_membershiptype = "<em>ikke bruker</em>";
 		} else {
-			$res2 = $this->query("SELECT description FROM $this->table_membershiptypes WHERE sid='$m->memberstatus'");
+			$res2 = $this->query("SELECT description FROM $this->table_membershiptypes WHERE sid='$user_obj->memberstatus'");
 			if ($res2->num_rows == 0) $info_membershiptype = "<em>Ukjent</em>";
 			else {
 				$row2 = $res2->fetch_assoc();
@@ -3127,8 +3435,8 @@ class memberlist_actions extends memberlist {
 			}
 		}
 				
-		if (count($m->memberof) > 0) {
-			$kat = $this->groups[$m->memberof[0]]->kategori;
+		if (count($user_obj->memberof) > 0) {
+			$kat = $this->groups[$user_obj->memberof[0]]->kategori;
 			if ($kat == 'SM' || $kat == 'SP') {
 			
 			} else {
@@ -3138,85 +3446,23 @@ class memberlist_actions extends memberlist {
 			$this->allow_editforesatte = false;		
 		}
 		
+		if ($this->login_identifier != $user_id){
+			$selectBox = $this->generateGroupSelectBox("nygruppe",!$this->allow_moveuserstononpatruljer,$user_obj->memberof);
 		
-		$url_viewprofile = ($this->useCoolUrls ? 
-			$this->generateURL("") : 
-			$this->generateURL("medlem=$id") 
-		);
-		$url_editprofile = ($this->useCoolUrls ? 
-			$this->generateURL("editprofile") : 
-			$this->generateURL(array("medlem=$id","editprofile")) 
-		);
-		$url_resendwelcomemail = ($this->useCoolUrls ? 
-			$this->generateURL("resendwelcomemail") :
-			$this->generateURL(array("medlem=$id","resendwelcomemail"))
-		);
-		$url_deletemember = ($this->useCoolUrls ? 
-			$this->generateURL("deleteuser") :
-			$this->generateURL(array("medlem=$id","deleteuser"))
-		);
-		$url_editmemberships = ($this->useCoolUrls ? 
-			$this->generateURL("editmemberships") :
-			$this->generateURL(array("medlem=$id","editmemberships"))
-		);
-		$url_titulering = ($this->useCoolUrls ? 
-			$this->generateURL("edittitle") :
-			$this->generateURL(array("medlem=$id","edittitle"))
-		);
-		$url_verv = ($this->useCoolUrls ? 
-			$this->generateRootURL("/lederverktoy/verv/") :
-			$this->generateURL(array("verv"))
-		);
-		$url_adjustrights = ($this->useCoolUrls ? 
-			$this->generateURL("editrights") :
-			$this->generateURL(array("medlem=$id","editrights"))
-		);
-		$url_assignusername = ($this->useCoolUrls ? 
-			$this->generateURL("assignusername") :
-			$this->generateURL(array("medlem=$id","assignusername"))
-		);
-		$url_releaseusername = ($this->useCoolUrls ? 
-			$this->generateURL("releaseusername") :
-			$this->generateURL(array("medlem=$id","releaseusername"))
-		);
-		$url_foresatte = ($this->useCoolUrls ? 
-			$this->generateURL("foresatte") :
-			$this->generateURL(array("medlem=$id","foresatte"))
-		);
-		$url_sendlogindetails = ($this->useCoolUrls ? 
-			$this->generateURL("sendlogindetails") :
-			$this->generateURL(array("medlem=$id","sendlogindetails"))
-		);
-		$url_editmembershiptype = ($this->useCoolUrls ? 
-			$this->generateURL("editmembershiptype") :
-			$this->generateURL(array("medlem=$id","editmembershiptype"))
-		);
-		
-		if ($this->login_identifier != $id){
-			$selectBox = $this->generateGroupSelectBox("nygruppe",!$this->allow_moveuserstononpatruljer,$m->memberof);
-			$url_moveuser = ($this->useCoolUrls ? 
-				$this->generateURL(array("membershipedit=move")) : 
-				$this->generateURL(array("medlem=$member","membershipedit=move"))
-			);
-			$url_stopall = ($this->useCoolUrls ? 
-				$this->generateURL(array("membershipedit=stoppalle")) : 
-				$this->generateURL(array("medlem=$member","membershipedit=stoppalle"))
-			);
-		
-			$memberof_admin = "
-				<form method='post' action='$url_moveuser'>
-					$selectBox <input type='submit' value='Flytt' />
+			$memberof_admin = '
+				<form method="post" action="'.$this->generateURL('action=moveUser').'">
+					'.$selectBox.' <input type="submit" value="Flytt" />
 				</form>
 
-				<form method='post' action='$url_stopall'>
-					<input type='submit' value='Avslutt medlemskap' />
+				<form method="post" action="'.$this->generateURL('action=stopAllMemberships').'">
+					<input type="submit" value="Avslutt medlemskap" />
 				</form>
-			";
+			';
 		} else {
 			$memberof_admin = "";
 		}
 	    
-		$output = "<h3>Brukerinnstillinger for ".$m->fullname."</h3>";
+		$output = "<h3>Brukerinnstillinger for ".$user_obj->fullname."</h3>";
         call_user_func(
             $this->add_to_breadcrumb,
             '<a href="'.$this->generateURL('edituser').'">Brukerinnstillinger</a>'
@@ -3226,18 +3472,18 @@ class memberlist_actions extends memberlist {
 	
 			$success = true;
 				
-			if (count($m->memberof) == 0) {
+			if (count($user_obj->memberof) == 0) {
 				$success = false;
 				if ($hasUser) {
 					$output .= $this->infoMessage('Denne personen har brukernavnet <strong>'.$username.'</strong>, 
 						men dette kan ikke lenger benyttes til å logge inn, fordi personen ikke er 
 						medlem av noen grupper. Du bør enten melde personen inn igjen eller frigjøre 
 						brukernavnet så andre kan benytte det.<br /><br /> 
-						<a href="'.$url_releaseusername.'">Frigjør brukernavn</a>', 2);
+						<a href="'.$this->generateURL('action=releaseUsername').'">Frigjør brukernavn</a>', 2);
 				} else {
 					$output .= $this->infoMessage('Denne personen har ikke lenger noen tilknytning til gruppen.
 						Dersom personen igjen tilknyttes gruppen kan du melde personen inn i en gruppe
-						i <a href="'.$url_editprofile.'">personens medlemsprofil</a>. Deretter kan 
+						i <a href="'.$this->generateURL('action=editUserProfile').'">personens medlemsprofil</a>. Deretter kan 
 						personen tildeles brukernavn igjen.', 2);				
 				}
 			} else {
@@ -3245,27 +3491,27 @@ class memberlist_actions extends memberlist {
 					$success = false;
 					$output .= $this->infoMessage('Denne personen har tilknytning til gruppen, men har ikke
 						fått tildelt et brukernavn til å logge inn på gruppens nettsider med.<br /><br /> 
-						<a href="'.$url_assignusername.'">Tildel brukernavn</a>', 2);
+						<a href="'.$this->generateURL('action=assignUsername').'">Tildel brukernavn</a>', 2);
 				}
 			}
 			if ($hasUser && !$hasPass) {
 				$success = false;
 				$output .= $this->infoMessage('Denne personen har fått tildelt et brukernavn, men har ikke
 					laget sitt eget passord. Du bør sjekke at e-postadressen 
-					<strong>'.$m->email.'</strong> er i bruk, og deretter sende registreringsmailen
+					<strong>'.$user_obj->email.'</strong> er i bruk, og deretter sende registreringsmailen
 					med instruksjoner om hvordan man lager passord på nytt:<br /><br /> 
-					<a href="'.$url_resendwelcomemail.'">Send registreringsmail på nytt</a>', 2);
+					<a href="'.$this->generateURL('action=resendWelcomeMail').'">Send registreringsmail på nytt</a>', 2);
 			}
-			if (empty($m->firstname) || empty($m->lastname) || empty($m->street) || empty($m->streetno) || empty($m->postno) || empty($m->city) || (empty($m->homephone) && empty($m->cellular)) ) {
+			if (empty($user_obj->firstname) || empty($user_obj->lastname) || empty($user_obj->street) || empty($user_obj->streetno) || empty($user_obj->postno) || empty($user_obj->city) || (empty($user_obj->homephone) && empty($user_obj->cellular)) ) {
 				$output .= $this->infoMessage('Kontaktopplysningene til denne personen er mangelfulle. 
 					Du kan oppdatere de i personens medlemsprofil:<br /><br /> 
-					<a href="'.$url_editprofile.'">Rediger medlemsprofil</a>', 2);
+					<a href="'.$this->generateURL('action=editUserProfile').'">Rediger medlemsprofil</a>', 2);
 			}
 			if ($this->allow_editforesatte && !count($foresatte)) {
 				$output .= $this->infoMessage('Denne personen er speider eller småspeider, men
 					har ingen registrerte foresatte. Alle speidere og småspeidere
 					bør være registrert med minst én foresatt.<br /><br /> 
-					<a href="'.$url_foresatte.'">Legg til en foresatt</a>', 2);
+					<a href="'.$this->generateURL('action=viewGuardians').'">Legg til en foresatt</a>', 2);
 			}
 			if ($hasUser && $hasPass) {
 				if (empty($loginTime)) {
@@ -3273,20 +3519,20 @@ class memberlist_actions extends memberlist {
 					$output .= $this->infoMessage('Denne personen har <strong>aldri</strong> logget 
 						inn på nettsiden. Du bør kanskje sjekke om personen har glemt sine 
 						innloggingsopplysninger.<br /><br />
-						<a href="'.$url_sendlogindetails.'">Send innloggingsopplysninger</a>', 2);				
+						<a href="'.$this->generateURL('action=sendLoginDetails').'">Send innloggingsopplysninger</a>', 2);				
 				} else if ((time()-$loginTime) > 86400*30*6) {
 					$months = round((time()-$loginTime)/(86400*30.5));
 					$output .= $this->infoMessage('Denne personen har ikke logget inn på nettsiden på
 						over <strong>'.$months.' måneder</strong>. Du bør kanskje sjekke om personen
 						har glemt sine innloggingsopplysninger.<br /><br />
-						<a href="'.$url_sendlogindetails.'">Send innloggingsopplysninger</a>', 1);
+						<a href="'.$this->generateURL('action=sendLoginDetails').'">Send innloggingsopplysninger</a>', 1);
 				}
 			}
 			if ($success) {
 				$output .= $this->infoMessage('Denne personen har fått tildelt brukernavn, aktivert det og 
 					logget inn på nettsiden.', 4);
             }
-			if ($this->login_identifier == $id){
+			if ($this->login_identifier == $user_id){
                 $output .= $this->infoMessage('
                     Dette er dine egne brukerinnstillinger. Det er noen begrensninger i hvilke 
                     innstillinger du kan endre for deg selv, siden brukerinnstillinger først og
@@ -3316,24 +3562,24 @@ class memberlist_actions extends memberlist {
 			Personen er medlem av: 
 			<div style="padding:10px;">'.$info_memberof.'</div>';
 		if ($this->allow_editmemberships) {
-			if ($this->login_identifier != $id){
+			if ($this->login_identifier != $user_id){
 				$output .= '
 					Flytt personen til en ny gruppe:<div style="font-size:80%;padding:10px;">(avslutter alle nåværende gruppemedlemskap)</div>
-					<form method="post" action="'.$url_moveuser.'" style="padding-left:10px;padding-bottom:10px;">
+					<form method="post" action="'.$this->generateURL('action=moveUser').'" style="padding-left:10px;padding-bottom:10px;">
 						'.$selectBox.' <input type="submit" value="Flytt" />
 					</form>
 					Avslutt medlemskap i 18. Bergen:<div style="font-size:80%;padding:10px;">
 					Dette frigjør også personens brukernavn! Hvis du ønsker at personen fortsatt skal 
 					kunne logge inn, må du i stedet flytte han/hun til gruppen «Permitterte og 
 					pensjonerte speidere».</div>
-					<form method="post" action="'.$url_stopall.'" style="padding-left:10px; padding-bottom:10px;">
+					<form method="post" action="'.$this->generateURL('action=stopAllMemberships').'" style="padding-left:10px; padding-bottom:10px;">
 						<input type="submit" value="Avslutt alle medlemskap" />
 					</form>
 					Andre endringer:
 					<div style="font-size:80%;padding:10px;">
 					Ønsker du å gjøre andre medlemskapsendringer, f.eks. legge til et 
 					nytt medlemskap i en gruppe uten å stoppe de nåværende, kan du gjøre
-					dette under «Medlemskap» på <a href="'.$url_editprofile.'">personens brukerprofil</a>.
+					dette under «Medlemskap» på <a href="'.$this->generateURL('action=editUserProfile').'">personens brukerprofil</a>.
 					</div>
 				';
 			}
@@ -3343,7 +3589,7 @@ class memberlist_actions extends memberlist {
 		<fieldset><legend><strong>Relasjoner</strong></legend>
 			<table width="100%"><tr>
 				<td valign="top" width="50%">
-					Foresatte'.($this->allow_editforesatte ? ' (<a href="'.$url_foresatte.'">Administrer</a>)':'').':
+					Foresatte'.($this->allow_editforesatte ? ' (<a href="'.$this->generateURL('action=viewGuardians').'">Administrer</a>)':'').':
 					<div style="padding:10px;">'.$info_foresatte.'</div>
 				</td><td valign="top">
 					Foresatt for:
@@ -3355,21 +3601,21 @@ class memberlist_actions extends memberlist {
 			<table width="100%">
 				<tr>
 					<td align="right">Brukernavn: </td>
-					<td>'.$info_username.' '.(($this->allow_addmember && $hasPass) ? '(<a href="'.$url_sendlogindetails.'">Send innloggingsopplysninger</a>)' : '').'</td>
+					<td>'.$info_username.' '.(($this->allow_addmember && $hasPass) ? '(<a href="'.$this->generateURL('action=sendLoginDetails').'">Send innloggingsopplysninger</a>)' : '').'</td>
 				</tr>
 				<tr>
 					<td align="right">Medlemskapstype: </td>
-					<td>'.(($hasUser && $this->allow_editmembershiptype) ? '<a href="'.$url_editmembershiptype.'" title="Klikk for å redigere">'.$info_membershiptype.'</a>' : $info_membershiptype).'</td>
+					<td>'.(($hasUser && $this->allow_editmembershiptype) ? '<a href="'.$this->generateURL('action=editMembershipType').'" title="Klikk for å redigere">'.$info_membershiptype.'</a>' : $info_membershiptype).'</td>
 					<td></td>
 				</tr>
 				<tr>
 					<td valign="top" align="right">Rolle:</td>
-					<td valign="top">'.($this->allow_edittitles ? '<a href="'.$url_titulering.'" title="Klikk for å redigere">'.$info_tittel.'</a>' : $info_tittel).'</td>
+					<td valign="top">'.($this->allow_edittitles ? '<a href="'.$this->generateURL('action=editUserTitle').'" title="Klikk for å redigere">'.$info_tittel.'</a>' : $info_tittel).'</td>
 					<td valign="top"></td>
 				</tr>
 				<tr>
 					<td valign="top" align="right">Tilgangsnivå: </td>
-					<td valign="top">'.($this->allow_editrights ? '<a href="'.$url_adjustrights.'" title="Klikk for å redigere">'.$m->rights.'</a>' : $m->rights).'</td>
+					<td valign="top">'.($this->allow_editrights ? '<a href="'.$this->generateURL('action=editUserRights').'" title="Klikk for å redigere">'.$user_obj->rights.'</a>' : $user_obj->rights).'</td>
 				</tr>
 			</table>
 		</fieldset>
@@ -3377,28 +3623,20 @@ class memberlist_actions extends memberlist {
 		return $output;
 	}
 	
-	function isForesatt($id){
-		$m = $this->members[$id];
-		foreach ($m->memberof as $g) {
-			if ($this->groups[$g]->kategori == "FO") return true;
-		}
-		return false;
-	}
-
-	function memberAdded($id){
+	function memberAdded(){
 
 		if (!$this->allow_addmember) return $this->permissionDenied();
 
-		$m = $this->members[$id];
-		$kat = $this->groups[$m->memberof[0]]->kategori;
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
+
+		$kat = $this->groups[$user_obj->memberof[0]]->kategori;
 		$pg = 0;
 		foreach ($this->groups as $g) {
 			if ($g->kategori == "FO") $pg = $g->id;
 		}
-		$url_assignusername = $this->generateURL("assignusername");
-		$url_addforesatt = $this->generateCoolURL("/grupper/".$pg,"addmember&foresattil=$id");
 		
-		$isForesatt = $this->isForesatt($id);
+		$isForesatt = $this->isForesatt($user_id);
 		return '
 			<h3>Personen er lagt til i medlemsregisteret</h3>
 			<p>
@@ -3412,31 +3650,40 @@ class memberlist_actions extends memberlist {
 			</p>
 			').'
 			<ul>
-				<li><a href="'.$url_assignusername.'">Opprette brukerkonto for '.$m->fullname.'</a></li>
-				'.($isForesatt ? '' : '<li><a href="'.$url_addforesatt.'">Registrere ny foresatt til '.$m->fullname.'</a></li>').'
+				<li>
+					<a href="'.$this->generateURL('action=assignUsername').'">
+						Opprette brukerkonto for '.$user_obj->fullname.'
+					</a>
+				</li>
+				'.($isForesatt ? '' : '
+					<li>
+						<a href="'.$this->generateCoolURL("/grupper/".$pg,"action=addMember&foresattil=$user_id").'">
+							Registrere ny foresatt til '.$user_obj->fullname.'
+						</a>
+					</li>
+				').'
 			</ul>			
 		';
 	}
 	
-	function releaseUsernameForm($id){
+	function releaseUsername(){
 		global $login;
 
 		if (!$this->allow_editprofile) return $this->permissionDenied();
 
-		$m = $this->members[$id];
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 		
-		$url_post = $this->generateURL(array("noprint=true","doreleaseusername"));
-
-		if (!$login->hasUsername($id))
+		if (!$login->hasUsername($user_id))
 			return $this->notSoFatalError("Brukernavnet er allerede frigjort!");
 		
-		if (count($m->memberof) > 0) {
-			return $this->notSoFatalError("For å frigjøre brukernavnet må du først avslutte alle medlemmets medlemskap. Medlemmet er fremdeles medlem av ".$this->listMemberships($id).".");
+		if (count($user_obj->memberof) > 0) {
+			return $this->notSoFatalError("For å frigjøre brukernavnet må du først avslutte alle medlemmets medlemskap. Medlemmet er fremdeles medlem av ".$this->listMemberships($user_id).".");
 		}
 		
 		return '
-			<h3>'.$m->fullname.': Frigjør brukernavn</h3>
-			<form method="post" action="$url_post">
+			<h3>'.$user_obj->fullname.': Frigjør brukernavn</h3>
+			<form method="post" action="'.$this->generateURL('releaseUsernameDo').'">
 				Bekreft frigjøring av brukernavn.
 				<br /><br />
 				<input type="submit" value="Bekreft" />
@@ -3445,47 +3692,58 @@ class memberlist_actions extends memberlist {
 		';
 	}
 	
-	function releaseUsername($user_id, $redir = true, $silent = false) {
+	function releaseUsernameDo($redirect = true, $silent = false) {
 		global $login;
 		if (!$this->allow_editprofile) return $this->permissionDenied();
-		$m = $this->members[$user_id];
-		if (count($m->memberof) > 0) return $this->permissionDenied();
+
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
+
 		if (!$this->isUser($user_id)) return $this->permissionDenied();
+		if (count($user_obj->memberof) > 0) return $this->permissionDenied();
 		
 		$username = $login->getUsername($user_id);
 		$login->releaseUsername($user_id);
-		if (!$silent) $this->addToActivityLog("frigjorde brukernavnet til ".$m->fullname." (".$username.")");		
-		if ($redir) $this->redirect($this->generateUrl("edituser"),"Frigjorde brukernavn");	
+		if (!$silent) $this->addToActivityLog("frigjorde brukernavnet til ".$user_obj->fullname." (".$username.")");		
+		if ($redirect) $this->redirect($this->generateUrl('action=userOverview'), 'Frigjorde brukernavnet');	
 	}
 
-	function assignUsername($id){
+	function assignUsername(){
 		global $login;
 
 		if (!$this->allow_addmember) return $this->permissionDenied();
 		
-		$m = $this->members[$id];
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 		
-		if ($login->hasUsername($id)) 
+		if ($login->hasUsername($user_id)) { 
 			return $this->notSoFatalError("Medlemmet er allerede tilknyttet en brukerkonto!");
+		}
 
-		$url_post = $this->generateURL(array("noprint=true","saveusername"));		
-		$email = $this->members[$id]->email;
-		$email = (isset($_GET['email']) ? $_GET['email'] : $email);
-		$username = (isset($_GET['username']) ? $_GET['username'] : "");
+		$email = $user_obj->email;
+		$username = '';
 		
-		if (isset($_GET['errors'])){
-			$errors = explode(",",$_GET['errors']);
+		if (isset($_SESSION['errors'])){		
+			$errors = $_SESSION['errors'];
+			$postdata = $_SESSION['postdata'];
+
+			$email = $postdata['email'];
+			$username = $postdata['username'];
+			
 			$errorS = "";
 			foreach ($errors as $e){
 				$errorS .= "<div>".$this->errorMessages[$e]."</div>";
 			}
+
+			unset($_SESSION['errors']);
+			unset($_SESSION['postdata']);
 		}
 
 		$output = '
-			<h3>'.$m->fullname.': Opprett brukerkonto</h3>';
+			<h3>'.$user_obj->fullname.': Opprett brukerkonto</h3>';
 		if (isset($errorS)) $output .= $this->notSoFatalError($errorS);
 		$output .= '
-			<form method="post" action="'.$url_post.'">
+			<form method="post" action="'.$this->generateURL('action=saveUsername').'">
 				<table>
 					<tr><td>E-post: </td><td><input type="text" name="email" value="'.$email.'" size="30" /> *</td></tr>
 					<tr><td>Brukernavn: </td><td><input type="text" name="username" value="'.$username.'" size="30" /> * </td></tr>
@@ -3501,14 +3759,15 @@ class memberlist_actions extends memberlist {
 		return $output;
 	}
 	
-	function saveUsername($id){
+	function saveUsername(){
 		global $login;
 		
 		if (!$this->allow_addmember) return $this->permissionDenied();
 
-		$m = $this->members[$id];
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 
-		if ($login->hasUsername($id)) 
+		if ($login->hasUsername($user_id)) 
 			return $this->notSoFatalError("Medlemmet er allerede tilknyttet en brukerkonto!");
 		
 		$errors = array();
@@ -3522,131 +3781,103 @@ class memberlist_actions extends memberlist {
 				array_push($errors,"no_username_entered"); 
 			} else { 
 				$username = $_POST["username"];
-				$errors = $login->assignUsername($id, $username);
+				$errors = $login->assignUsername($user_id, $username);
 			}
 		}
 		if (count($errors) > 0){
-			header("Location: ".($this->useCoolUrls ? 
-				$this->generateURL(array("assignusername","errors=".implode(",",$errors),"email=".urlencode($email),"username=".urlencode($username))) :
-				$this->generateURL(array("medlem=$id","assignusername","errors=".implode(",",$errors),"email=".urlencode($email),"username=".urlencode($username)))
-			));
-			exit();
+			$_SESSION['errors'] = array_unique($errors);
+			$_SESSION['postdata'] = $_POST;
+			$this->redirect($this->generateURL('action=assignUsername',true));
 		}
 
 		$this->query("
 			UPDATE $this->table_memberlist
 			SET email=\"$email\"
-			WHERE ident='$id'"
+			WHERE ident=$user_id"
 		);
 
-		$this->addToActivityLog("opprettet brukerkonto for <a href=\"".$this->generateURL("")."\">$m->fullname</a>");
+		$this->addToActivityLog("opprettet brukerkonto for <a href=\"".$this->generateURL('')."\">$user_obj->fullname</a>");
+		$this->logEvent('ACCOUNT_CREATED', $user_id);
 		
 		$this->reloadMemberlist(); // Last inn endringer
 
 		// Send velkomstmail
-		$this->sendWelcomeMail($id,false);
+		$this->sendWelcomeMail($user_id,false);
 		
-		$this->redirect($this->generateURL("usernameassigned"));
+		$this->redirect($this->generateURL('action=userOverview',true),'En epost har nå blitt sendt til medlemmet med instruksjoner for å logge inn på websiden.');
 	}
 
-	function usernameAssigned($id){
+	function viewGuardians(){
 
-		if (!$this->allow_addmember) return $this->permissionDenied();
-		
-		$m = $this->members[$id];
-		$kat = $this->groups[$m->memberof[0]]->kategori;
-		$pg = 0;
-		foreach ($this->groups as $g) {
-			if ($g->kategori == "FO") $pg = $g->id;
-		}
-		$url_addforesatt = $this->generateCoolURL("/grupper/".$pg,"addmember&foresattil=$id");
-		$isForesatt = $this->isForesatt($id);
-		
-		return '
-			<h3>'.$m->fullname.': Brukerkonto opprettet!</h3>
-			<p>
-				Vi har nå sendt en e-post til medlemmet med instruksjoner om hvordan han/hun kan logge inn på troppsportalen.
-			</p>
-			'.($isForesatt ? '':'
-			<p>
-				Nå er du i utgangspunktet ferdig, men du må gjerne knytte en foresatt til medlemmet.
-			</p>
-			<ul>
-				<li><a href="'.$url_addforesatt.'">Registrere ny foresatt</a></li>
-			</ul>').'
-			
-		';
-	}
-
-	function viewForesatte($id){
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 
 		if (!$this->allow_viewforesatte) return $this->permissionDenied();
 
-		$m = $this->members[$id];
 		//$kat = $this->groups[$m->memberof[0]]->kategori;
 		$pg = 0;
 		foreach ($this->groups as $g) {
 			if ($g->kategori == "FO") $pg = $g->id;
-		}
+		}	
 		
-		$url_addforesatt = $this->generateCoolURL("/grupper/".$pg,"addmember&foresattil=$id");
-		$url_post = $this->generateURL(array("noprint=true","saveforesatt"));
-		$url_back = $this->generateURL("edituser");
+		$foresatte = $this->foresatteTil($user_id);
 		
-		$foresatte = $this->foresatteTil($id);
-		
-		$output = "
-			<h3>$m->fullname: Foresatte</h3>
-			<ul class='custom_icons'>
-		";
+		$foresatteList = '';
 		foreach ($foresatte as $fi){
 			$f = $this->members[$fi];
 			$url_f = $this->generateCoolURL("/medlemmer/$fi");
-			$url_fjern = $this->generateURL("removeforesatt=$fi");
-			$output .= '<li class="'.$f->classname.'"><a href="'.$url_f.'">'.$f->fullname.'</a>'.($this->allow_editforesatte ? ' [<a href="'.$url_fjern.'">Fjern som foresatt</a>]':'').'</li>';
+			$url_fjern = $this->generateURL(array("action=removeGuardian","guardian_id=$fi"));
+			$foresatteList .= '<li class="'.$f->classname.'"><a href="'.$url_f.'">'.$f->fullname.'</a>'.($this->allow_editforesatte ? ' [<a href="'.$url_fjern.'">Fjern som foresatt</a>]':'').'</li>';
 		}
-		$output .= '</ul>';
-		$url_addexistingforesatt = ($this->useCoolUrls ? 
-			$this->generateURL("addforesatt") :
-			$this->generateURL(array("member=$id","addforesatt"))
-		);
+		
+		$output = '
+			<h3>'.$user_obj->fullname.': Foresatte</h3>
+			<ul class="custom_icons">
+				'.$foresatteList.'
+			</ul>
+		';
 		if ($this->allow_editforesatte){
-			$output .= '<img src="'.$this->image_dir.'medlemsliste/newuser.gif" alt="User" /> <a href="'.$url_addforesatt.'">Legg til nytt medlem som foresatt</a><br />
-				<img src="'.$this->image_dir.'medlemsliste/newuser.gif" alt="User" /> <a href="'.$url_addexistingforesatt.'">Legg til eksisterende medlem som foresatt</a>
+			$output .= '
+				<img src="'.$this->image_dir.'medlemsliste/newuser.gif" alt="User" /> 
+				<a href="'.$this->generateURL(array('action=addMember','foresattil='.$user_id)).'">Legg til nytt medlem som foresatt</a><br />
+				
+				<img src="'.$this->image_dir.'medlemsliste/newuser.gif" alt="User" /> 
+				<a href="'.$this->generateURL("action=addGuardian").'">Legg til eksisterende medlem som foresatt</a>
 			';
 		}
 		return $output;
 	}
 
-	function removeForesatt($member){
+	function removeGuardian(){
 
 		if (!$this->allow_editforesatte) return $this->permissionDenied();
+		
+		$guardian_id = intval($_GET['guardian_id']);
+		$user_id = $this->current_medlem;
+		
+		$this->deregisterGuardian($user_id, $guardian_id);
 
-		$foresattToBeRemoved = $_GET['removeforesatt'];
-		if (!$this->isUser($foresattToBeRemoved)) $this->fatalError("invalid input .81");
-		$this->query("DELETE FROM $this->table_guardians WHERE medlem='$member' AND foresatt='$foresattToBeRemoved' LIMIT 1");
-		$this->addToActivityLog("Fjernet foresatt, ".$this->members[$foresattToBeRemoved]->fullname.", for medlemmet ".$this->members[$member]->fullname);
-
-		$this->redirect($this->generateURL("foresatte"));
+		$this->redirect($this->generateURL('action=viewGuardians'));
 	}
 
-	function addForesattForm($id){
+	function addGuardian(){
 
 		if (!$this->allow_editforesatte) return $this->permissionDenied();
 
-		$m = $this->members[$id];
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
+
 		$fg = array();
 		foreach ($this->groups as $g) {
 			if ($g->kategori == "FO") $fg[] = $g->id;
 		}
 		
-		$options_list =  "<option value=\"0\">Velg person:</option>\n";
+		$options_list =  '<option value="0">Velg person:</option>';
 		foreach ($fg as $f){
 			$fobj = array();
 			foreach ($this->groups[$f]->members as $fi){
 				$f_me = $this->members[$fi];
 				$fobj[$f_me->ident] = $f_me->fullname;
-				//$options_list .= "<option value='$f->ident'>$f->fullname</option>\n";
 			}
 			asort($fobj); // Sort an array and maintain index association
 			$options_list .= "<optgroup label='".$this->groups[$f]->caption."'>\n";
@@ -3655,33 +3886,28 @@ class memberlist_actions extends memberlist {
 			}
 			$options_list .= "</optgroup>\n";
 		}
-		$url_post = $this->generateURL(array("noprint=true","saveforesatt"));
-		$url_back = $this->generateURL("edituser");
 		return '
-			<h3>'.$m->fullname.': Legg til foresatt</h3>
-			<form method="post" action="'.$url_post.'">
+			<h3>'.$user_obj->fullname.': Legg til foresatt</h3>
+			<form method="post" action="'.$this->generateURL('action=addGuardianDo').'">
 				<select name="nyforesatt">
 					'.$options_list.'
 				</select>
 				<br /><br />
-				<input type="button" value="Avbryt" onclick=\'window.location="$url_back"\' /> <input type="submit" value="Legg til" />
+				<input type="button" value="Avbryt" onclick=\'window.location="'.$this->generateURL('action=userOverview').'"\' /> 
+				<input type="submit" value="Legg til" />
 			</form>
 		';
 	}
 
-	function addForesatt($id){
+	function addGuardianDo(){
 
 		if (!$this->allow_editforesatte) return $this->permissionDenied();
 
-		$m = $this->members[$id];
-		$foresatte = $this->foresatteTil($id);
-		$nyforesatt = $_POST['nyforesatt'];
-		if (!$this->isUser($nyforesatt)) $this->fatalError("Personen du valgte eksisterer ikke!");
-		if (in_array($nyforesatt,$foresatte)) $this->fatalError("Personen du valgte er allerede registrert som foresatt til $m->fullname.");
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
 		
-		$this->addGuardian($id,$nyforesatt);
-		
-		$this->redirect($this->generateURL("edituser"));
+		$this->registerGuardian($user_id, $guardian_id);
+		$this->redirect($this->generateURL('action=viewGuardians'));
 		
 	}
 
@@ -3747,7 +3973,7 @@ class memberlist_actions extends memberlist {
 		$ident = $this->addMember($firstname,$middlename,$lastname,$gruppe);
 		
 		if (isset($_POST['foresattil'])){
-			$this->addGuardian($_POST['foresattil'], $ident);
+			$this->registerGuardian($_POST['foresattil'], $ident);
 		}
 		
 		$this->redirect($this->generateCoolURL("/medlemmer/$ident","memberadded"));
@@ -3814,7 +4040,7 @@ class memberlist_actions extends memberlist {
 
 		$g = $this->groups[$gruppe];
 
-		$vervObj = new vervredigering();
+		$vervObj = $this->vervredigeringInstance();
 		$nypeff = $_POST['nypeff'];
 		$peffverv = $vervObj->getVervBySlug('peff');
 		$assverv = $vervObj->getVervBySlug('ass');
@@ -3901,7 +4127,7 @@ class memberlist_actions extends memberlist {
 
 		$g = $this->groups[$gruppe];
 
-		$vervObj = new vervredigering();
+		$vervObj = $this->vervredigeringInstance();
 		$nyass = $_POST['nyass'];
 
 		$peffverv = $vervObj->getVervBySlug('peff');
@@ -3947,7 +4173,8 @@ class memberlist_actions extends memberlist {
 	    }
 	    return ($a->position < $b->position) ? -1 : 1;
 	}
-
+	
+	/*
 	function editGroupPositionsForm(){
 
 		if (!$this->allow_addgroup) return $this->permissionDenied();
@@ -3993,6 +4220,7 @@ class memberlist_actions extends memberlist {
 		else
 			$this->redirect($this->generateURL("editgrouppositions")); 
 	}
+	*/
 	
 	function addGroupForm(){
 
@@ -4190,6 +4418,8 @@ class memberlist_actions extends memberlist {
 		);
 		$id = $this->insert_id();
 
+		$this->logEvent('GROUP_CREATED', 0, $id);
+
 		// Redirect
 		$this->redirect($this->generateCoolURL("/$slug"),"Gruppen ble opprettet");
 	}
@@ -4199,7 +4429,7 @@ class memberlist_actions extends memberlist {
 		$gruppe = $this->groups[$id];
 		header("Content-Type: text/xml; charset=utf-8");
 		print "<data>\n";
-		$res = $this->query("SELECT bruker,startdate,enddate FROM $this->table_memberships WHERE gruppe='$id'");
+		$res = $this->query("SELECT bruker,startdate,enddate FROM $this->table_group_memberships WHERE gruppe='$id'");
 		while ($row = $res->fetch_assoc()){
 			$start = date("M j Y H:i:s",strtotime($row['startdate']));
 			$end = ($row['enddate'] == '0000-00-00') ? date("M j Y H:i:s",time()) : date("M j Y H:i:s",strtotime($row['enddate']));
@@ -4309,11 +4539,11 @@ class memberlist_actions extends memberlist {
 	
 		$gruppe = $this->groups[$id];
 		
-		$res = $this->query("SELECT COUNT(DISTINCT bruker) as member_count FROM $this->table_memberships WHERE gruppe='$id'");
+		$res = $this->query("SELECT COUNT(DISTINCT bruker) as member_count FROM $this->table_group_memberships WHERE gruppe='$id'");
 		$row = $res->fetch_assoc();
 		$member_count = $row['member_count'];
 
-		$res = $this->query("SELECT bruker,startdate FROM $this->table_memberships WHERE gruppe='$id' ORDER BY startdate LIMIT 1");
+		$res = $this->query("SELECT bruker,startdate FROM $this->table_group_memberships WHERE gruppe='$id' ORDER BY startdate LIMIT 1");
 		$first = $res->fetch_assoc();
 		$oldest = date("Y",strtotime($first['startdate']));
 
@@ -4349,45 +4579,125 @@ class memberlist_actions extends memberlist {
 	}
 
 	// Vis gruppe-side
-	function printGroupDetails($id){
-		
-		$gruppe = $this->groups[$id];	
+	function viewGroup(){
+	
+		$group_id = $this->current_gruppe;
+		$g = $this->getGroupById($group_id);	
+
 		$output = "";		
 		
+		$uids = $g['Users'];
+		$users = $this->getUserData($uids,array('Guardians','ProfileUrl','Title','ProfilePicture','FirstName'));
+		
 		$parents = array();
-		foreach ($this->groups[$id]->members as $m) {
-			foreach ($this->members[$m]->guardians as $g) {
-				$parents[] = $g;
+		foreach ($users as $u) {
+			foreach ($u['Guardians'] as $uid) {
+				$parents[] = $uid;
 			}
 		}
 		$parents = array_unique($parents);
-		$people_and_parents = array_merge($this->groups[$id]->members, $parents);
-		
-		$mailUrlMembers = $this->messageUrl."?recipients=".implode(",",$this->groups[$id]->members);		
+		$people_and_parents = array_merge($uids, $parents);
+				
+		$mailUrlMembers = $this->messageUrl."?recipients=".implode(",",$uids);		
 		$mailUrlParents = $this->messageUrl."?recipients=".implode(",",$parents);		
 		$mailUrlAll = $this->messageUrl."?recipients=".implode(",",$people_and_parents);		
 
 
-		$caption = $gruppe->caption;
-		if ($gruppe->kategori == "SP") $caption = 'Patruljen '.$caption;
-		else if ($gruppe->kategori == "RO") $caption = 'Roverpatruljen '.$caption;
+		$caption = $g['Caption'];
+		if ($g['Category'] == "SP") $caption = 'Patruljen '.$caption;
+		else if ($g['Category'] == "RO") $caption = 'Roverpatruljen '.$caption;
+
+
 				
 		$output .= '
 			<h3>'.$caption.'</h3>
 			
-			<div style="padding-top:10px;"><img src="/images/mail.gif" alt="Epost" /> <a href="'.$mailUrlMembers.'">Send en melding til gruppens medlemmer</a></div>
-			';
-			if (count($parents) > 0) {
+			<p class="hidefromprint">';
+				if (!empty($g['GroupPages'])) {
+					$output .= '
+					<a href="'.$g['GroupPages'].'" class="icn" 
+						style="background-image:url(/images/icns/world.png)">Patruljesider</a>
+					';
+				}
 				$output .= '
-					<div><img src="/images/mail.gif" alt="Epost" /> <a href="'.$mailUrlParents.'">Send en melding til gruppens foresatte</a></div>
-					<div><img src="/images/mail.gif" alt="Epost" /> <a href="'.$mailUrlAll.'">Send en melding til gruppens medlemmer og foresatte</a></div>
+				<a href="'.$this->generateURL('action=viewTimeline').'" class="icn" 
+					style="background-image:url(/images/icns/hourglass.png)">Tidslinje</a>
+				<a href="'.$this->generateURL('action=editGroupSettings').'" class="icn" 
+					style="background-image:url(/images/icns/wrench_orange.png)">Innstillinger</a>
 				';
+				if ($g['Category'] == "SP" || $g['Category'] == "RO"){				
+					if ($this->allow_editpeff || $this->allow_editass){
+					$output .= '
+					<a href="'.$this->generateURL('action=utnevnPeff').'" class="icn" 
+						style="background-image:url(/images/icns/star.png)">Utnevn ny peff</a>
+					<a href="'.$this->generateURL('action=utnevnAss').'" class="icn" 
+						style="background-image:url(/images/icns/star.png)">Utnevn ny ass</a>
+					';
+				}}
+				if ($this->allow_addmember){
+					$output .= '
+						<a href="'.$this->generateURL('action=addMember').'" class="icn" 
+							style="background-image:url(/images/icns/user_add.png)">Legg til nytt medlem</a>
+					';
+				}
+				$output .= '
+			</p>
+			<img src="/images/mail.gif" alt="Epost" /> Send mail til 
+			<a href="'.$mailUrlMembers.'">medlemmer</a>';
+			if (count($parents) > 0) {
+				$output .= ', <a href="'.$mailUrlParents.'">foresatte</a> eller <a href="'.$mailUrlAll.'">medlemmer og foresatte</a>';
 			}
 			$output .= '			
 			<ul>				
 		';
 		
 		$lang = $this->preferred_lang;
+		$output .= '
+		</ul>
+		';
+		$membercount = count($uids);
+		$output .= "<h4>$caption har for tiden $membercount medlemmer:</h4>";
+
+		if (isset($_GET['errors'])){
+			$errors = explode(",",$_GET['errors']);
+			$errorS = "";
+			foreach ($errors as $e){
+				$errorS .= "<div>".$this->errorMessages[$e]."</div>";
+			}
+			$output .= $this->notSoFatalError($errorS);
+		}
+		
+		$output .= "
+			<ul class='memberlist_imageview' style='padding-left:15px;'>
+		";
+		
+		foreach ($users as $u){			
+			$url_profile = $u['ProfileUrl'];
+			$verv = "<br /><span style=\"font-size: smaller;\">(".$u['Title'].")</span>";
+			$output .= '				
+				<li class="bildegalleri">
+
+					<div class="alpha-shadow noframe">
+						<div class="inner_div">
+							'.($this->isLoggedIn() ? '<a href="'.$url_profile.'">':'').
+							'<img src="'.$u['ProfilePicture']['SmallThumb'].'" style="width: 105px; height: 140px;" alt="'.$u['FirstName'].'" />'.
+							($this->isLoggedIn() ? '</a>':'').'
+						</div>
+					</div>
+					<div style="clear:both;font-size:small; text-align: center; width: 120px; height: 44px;">'.$u['FirstName'].$verv.'</div>
+					
+				</li>
+			';
+		}
+		$output .= "
+			</ul>
+		";
+		
+		
+		// Nyhetsbrev:
+		$output .= "<div style='clear:both;'><!-- --></div>";
+		$output .= "Medlemmene av denne gruppen mottar følgende nyhetsbrev:<br />";
+		$cnt = 0;
 		$res = $this->query("SELECT 
 				$this->table_pages.fullslug as uri,
 				$this->table_pageoptions.value as groups,
@@ -4404,244 +4714,155 @@ class memberlist_actions extends memberlist {
 				$this->table_pagelabels.lang='$lang'
 			"
 		);
-		if (!empty($gruppe->gruppesider)) {
-			$output .= '
-				<li><a href="'.$gruppe->gruppesider.'">Besøk gruppens egne nettsider</a></li>
-			';
-		}	
-		$output .= '
-			<li><a href="'.$this->generateURL("history").'">Gruppens historie</a> (beta!)</li>
-		</ul>
-		';
-		$tmp = array_unique($gruppe->members);
-		$membercount = count($tmp);
-		$output .= "<h4>$gruppe->caption har for tiden $membercount medlemmer:</h4>";
-
-		if (isset($_GET['errors'])){
-			$errors = explode(",",$_GET['errors']);
-			$errorS = "";
-			foreach ($errors as $e){
-				$errorS .= "<div>".$this->errorMessages[$e]."</div>";
-			}
-			$output .= $this->notSoFatalError($errorS);
-		}
-
-
-		if ($this->allow_addmember){
-			$output .= "<table>\n";
-			$output .= sprintf('
-				<tr>
-					<td><img src="%smedlemsliste/newuser.gif" alt="User" /></td>
-					<td><a href="%s"><i>Legg til nytt medlem</i></a></td>
-				</tr>',$this->image_dir,$this->generateURL("addmember")
-				);
-			$output .= "</table>\n";
-		}
-		
-		$output .= "
-			<ul class='memberlist_imageview' style='padding-left:15px;'>
-		";
-		
-		foreach ($tmp as $id){
-			$medlem = $this->members[$id];
-			
-			$url_profile = $this->generateCoolURL("/medlemmer/".$medlem->ident);
-			$url_edituser = $this->generateCoolURL("/medlemmer/".$medlem->ident,"edituser");
-			$img_user = $this->getProfileImage($id);
-			//$vervobj = new vervredigering();
-			//$verv = $vervobj->vervForMember($medlem->ident);
-			//$verv = ((count($verv) > 0) ? "<br /><span style=\"font-size: smaller;\">(".implode(", ",$verv).")</span>" : "");
-			//unset($vervobj);
-			//if (empty($verv)) {
-				$verv = "<br /><span style=\"font-size: smaller;\">(".$medlem->tittel.")</span>";
-			//}
-			$output .= '				
-				<li class="bildegalleri">
-
-					<div class="alpha-shadow noframe">
-						<div class="inner_div">
-							'.($this->isLoggedIn() ? '<a href="'.$url_profile.'">':'').
-							'<img src="'.$img_user.'" style="width: 105px; height: 140px;" alt="'.$medlem->firstname.'" />'.
-							($this->isLoggedIn() ? '</a>':'').'
-						</div>
-					</div>
-					<div style="clear:both;font-size:small; text-align: center; width: 120px; height: 44px;">'.$medlem->firstname.$verv.'</div>
-
-				</li>
-			';
-		}
-		$output .= "
-			</ul>
-		";
-		
-		$output .= "<div style='clear:both;'><!-- --></div>";
-		$output .= "Medlemmene av denne gruppen mottar følgende nyhetsbrev:<br />";
-		$cnt = 0;
 		while ($row = $res->fetch_assoc()) {
-			$g = $gruppe;
+			$tmp = $g;
 			do {
-				if (in_array($g->id,explode(",",$row['groups']))) {
+				if (in_array($tmp['Id'],explode(",",$row['groups']))) {
 					$cnt++;
 					$output .= '<img src="'.$this->image_dir.'mail.gif" alt="Mail" /> <a href="/'.$row['uri'].'">'.$row['caption'].'</a><br />';
 					break;
 				}
-				if ($g->parent == 0) break;
-				$g = $this->groups[$g->parent];
-				
-			} while ($g->parent != -1);
+				if ($tmp['ParentGroup'] == 0) break;
+				$tmp = $this->getGroupById($tmp['ParentGroup']);				
+
+			} while ($tmp['ParentGroup'] != 0);
 		}
 		if ($cnt == 0) $output .= "<em>Ingen</em>";
-		
 
-
-		if ($this->allow_editgroupsettings){
-			$output .= "<h4>Gruppeinnstillinger:</h4>";
-			
-			if (isset($_SESSION['errors'])){
-			
-				$errors = $_SESSION['errors'];
-				$errstr = "<ul>";
-				foreach ($_SESSION['errors'] as $s){
-					if (isset($this->errorMessages[$s]))
-						$errstr.= "<li>".$this->errorMessages[$s]."</li>";
-					else
-						$errstr.= "<li>$s</li>";				
-				}
-				$errstr .= "</ul>";
-				$output .= $this->notSoFatalError($errstr,array('logError'=>false,'customHeader'=>'Gruppeinnstillingene ble ikke lagret fordi:'));
-							
-				unset($_SESSION['errors']);
-				unset($_SESSION['postdata']);
-				
-			}
-			
-			$url_savegroupsettings = $this->generateURL(array("savegroupsettings","noprint=true"));
-			if ($gruppe->visgruppe == 0){ $skjulgruppe = "checked=\"checked\""; } else { $skjulgruppe = ""; }
-			$gruppenavn = $gruppe->caption;
-			$slug = $gruppe->slug;
-			$gruppesider = $gruppe->gruppesider;
-			
-			/*** TITULERING ***/
-			
-			$res = $this->query("
-				SELECT 
-					id, 
-					tittel, 
-					classname,
-					kategori
-				FROM 
-					$this->table_rang 
-				ORDER BY
-					position
-				"
-			);
-			$titulering = "<select name='def_rang'>
-				<option value='0'>Ikke sett</option>";
-			while ($row = $res->fetch_assoc()){
-				$id = $row['id'];
-				$caption = stripslashes($row['tittel']);
-				$titulering .= "<option value='$id' ".(($row['id']==$gruppe->defaultrang)?"selected='selected'":"").">$caption</option>";
-			}
-			$titulering .= "</select>";
-			
-			/*** TILGANG ***/
-					
-			$tilgang = "<select name='def_rights'>
-				<option value='0'>Ikke sett</option>";
-			$res = $this->query("SELECT level, shortdesc, longdesc FROM $this->table_rights ORDER BY level");
-			while ($row = $res->fetch_assoc()) {
-				$level = $row['level'];
-				$shortdesc = stripslashes($row['shortdesc']);
-				$tilgang .= "<option value='$level' ".(($level==$gruppe->defaultrights)?"selected='selected'":"").">$level: $shortdesc</option>";
-			}
-			$tilgang .= "</select>";
-		
-			/*** PARENT GROUP LIST ***/
-
-			$grouplist = $this->generateGroupSelectBox("parent_group",false,array(),$gruppe->parent,true);
-			
-			/*** KATEGORIER ***/
-
-			$res = $this->query("
-				SELECT id, caption
-				FROM $this->table_groupcats"
-			);
-			$kategorier = "<select name='kategori' id='kategori'>\n";
-			while ($row = $res->fetch_assoc()) {
-				$id = $row['id'];
-				$caption = $row['caption'];
-				$kategorier .= "<option value='$id' ".(($id==$gruppe->kategori)?"selected='selected'":"").">$caption ($id)</option>";
-			}
-			$kategorier .= "</select>";
-						
-			/*** PRINT FORM ***/
-			
-			if ($gruppe->kategori != "FO") {
-				$foresattstyle = "display:none";
-			} else {
-				$foresattstyle = "";
-			}
-
-			$output .= "
-				<form method='post' action='$url_savegroupsettings'>
-					<table class='skjema'>
-						<tr>
-							<td>Navn: </td>
-							<td><input type=\"text\" name=\"gruppenavn\" value=\"$gruppenavn\" size=\"40\" /></td>
-						</tr><tr>
-							<td>Adresse: </td>
-							<td>http://".$_SERVER['SERVER_NAME']."/".$this->coolUrlPrefix."/ <input type=\"text\" name=\"slug\" value=\"$slug\" size=\"20\" /></td>
-						</tr><tr>
-							<td>Nettsider: </td>
-							<td>http://".$_SERVER['SERVER_NAME']." <input type=\"text\" name=\"gruppesider\" value=\"$gruppesider\" size=\"20\" /></td>
-						</tr><tr>
-							<td>Undergruppe av: </td>
-							<td>$grouplist</td>
-						</tr><tr>
-							<td>Kategori:</td>
-							<td>$kategorier</td>
-						</tr><tr>
-							<td>Skjul gruppe:</td>
-							<td><input type=\"checkbox\" id=\"skjulgruppe\" name=\"skjulgruppe\" $skjulgruppe /></td>
-						</tr><tr>
-							<td>Default tilgangsnivå:</td>
-							<td>$tilgang</td>
-						</tr><tr>
-							<td>Default rolle:</td>
-							<td>$titulering</td>
-						</tr>
-					</table>
-					<br />
-					<input type=\"submit\" value=\"Lagre\" />
-				</form>
-			";
-			
-		}
-		
-		
-		if ($gruppe->kategori == "SP" || $gruppe->kategori == "RO"){
-			
-			if ($this->allow_editpeff || $this->allow_editass){
-	
-				$output .= "
-					<h4>Patruljeledelse:</h4>
-					<ul class='custom_icons'>
-				";
-				if ($this->allow_editpeff) $output .= "
-					<li class='star'>
-						<a href=\"".$this->generateURL("editpeff")."\">Utnevn ny peff</a>
-					</li>";
-				if ($gruppe->kategori == "SP" && $this->allow_editass) $output .= "
-					<li class='star'>
-						<a href=\"".$this->generateURL("editass")."\">Utnevn ny ass</a>
-					</li>";
-				$output .= "</ul>\n";
-			
-			}
-
-		}
 		return $output;
+		
+	}
+	
+	function editGroupSettings() {
 
+		$group_id = $this->current_gruppe;
+		$g = $this->getGroupById($group_id);	
+
+		if (!$this->allow_editgroupsettings){
+			return $this->permissionDenied();
+		}
+		$output .= "<h4>Gruppeinnstillinger:</h4>";
+		
+		if (isset($_SESSION['errors'])){
+		
+			$errors = $_SESSION['errors'];
+			$errstr = "<ul>";
+			foreach ($_SESSION['errors'] as $s){
+				if (isset($this->errorMessages[$s]))
+					$errstr.= "<li>".$this->errorMessages[$s]."</li>";
+				else
+					$errstr.= "<li>$s</li>";				
+			}
+			$errstr .= "</ul>";
+			$output .= $this->notSoFatalError($errstr,array('logError'=>false,'customHeader'=>'Gruppeinnstillingene ble ikke lagret fordi:'));
+						
+			unset($_SESSION['errors']);
+			unset($_SESSION['postdata']);
+			
+		}
+		
+		$url_savegroupsettings = $this->generateURL(array("savegroupsettings","noprint=true"));
+		if ($g['Visible'] == 0){ $skjulgruppe = "checked=\"checked\""; } else { $skjulgruppe = ""; }
+		$gruppenavn = $g['Caption'];
+		$slug = $g['Slug'];
+		$gruppesider = $g['GroupPages'];
+		
+		/*** TITULERING ***/
+		
+		$res = $this->query("
+			SELECT 
+				id, 
+				tittel, 
+				classname,
+				kategori
+			FROM 
+				$this->table_rang 
+			ORDER BY
+				position
+			"
+		);
+		$titulering = "<select name='def_rang'>
+			<option value='0'>Ikke sett</option>";
+		while ($row = $res->fetch_assoc()){
+			$id = $row['id'];
+			$caption = stripslashes($row['tittel']);
+			$titulering .= "<option value='$id' ".(($row['id']==$g['DefaultRang'])?"selected='selected'":"").">$caption</option>";
+		}
+		$titulering .= "</select>";
+		
+		/*** TILGANG ***/
+				
+		$tilgang = "<select name='def_rights'>
+			<option value='0'>Ikke sett</option>";
+		$res = $this->query("SELECT level, shortdesc, longdesc FROM $this->table_rights ORDER BY level");
+		while ($row = $res->fetch_assoc()) {
+			$level = $row['level'];
+			$shortdesc = stripslashes($row['shortdesc']);
+			$tilgang .= "<option value='$level' ".(($level==$g['DefaultRights'])?"selected='selected'":"").">$level: $shortdesc</option>";
+		}
+		$tilgang .= "</select>";
+	
+		/*** PARENT GROUP LIST ***/
+
+		$grouplist = $this->generateGroupSelectBox("parent_group",false,array(),$g['ParentGroup'],true);
+		
+		/*** KATEGORIER ***/
+
+		$res = $this->query("
+			SELECT id, caption
+			FROM $this->table_groupcats"
+		);
+		$kategorier = "<select name='kategori' id='kategori'>\n";
+		while ($row = $res->fetch_assoc()) {
+			$id = $row['id'];
+			$caption = $row['caption'];
+			$kategorier .= "<option value='$id' ".(($id==$g['Category'])?"selected='selected'":"").">$caption ($id)</option>";
+		}
+		$kategorier .= "</select>";
+					
+		/*** PRINT FORM ***/
+		
+		if ($g['Category'] != "FO") {
+			$foresattstyle = "display:none";
+		} else {
+			$foresattstyle = "";
+		}
+
+		$output .= "
+			<form method='post' action='$url_savegroupsettings'>
+				<table class='skjema'>
+					<tr>
+						<td>Navn: </td>
+						<td><input type=\"text\" name=\"gruppenavn\" value=\"$gruppenavn\" size=\"40\" /></td>
+					</tr><tr>
+						<td>Adresse: </td>
+						<td>http://".$_SERVER['SERVER_NAME']."/".$this->coolUrlPrefix."/ <input type=\"text\" name=\"slug\" value=\"$slug\" size=\"20\" /></td>
+					</tr><tr>
+						<td>Nettsider: </td>
+						<td>http://".$_SERVER['SERVER_NAME']." <input type=\"text\" name=\"gruppesider\" value=\"$gruppesider\" size=\"20\" /></td>
+					</tr><tr>
+						<td>Undergruppe av: </td>
+						<td>$grouplist</td>
+					</tr><tr>
+						<td>Kategori:</td>
+						<td>$kategorier</td>
+					</tr><tr>
+						<td>Skjul gruppe:</td>
+						<td><input type=\"checkbox\" id=\"skjulgruppe\" name=\"skjulgruppe\" $skjulgruppe /></td>
+					</tr><tr>
+						<td>Default tilgangsnivå:</td>
+						<td>$tilgang</td>
+					</tr><tr>
+						<td>Default rolle:</td>
+						<td>$titulering</td>
+					</tr>
+				</table>
+				<br />
+				<input type=\"submit\" value=\"Lagre\" />
+			</form>
+		";		
+		
+		return $output;
 	}
 
 	// Lagre gruppeinnstillinger
@@ -4715,26 +4936,29 @@ class memberlist_actions extends memberlist {
 	############################################################################################################################
 	*/	
 
-	function startMembership($medlem, $gruppe, $silent = false){
+	function startMembership($user_id, $group_id, $silent = false){
 
 		if (!$this->allow_editmemberships){
 			$this->permissionDenied();
 			return 0;
 		}
-
-		if (!$this->isGroup($gruppe)) $this->fatalError("Gruppen eksisterer ikke!");
-		if (!$this->isUser($medlem)) $this->fatalError("Brukeren eksisterer ikke!");
-		$this->query("INSERT INTO $this->table_memberships (bruker,gruppe,startdate) ".
-			"VALUES ('$medlem','$gruppe',CURDATE());");
+		$user_id = intval($user_id);
+		$group_id = intval($group_id);
+		if (!$this->isGroup($group_id)) $this->fatalError("Gruppen eksisterer ikke!");
+		if (!$this->isUser($user_id)) $this->fatalError("Brukeren eksisterer ikke!");
+		$this->query("INSERT INTO $this->table_group_memberships (bruker,gruppe,startdate) ".
+			"VALUES ($user_id,$group_id,CURDATE());");
 		$lastid = $this->insert_id();
-		if (!$silent) $this->addToActivityLog("startet medlemskap i ".$this->groups[$gruppe]->caption." for ".$this->makeMemberLink($medlem).".");
-		
-		if ($this->members[$medlem]->rights < $this->groups[$gruppe]->defaultrights){
-			$this->setRights($medlem,$this->groups[$gruppe]->defaultrights);
+		if (!$silent) {
+			$this->addToActivityLog("startet medlemskap i ".$this->groups[$group_id]->caption." for ".$this->makeMemberLink($user_id).".");
+			$this->logEvent('USER_JOINED_GROUP', $user_id, $group_id);
+		}
+		if ($this->members[$user_id]->rights < $this->groups[$group_id]->defaultrights){
+			$this->setRights($user_id,$this->groups[$group_id]->defaultrights);
 		}
 		
-		if ($this->groups[$gruppe]->defaultrang > 0){
-			$this->setRang($medlem,$this->groups[$gruppe]->defaultrang);
+		if ($this->groups[$group_id]->defaultrang > 0){
+			$this->setRang($user_id,$this->groups[$group_id]->defaultrang);
 		}
 
 		return $lastid;
@@ -4759,15 +4983,17 @@ class memberlist_actions extends memberlist {
 			if ($res->num_rows != 1){ $this->fatalError("Fant ikke gruppen!"); }
 			$row = $res->fetch_assoc();
 			$group_name = $row['caption'];
-			$this->query("UPDATE $this->table_memberships SET enddate=CURDATE() WHERE bruker=$user_id AND gruppe=$group_id AND enddate='0000-00-00'");
+			$this->query("UPDATE $this->table_group_memberships SET enddate=CURDATE() WHERE bruker=$user_id AND gruppe=$group_id AND enddate='0000-00-00'");
             if ($this->affected_rows() != 1) {
                 //$this->fatalError("Klarte ikke å avslutte medlemskap i $group_name!");
                 // Medlemsskapet kan allerede være avsluttet....
             }
-			if (!$silent) $this->addToActivityLog("avsluttet medlemskap i $group_name for ".$this->makeMemberLink($user_id).".");
-		
+			if (!$silent) {
+				$this->addToActivityLog("avsluttet medlemskap i $group_name for ".$this->makeMemberLink($user_id).".");
+				$this->logEvent('USER_LEFT_GROUP', $user_id, $group_id);
+			}
 		} else { 					// (B) Stop the membership $membership_id
-			$res = $this->query("SELECT bruker,gruppe FROM $this->table_memberships WHERE id=$membership_id");
+			$res = $this->query("SELECT bruker,gruppe FROM $this->table_group_memberships WHERE id=$membership_id");
 			if ($res->num_rows != 1){ $this->fatalError("Fant ikke medlemskapet!"); }
 			$row = $res->fetch_assoc();
 			$user_id = intval($row['bruker']);
@@ -4775,13 +5001,16 @@ class memberlist_actions extends memberlist {
 			$res = $this->query("SELECT caption FROM $this->table_groups WHERE id=$group_id");
 			$row = $res->fetch_assoc();
 			$group_name = $row['caption'];
-			$this->query("UPDATE $this->table_memberships SET enddate=CURDATE() WHERE id=$membership_id");
-			if (!$silent) $this->addToActivityLog("avsluttet medlemskap i $group_name for ".$this->makeMemberLink($user_id).".");
+			$this->query("UPDATE $this->table_group_memberships SET enddate=CURDATE() WHERE id=$membership_id");
+			if (!$silent) {
+				$this->addToActivityLog("avsluttet medlemskap i $group_name for ".$this->makeMemberLink($user_id).".");
+				$this->logEvent('USER_LEFT_GROUP', $user_id, $group_id);
+			}
 		}
 		$isLeader = $this->isGroupLeader($user_id);
 		if ($isLeader != 0){
 			if ($isLeader['group'] == $group_id){
-				$vervObj = new vervredigering();
+				$vervObj = $this->vervredigeringInstance();
 				if ($isLeader['tittel'] == "peff"){
 					$vervObj->stoppPeffVerv($user_id, $group_id);
 				} else if ($isLeader['tittel'] == "ass"){
@@ -4796,12 +5025,12 @@ class memberlist_actions extends memberlist {
 			"SELECT 
 				$this->table_groups.id as groupid, 
 				$this->table_groups.caption as groupcaption, 
-				$this->table_memberships.startdate as membershipstart, 
-				$this->table_memberships.enddate as membershipend
+				$this->table_group_memberships.startdate as membershipstart, 
+				$this->table_group_memberships.enddate as membershipend
 			FROM 
-				$this->table_memberships, $this->table_groups 
-			WHERE $this->table_memberships.id='$id'
-				AND $this->table_memberships.gruppe=$this->table_groups.id"
+				$this->table_group_memberships, $this->table_groups 
+			WHERE $this->table_group_memberships.id='$id'
+				AND $this->table_group_memberships.gruppe=$this->table_groups.id"
 		);
 		if ($res->num_rows != 1){
 			$this->fatalError("Ugyldig inn-data!");
@@ -4814,7 +5043,7 @@ class memberlist_actions extends memberlist {
 
 	function validateMembershipRelation($member,$id){
 		// Sjekk at vi har fått en gyldig id, og at medlemskapet tilhører brukeren vi har klarert redigering for
-		$res = $this->query("SELECT bruker,gruppe FROM $this->table_memberships WHERE id='$id'");
+		$res = $this->query("SELECT bruker,gruppe FROM $this->table_group_memberships WHERE id='$id'");
 		if ($res->num_rows != 1) return false;
 		$row = $res->fetch_assoc();
 		if ($row['bruker'] != $this->current_medlem) return false;
@@ -4822,8 +5051,8 @@ class memberlist_actions extends memberlist {
 	}
 
 	function groupCaptionFromMembership($id){
-		$rs = $this->query("SELECT gruppe FROM $this->table_memberships WHERE id='$id'");
-		if ($rs->num_rows != 1) ErrorMessageAndExit("Ugyldig inn-data!");
+		$rs = $this->query("SELECT gruppe FROM $this->table_group_memberships WHERE id='$id'");
+		if ($rs->num_rows != 1) $this->fatalError("Ugyldig inn-data!");
 		$row = $rs->fetch_assoc();
 		return $this->groups[$row['gruppe']]->caption;
 	}
@@ -4859,7 +5088,7 @@ class memberlist_actions extends memberlist {
 		$m = $this->members[$user_id];
 
 		// Stopp alle patruljeverv (peff, ass) hvis eksisterende
-		$vervObj = new vervredigering();
+		$vervObj = $this->vervredigeringInstance();
 		$id = $vervObj->stoppAllePatruljeVerv($user_id);
 		unset($vervObj);
 
@@ -4873,7 +5102,7 @@ class memberlist_actions extends memberlist {
 		$this->resetRights($user_id, true);
 		
 		// Frigjør brukernavn
-		$this->releaseUsername($user_id, false);
+		$this->releaseUsernameDo(false,true);
 
 		$this->addToActivityLog("avsluttet alle medlemskap og frigjorde brukernavnet til ".$this->makeMemberLink($user_id).".");
 
@@ -4925,7 +5154,7 @@ class memberlist_actions extends memberlist {
 		if (!$this->allow_editmemberships) return $this->permissionDenied();
 		
 		// Sjekk at vi har fått en gyldig id, og at medlemskapet tilhører brukeren vi har klarert redigering for
-		$res = $this->query("SELECT bruker,gruppe FROM $this->table_memberships WHERE id='$id'");
+		$res = $this->query("SELECT bruker,gruppe FROM $this->table_group_memberships WHERE id='$id'");
 		if ($res->num_rows != 1) $this->fatalError("Ugyldig inn-data 7.1!");
 		$row = $res->fetch_assoc();
 		if ($row['bruker'] != $this->current_medlem) $this->fatalError("Ugyldig inn-data 7.2!");
@@ -4934,63 +5163,67 @@ class memberlist_actions extends memberlist {
 		$medlem = $this->members[$this->current_medlem]->fullname;
 
 		// Stopp alle patruljeverv i gruppen (peff, ass) hvis eksisterende
-		$vervObj = new vervredigering();
+		$vervObj = $this->vervredigeringInstance();
 		$vervObj->stoppAllePatruljeVerv($this->current_medlem,$row['gruppe']);
 		unset($vervObj);
 
-		$this->query("DELETE FROM $this->table_memberships WHERE id='$id'");
+		$this->query("DELETE FROM $this->table_group_memberships WHERE id='$id'");
 		$this->addToActivityLog("slettet medlemskap i $gruppenavn for ".$this->makeMemberLink($medlem).".");
 	}
 
-	function moveMemberForm($id){
+	function moveUser(){
 		
 		if (!$this->allow_addcurrentmembership) return $this->permissionDenied();
+
+		$user_id = $this->current_medlem;
 
 		if (!isset($_POST['nygruppe'])){ $this->fatalError("Ingen gruppe spesifisert!"); }
 		if (!$this->isGroup($_POST['nygruppe'])){ $this->fatalError("Gruppen eksisterer ikke!"); }
 		$ny_gruppe = $_POST['nygruppe'];
 
-		$url_post = $this->generateURL(array("noprint=true","membershipsave=move"));
-		$url_back = $this->generateURL(array("editmemberships")); 
+		$url_post = $this->generateURL('action=moveUserDo');
+		$url_back = $this->generateURL('action=userOverview'); 
 
 		return '
-			<h3>'.$this->members[$id]->fullname.': Medlemskap</h3>
+			<h3>'.$this->members[$user_id]->fullname.': Medlemskap</h3>
 			<form method="post" action="'.$url_post.'">
 				<input type="hidden" name="nygruppe" value="'.$ny_gruppe.'" />
-				Er du sikker på at du vil flytte <strong>'.$this->members[$id]->fullname.'</strong> til 
+				Er du sikker på at du vil flytte <strong>'.$this->members[$user_id]->fullname.'</strong> til 
 				<strong>'.$this->groups[$ny_gruppe]->caption.'</strong>?<br /> 
-				Nåværende medlemskap i '.$this->listMemberships($id).' blir avsluttet.<br /><br />
+				Nåværende medlemskap i <strong>'.$this->listMemberships($user_id).'</strong> blir avsluttet.<br /><br />
 				
 				<input type="submit" value="     Ja      " /> 
-				<input type="button" value="     Nei      " onclick="window.location=\''.$url_back.'\'" /> 
+				<input type="button" value="     Nei      " onclick=\'window.location="'.$url_back.'"\' /> 
 			</form>
 		';
 	
 	}
 	
-	function moveMember($id){
+	function moveUserDo(){
 
 		if (!$this->allow_addcurrentmembership) return $this->permissionDenied();
+
+		$user_id = $this->current_medlem;
 
 		if (!$this->isGroup($_POST['nygruppe'])){ $this->fatalError("Gruppen eksisterer ikke!"); }
 		$ny_gruppe = $_POST['nygruppe'];
 		$grpcaption = $this->groups[$ny_gruppe]->caption;
 		
-		$m = $this->members[$id];	
+		$m = $this->members[$user_id];	
 		$memofstr = array();
 		foreach ($m->memberof as $i){
 			$memofstr[] = $this->groups[$i]->caption;
-			$this->stopMembership(0, $m->ident, $i, true);
+			$this->stopMembership(0, $m->ident, $i);
 		}
 		$memofstr = implode(", ",$memofstr);
-		$this->startMembership($m->ident,$ny_gruppe, true);
+		$this->startMembership($m->ident,$ny_gruppe);
 		$this->reloadMemberlist();
 		$this->resetRights($m->ident, true);
 		$this->resetMemberStatus($m->ident, true);
 		
-		$this->addToActivityLog("flyttet ".$this->makeMemberLink($id)." fra ".$memofstr." til ".$grpcaption);
+		$this->addToActivityLog("flyttet ".$this->makeMemberLink($user_id)." fra ".$memofstr." til ".$grpcaption);
 
-		$this->redirect($this->generateURL("edituser"),"Medlemmet ble flyttet til $grpcaption!");
+		$this->redirect($this->generateURL('action=userOverview'),"Medlemmet ble flyttet til $grpcaption!");
 	}
 
 	
@@ -5052,8 +5285,8 @@ class memberlist_actions extends memberlist {
 			}
 			$id = $this->startMembership($member, $gruppe);
 		} else {
-			$id = $this->startMembership($member, $gruppe);
-			$this->stopMembership($id);	
+			$id = $this->startMembership($member, $gruppe, true);
+			$this->stopMembership($id, 0, 0, true);	
 		}
 		return $id;
 	}
@@ -5135,11 +5368,11 @@ class memberlist_actions extends memberlist {
 				$this->fatalError("Medlemskapet kan ikke slutte før det begynner!");
 			}
 			
-			$this->query("UPDATE $this->table_memberships SET startdate='$fra', enddate='$til' WHERE id='$id'");
+			$this->query("UPDATE $this->table_group_memberships SET startdate='$fra', enddate='$til' WHERE id='$id'");
 		
 		} else {
 		
-			$this->query("UPDATE $this->table_memberships SET startdate='$fra' WHERE id='$id'");
+			$this->query("UPDATE $this->table_group_memberships SET startdate='$fra' WHERE id='$id'");
 			
 		}
 	}
@@ -5179,13 +5412,15 @@ class memberlist_actions extends memberlist {
 	function makeStopMembership($id) {
 
 		$medlem = $this->current_medlem;
+		
+		$this->stopMembership($id);
 
-		if ($id == -1){
-			$this->query("UPDATE $this->table_memberships SET enddate=CURDATE() WHERE bruker=$medlem AND til=0");
+		/*if ($id == -1){
+			$this->query("UPDATE $this->table_group_memberships SET enddate=CURDATE() WHERE bruker=$medlem AND til=0");
 			$this->addToActivityLog("avsluttet alle medlemskap for ".$this->members[$medlem]->fullname.".");
 		} else {
 			if (!is_numeric($id)) $this->fatalError("membershipid not int");
-			$res = $this->query("SELECT bruker,gruppe,enddate FROM $this->table_memberships WHERE id='$id'");
+			$res = $this->query("SELECT bruker,gruppe,enddate FROM $this->table_group_memberships WHERE id='$id'");
 			if ($res->num_rows != 1){ $this->fatalError("Fant ikke medlemskapet!"); }
 			$row = $res->fetch_assoc();
 			$medlem = $row['bruker'];
@@ -5193,7 +5428,7 @@ class memberlist_actions extends memberlist {
 			if ($row['enddate'] != '0000-00-00') {
 				$this->fatalError("Medlemskapet i $gruppe er allerede avsluttet.");
 			}
-			$this->query("UPDATE $this->table_memberships SET enddate=CURDATE() WHERE id=$id");
+			$this->query("UPDATE $this->table_group_memberships SET enddate=CURDATE() WHERE id=$id");
 			$this->addToActivityLog("avsluttet medlemskap i $gruppe for ".$this->members[$medlem]->fullname.".");
 		}
 		
@@ -5201,7 +5436,7 @@ class memberlist_actions extends memberlist {
 		if ($isLeader != 0){
 			if (isset($gruppe)) {
 				if ($isLeader['group'] == $gruppe){
-					$vervObj = new vervredigering();
+					$vervObj = $this->vervredigeringInstance();
 					if ($isLeader['tittel'] == "peff"){
 						$vervObj->stoppPeffVerv($medlem, $gruppe);
 					} else if ($isLeader['tittel'] == "ass"){
@@ -5209,10 +5444,10 @@ class memberlist_actions extends memberlist {
 					}
 				}
 			} else {
-				$vervObj = new vervredigering();
+				$vervObj = $this->vervredigeringInstance();
 				$vervObj->stoppAllePatruljeVerv($medlem);
 			}
-		}
+		}*/
 		
 	}
 	
@@ -5240,7 +5475,7 @@ class memberlist_actions extends memberlist {
 	function makeDeleteMembership($id) {
 
 		// Sjekk at vi har fått en gyldig id, og at medlemskapet tilhører brukeren vi har klarert redigering for
-		$res = $this->query("SELECT bruker,gruppe,enddate FROM $this->table_memberships WHERE id='$id'");
+		$res = $this->query("SELECT bruker,gruppe,enddate FROM $this->table_group_memberships WHERE id='$id'");
 		if ($res->num_rows != 1) $this->fatalError("Ugyldig inn-data 7.1!");
 		$row = $res->fetch_assoc();
 		if ($row['bruker'] != $this->current_medlem) $this->fatalError("Ugyldig inn-data 7.2!");
@@ -5249,19 +5484,19 @@ class memberlist_actions extends memberlist {
 		$gruppe = $this->groups[$row['gruppe']]->caption;
 		$medlem = $this->members[$this->current_medlem]->fullname;
 
-		$this->query("DELETE FROM $this->table_memberships WHERE id='$id'");
+		$this->query("DELETE FROM $this->table_group_memberships WHERE id='$id'");
 		$this->addToActivityLog("slettet medlemskap i $gruppe for $medlem.");
 		
 	}
 	
-	function printMembershipsList() {
+	function ajaxEditMemberships() {
 		$member = $this->current_medlem;
 		$a = "";
 		$id = -1;
 		
 		if (isset($_POST['medlemsskap']) && is_numeric($_POST['medlemsskap'])) {
 			$id = $_POST['medlemsskap'];
-			$res = $this->query("SELECT enddate FROM $this->table_memberships WHERE id=$id");
+			$res = $this->query("SELECT enddate FROM $this->table_group_memberships WHERE id=$id");
 			if ($res->num_rows != 1) $this->fatalError("invalid input .98");
 			$row = $res->fetch_assoc();
 			$current = ($row['enddate'] == '0000-00-00');
@@ -5330,17 +5565,17 @@ class memberlist_actions extends memberlist {
 
 		$res = $this->query("SELECT 
 				$this->table_groups.caption, 
-				$this->table_memberships.id,
-				$this->table_memberships.startdate, 
-				$this->table_memberships.enddate
+				$this->table_group_memberships.id,
+				$this->table_group_memberships.startdate, 
+				$this->table_group_memberships.enddate
 			FROM 
-				$this->table_memberships, $this->table_groups 
+				$this->table_group_memberships, $this->table_groups 
 			WHERE
-				$this->table_memberships.bruker='$member'
-				AND $this->table_memberships.gruppe=$this->table_groups.id 
-				AND $this->table_memberships.enddate='0000-00-00'
+				$this->table_group_memberships.bruker='$member'
+				AND $this->table_group_memberships.gruppe=$this->table_groups.id 
+				AND $this->table_group_memberships.enddate='0000-00-00'
 			ORDER BY 
-				$this->table_memberships.startdate"
+				$this->table_group_memberships.startdate"
 		);
 		
 		while ($row = $res->fetch_assoc()){		
@@ -5384,17 +5619,17 @@ class memberlist_actions extends memberlist {
 
 		$res = $this->query("SELECT 
 				$this->table_groups.caption, 
-				$this->table_memberships.id,
-				$this->table_memberships.startdate, 
-				$this->table_memberships.enddate
+				$this->table_group_memberships.id,
+				$this->table_group_memberships.startdate, 
+				$this->table_group_memberships.enddate
 			FROM 
-				$this->table_memberships, $this->table_groups 
+				$this->table_group_memberships, $this->table_groups 
 			WHERE
-				$this->table_memberships.bruker='$member'
-				AND $this->table_memberships.gruppe=$this->table_groups.id 
-				AND $this->table_memberships.enddate!='0000-00-00' 
+				$this->table_group_memberships.bruker='$member'
+				AND $this->table_group_memberships.gruppe=$this->table_groups.id 
+				AND $this->table_group_memberships.enddate!='0000-00-00' 
 			ORDER BY 
-				$this->table_memberships.startdate"
+				$this->table_group_memberships.startdate"
 		);
 		
 		while ($row = $res->fetch_assoc()){		
@@ -5458,7 +5693,7 @@ class memberlist_actions extends memberlist {
 		$mList = $mList['htmlcode'];
 		$toReturn .= '<div id="membership_list">'.$mList.'</div>';
 		
-		$url = $this->generateURL(array("noprint=true","makemembershiplist"),true);
+		$url = $this->generateURL('action=ajaxEditMemberships',true);
 		$max_date_js = strftime('%m/%d/%Y',time());
 		$toReturn .= '
 			<script type="text/javascript">
@@ -5580,11 +5815,13 @@ class memberlist_actions extends memberlist {
 
 		$this->addToActivityLog("la til et nytt medlem: ".$this->makeMemberLink($user_id).".");
 
+		$this->logEvent('USER_REGISTERED', $user_id);
+
 		if (is_array($grupper)) {
 			foreach ($grupper as $gruppe)
-				$this->startMembership($user_id,$gruppe,true);		// Start gruppemedlemskap		
+				$this->startMembership($user_id,$gruppe);		// Start gruppemedlemskap		
 		} else {
-			$this->startMembership($user_id,$grupper,true);		// Start gruppemedlemskap
+			$this->startMembership($user_id,$grupper);		// Start gruppemedlemskap
 		}
 		
 		$this->reloadMemberlist();					// Last inn endringer
@@ -5657,8 +5894,25 @@ class memberlist_actions extends memberlist {
 		}
 	}
 	
+	function deregisterGuardian($child, $guardian) {
+		if (!$this->allow_editforesatte){
+			$this->permissionDenied();
+			return 0;
+		}
+		if (!$this->isUser($child)) $this->fatalError("User $child not found");
+		if (!$this->isUser($guardian)) $this->fatalError("User $guardian not found");
+
+		$foresatte = $this->foresatteTil($child);
+		if (in_array($guardian,$foresatte)) {
+			$this->query("DELETE FROM $this->table_guardians WHERE medlem='$child' AND foresatt='$guardian' LIMIT 1");	
+			$this->addToActivityLog("Fjernet foresatt, ".$this->members[$guardian]->fullname.", for medlemmet ".$this->members[$child]->fullname);
+			$this->logEvent('CHILD_REMOVED', $guardian, 0, $child);
+			$this->logEvent('PARENT_REMOVED', $child, 0, $guardian);
+		}
+		
+	}
 	
-	function addGuardian($child, $guardian) {
+	function registerGuardian($child, $guardian) {
 		if (!$this->allow_editforesatte){
 			$this->permissionDenied();
 			return 0;
@@ -5674,16 +5928,16 @@ class memberlist_actions extends memberlist {
 			$this->notSoFatalError("$guardian kunne ikke legges til som foresatt til $child fordi $guardian ikke er medlem av noen foreldregruppe!");
 			return false;
 		}
+
+		$foresatte = $this->foresatteTil($child);
+		if (in_array($guardian,$foresatte)) $this->fatalError("Personen du valgte er allerede registrert som foresatt.");
 	
-		$this->query("
-			INSERT INTO $this->table_guardians 
-				(medlem,foresatt) 
-			VALUES 
-				('$child','$guardian')"
-		);	
+		$this->query("INSERT INTO $this->table_guardians (medlem,foresatt) VALUES ('$child','$guardian')");	
 
 		// Activitylog
 		$this->addToActivityLog("registrerte ".$this->makeMemberLink($guardian)." som foresatt til ".$this->makeMemberLink($child));
+		$this->logEvent('CHILD_ADDED', $guardian, 0, $child);
+		$this->logEvent('PARENT_ADDED', $child, 0, $guardian);
 
 	}
 	

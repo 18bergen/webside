@@ -60,7 +60,7 @@ class vervredigering extends base {
 	}
 
 	function stoppAllePatruljeVerv($medlem, $gruppe=0){
-		global $db,$memberdb, $eventLog;
+		global $db,$memberdb;
 		$peffverv = $this->getVervBySlug('peff');
 		$assverv = $this->getVervBySlug('ass');
 		$res = $db->query(
@@ -83,26 +83,26 @@ class vervredigering extends base {
 					AND enddate='0000-00-00'".
 					(($gruppe == 0) ? "" : " AND gruppe='$gruppe'")
 			);
-			$eventLog->addToActivityLog("Avsluttet patruljeverv for ".$memberdb->getMemberById($medlem)->fullname.".");
+			$this->addToActivityLog("Avsluttet patruljeverv for ".$memberdb->getMemberById($medlem)->fullname.".");
 		}
 	}
 
 	function startPeffVerv($medlem, $gruppe){
-		global $db,$memberdb, $eventLog;
+		global $db,$memberdb;
 		$peffverv = $this->getVervBySlug('peff');
 		$db->query("INSERT INTO $this->table_verv_history (verv,startdate,gruppe,person) VALUES ($peffverv,CURDATE(),$gruppe,$medlem)");
-		$eventLog->addToActivityLog("Startet patruljeførerverv i vervhistorien for ".$memberdb->getMemberById($medlem)->fullname.".");
+		$this->addToActivityLog("Startet patruljeførerverv i vervhistorien for ".$memberdb->getMemberById($medlem)->fullname.".");
 	}
 
 	function startAssVerv($medlem, $gruppe){
-		global $db,$memberdb, $eventLog;
+		global $db,$memberdb;
 		$assverv = $this->getVervBySlug('ass');
 		$db->query("INSERT INTO $this->table_verv_history (verv,startdate,gruppe,person) VALUES ($assverv,CURDATE(),$gruppe,$medlem)");
-		$eventLog->addToActivityLog("Startet patruljeassistentverv i vervhistorien for ".$memberdb->getMemberById($medlem)->fullname.".");
+		$this->addToActivityLog("Startet patruljeassistentverv i vervhistorien for ".$memberdb->getMemberById($medlem)->fullname.".");
 	}
 
 	function stoppPeffVerv($medlem, $gruppe){
-		global $db,$memberdb, $eventLog;
+		global $db,$memberdb;
 		$peffverv = $this->getVervBySlug('peff');
 		$db->query(
 			"UPDATE $this->table_verv_history ".
@@ -111,11 +111,11 @@ class vervredigering extends base {
 				"AND $this->table_verv_history.gruppe=$gruppe ".
 				"AND $this->table_verv_history.enddate='0000-00-00'"
 		);
-		$eventLog->addToActivityLog("Avsluttet patruljeførerverv i vervhistorien for ".$memberdb->getMemberById($medlem)->fullname.".");
+		$this->addToActivityLog("Avsluttet patruljeførerverv i vervhistorien for ".$memberdb->getMemberById($medlem)->fullname.".");
 	}
 
 	function stoppAssVerv($medlem, $gruppe){
-		global $db,$memberdb, $eventLog;
+		global $db,$memberdb;
 		$assverv = $this->getVervBySlug('ass');
 		$db->query(
 			"UPDATE $this->table_verv_history ".
@@ -124,13 +124,13 @@ class vervredigering extends base {
 				"AND $this->table_verv_history.gruppe=$gruppe ".
 				"AND $this->table_verv_history.enddate='0000-00-00'"
 		);
-		$eventLog->addToActivityLog("Avsluttet patruljeassistentverv i vervhistorien for ".$memberdb->getMemberById($medlem)->fullname.".");
+		$this->addToActivityLog("Avsluttet patruljeassistentverv i vervhistorien for ".$memberdb->getMemberById($medlem)->fullname.".");
 	}
 
 	function opprettNyttVerv(){
-		global $db, $eventLog;
+		global $db;
 		if (!$this->allow_editverv) return $this->permissionDenied();
-		$eventLog->addToActivityLog("Opprettet nytt verv");
+		$this->addToActivityLog("Opprettet nytt verv");
 		$res = $db->query("SELECT MAX(position) FROM $this->table_verv");
 		$row = $res->fetch_row();
 		$position = $row[0]+1;
@@ -164,9 +164,9 @@ class vervredigering extends base {
 	}
 
 	function slettFraVervHistorie($id){
-		global $db, $memberdb, $eventLog;
+		global $db, $memberdb;
 		if (!$this->allow_editverv) return $this->permissionDenied();
-		if (!is_numeric($id)){ ErrorMessageAndExit("incorrect input (oppdaterVerv.id)"); }
+		if (!is_numeric($id)){ $this->fatalError("incorrect input (oppdaterVerv.id)"); }
 		$v = $this->table_verv;
 		$vh = $this->table_verv_history;
 		$res = $db->query("SELECT $v.id, $v.caption, $vh.person, $vh.startdate, $vh.enddate 
@@ -175,7 +175,7 @@ class vervredigering extends base {
 		$row = $res->fetch_assoc();
 		$m = $memberdb->getMemberById($row['person']);
 		$db->query("DELETE FROM $this->table_verv_history WHERE id=$id");
-		$eventLog->addToActivityLog("Slettet fra vervhistorie: $m->fullname som ".$row['caption'].
+		$this->addToActivityLog("Slettet fra vervhistorie: $m->fullname som ".$row['caption'].
 			" fra ".$row['startdate']." til ".$row['enddate']);
 		return $row['id'];
 	}
@@ -232,7 +232,7 @@ class vervredigering extends base {
 
 	function fetchHistory($id,$gruppe=null){
 		global $db;
-		if (!is_numeric($id)){ ErrorMessageAndExit("incorrect input (oppdaterVerv.id)"); }
+		if (!is_numeric($id)){ $this->fatalError("incorrect input (oppdaterVerv.id)"); }
 		$this->history = array();
 		$v = $this->table_verv;
 		$vh = $this->table_verv_history;

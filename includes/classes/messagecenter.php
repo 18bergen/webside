@@ -1113,8 +1113,8 @@ class messagecenter extends base {
 		*/
 				
 		// Send mail	
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-		$mail = new htmlMimeMail5();
+		require_once("../www/libs/Rmail/Rmail.php");
+		$mail = new Rmail();
 		$mail->setFrom("$sender_name <$sender_email>");
 		$mail->setReturnPath($sender_email);
 		$mail->setSubject($subject);
@@ -2285,7 +2285,7 @@ class messagecenter extends base {
 			}
 			call_user_func(
 				$this->add_to_breadcrumb, 
-				'<a href="'.$this->generateCoolURL('/readmessage/$id/').'">'.$subject.'</a>'
+				'<a href="'.$this->generateCoolURL("/readmessage/$id/").'">'.$subject.'</a>'
 			);
 		
 		}

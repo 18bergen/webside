@@ -2,17 +2,16 @@
 
 class MailNotifications {
 	
-	function getUnread() {
+	static function getUnread() {
 		global $memberdb,$db,$login;
 
-		if ($this->isLoggedIn()){ 
+		if ($login->isLoggedIn()){ 
 			$userId = $login->getUserId();
 	
 			$visInternForum = true;
-			$memof = $memberdb->getMemberById($userId)->memberof;
-			if (count($memof) == 1){
-				$g = $memberdb->getGroupById($memof[0]);
-				if ($g->kategori == "FO") $visInternForum = false;
+			$groups = $memberdb->getActiveGroupMemberships($userId);
+			if (count($groups) == 1){
+				if ($groups[0]['Category'] == "FO") $visInternForum = false;
 			}
 			
 			$res = $db->query("SELECT

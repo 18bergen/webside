@@ -89,7 +89,7 @@ $dp0->list_groups = "listGroups";
 $dp0->list_members = "listMembers";
 $dp0->permission_denied_function = "permissionDenied";
 $dp0->prepare_classinstance = "prepareClassInstance";
-$dp0->eventlog_function = "dpeventlogentry";
+$dp0->setEventlogInstance($eventlog);
 $dp0->htmleditdir = ROOT_DIR.'/htmlarea';
 $dp0->preferred_lang = 1;
 $dp0->default_lang = 1;

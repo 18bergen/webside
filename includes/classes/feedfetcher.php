@@ -1,10 +1,11 @@
 <?
 
-require_once(BG_LIB_PATH.'simplepie-1.2/simplepie.inc');
+#require_once(BG_LIB_PATH.'simplepie-1.2/simplepie.inc');
+require_once(BG_LIB_PATH.'simplepie-devel/SimplePie.compiled.php');
 
 class FeedFetcher {
 
-	function fetchFeeds($feeds) {
+	static function fetchFeeds($feeds) {
 
 		$_cacheDir = '../cache/simplepie';
 

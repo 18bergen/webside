@@ -2,20 +2,19 @@
 
 class ForumNotifications {
 	
-	function getUnread() {
+	static function getUnread() {
 		global $memberdb,$login,$db;
 
-		if ($this->isLoggedIn()){ 
+		if ($login->isLoggedIn()){ 
 			$userId = $login->getUserId();
 		
 			$pageIdGruppeForum = 77;
 			$pageIdInternForum = 79;
 			
 			$visInternForum = true;
-			$memof = $memberdb->getMemberById($userId)->memberof;
-			if (count($memof) == 1){
-				$g = $memberdb->getGroupById($memof[0]);
-				if ($g->kategori == "FO") $visInternForum = false;
+			$groups = $memberdb->getActiveGroupMemberships($userId);
+			if (count($groups) == 1){
+				if ($groups[0]['Category'] == "FO") $visInternForum = false;
 			}
 			
 			$res = $db->query("SELECT COUNT(*) 
