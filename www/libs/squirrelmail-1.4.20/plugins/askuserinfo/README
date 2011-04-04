@@ -1,0 +1,23 @@
+Ask User Info Plugin, version 1.0
+Thijs Kinkhorst, (c) 2003, 2007
+kink@squirrelmail.org
+
+*
+| NOTE: SquirrelMail 1.5.2 and up already support this functionality
+| and do not need this plugin!
+*
+
+This plugin pushes users a little bit more to enter their personal info.
+When a user logs in and doesn't have full name/email set, it directs
+the user to the relevant options page.
+
+Optionally you can remove or add checks for more personal info.
+
+If you want to use this plugin, you might also consider the
+retrieveuserdata plugin to fill in this info automatically in stead
+of prompting the user.
+
+Requirements: SquirrelMail 1.4.0 or higher, up to 1.5.1.
+
+Feedback appreciated.
+
