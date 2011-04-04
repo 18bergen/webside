@@ -1,0 +1,6 @@
+[submodule "www/libs/yui2"]
+	path = www/libs/yui2
+	url = git://github.com/yui/yui2.git
+[submodule "www/libs/yui3"]
+	path = www/libs/yui3
+	url = git://github.com/yui/yui3.git
