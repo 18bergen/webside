@@ -1,3 +1,13 @@
+I kulissene til 18bergen.org ligger et egenutviklet og delvis lokalisert 
+content managing system (CMS) skrevet i PHP og basert på MySQL datalagring. 
+Systemet ble påbegynt for en god del år siden, da det ikke akkurat florerte 
+av gode, gratis CMS. Mens det i dag finnes flere gode CMS, er fordelen med 
+vårt egenutviklede systemet at det er mer tilpasset en speidernettside og 
+ikke like overlesset med abstraksjonslag og funksjonalitet som i mer 
+generelle CMS som skal passe til alt. Systemets ulempe er at implementering 
+av ny funksjonalitet tar relativt lang tid fordi så mye kode må skrives 
+fra scratch. Systemet bygger i dag på objektorientert kode for PHP 5. 
+
 Ellers bruker vi
 
  - javascript-bibliotekene [YUI 2](http://developer.yahoo.com/yui/2) og 
