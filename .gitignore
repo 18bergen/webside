@@ -4,3 +4,4 @@
 *.swp
 .svn
 includes/constants.php
+/cache/
