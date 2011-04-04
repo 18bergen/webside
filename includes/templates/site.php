@@ -204,8 +204,8 @@
 		
 		<p align="center" style="padding-top:6px;">
 		  <a href="http://www.sortere.no/"><img src="/images/sortere.png" alt="Sortere.no" border="0" /></a>
-		</p>
-		
+        </p>
+        
 	  </div>
 
  </div>
