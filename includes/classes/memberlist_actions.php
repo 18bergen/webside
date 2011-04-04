@@ -894,17 +894,14 @@ class memberlist_actions extends memberlist {
 	function myndighet_i($grupper){
 		if (empty($this->login_identifier)) return false;
 		$myndighet = false;
-		if ($this->members[$this->login_identifier]->rights > 4){
+		$udata = $this->getUserData($this->login_identifier, 'Rights');
+		if ($udata['Rights'] > 4){
 			$myndighet = true;
-		} else if ($this->members[$this->login_identifier]->rights == 3){
+		} else if ($udata['Rights'] == 3){
 			$leder_i_array = $this->isGroupLeader($this->login_identifier);
 			$leder_i = $leder_i_array['group'];
-			if (is_array($grupper)){
-				if (in_array($leder_i,$grupper)){
-					$myndighet = true;
-				}
-			} else {
-				if ($leder_i == $grupper){
+			foreach ($memberships as $mem) {
+				if ($leder_i == $mem['Group']['Id']) {
 					$myndighet = true;
 				}
 			}
@@ -1249,10 +1246,10 @@ class memberlist_actions extends memberlist {
 		$memberShortCategory = "-"; $mscid = 0;
 		foreach ($u->memberof as $g){
 			$grp = call_user_func($this->lookup_group,$g);
-			$memberof[] = $grp->caption;
-			if ($this->kategoriOrder[$grp->kategori] > $mscid) {
-				$mscid = $this->kategoriOrder[$grp->kategori];;
-				$memberShortCategory = $grp->kategori;
+			$memberof[] = $grp['Caption'];
+			if ($this->kategoriOrder[$grp['Category']] > $mscid) {
+				$mscid = $this->kategoriOrder[$grp['Category']];;
+				$memberShortCategory = $grp['Category'];
 			}
 		}
 		if (isset($this->memberCount[$memberShortCategory])) $this->memberCount[$memberShortCategory]++;
@@ -1336,18 +1333,37 @@ class memberlist_actions extends memberlist {
 		$uids = array();
 		
 		if (isset($json->freetext)) {
-			if (preg_match('/rights=([0-9])/', $json->freetext, $matches)) {
-				$uids = $this->findAllUsersWithRights($matches[1]);
-			} else if (preg_match('/email=([\w@._\-]*)/', $json->freetext, $matches)) {
-				$uids = $this->findAllUsersWithEmail($matches[1]);
-			} else {
-				$uids = $this->freeTextUserSearch($json->freetext);
-				$gids = $this->freeTextGroupSearch($json->freetext);
+			$words = explode(' ',$json->freetext);
+			$uids = array();
+			foreach ($words as $word) {
+				if (!empty($word)) {
+					if (preg_match('/rights=([0-9])/', $word, $matches)) {
+						$uids[] = $this->findAllUsersWithRights($matches[1]);
+					}
+					if (preg_match('/email=([\w@._\-]*)/', $word, $matches)) {
+						$uids[] = $this->findAllUsersWithEmail($matches[1]);
+					}
+					if (preg_match('/active=(true|false)/', $word, $matches)) {
+						$uids[] = $this->findAllUsersWithActiveMembership($matches[1]);
+					}
+					$free = $this->freeTextUserSearch($word);
+					if (count($free) > 0) $uids[] = $free;
+				}
 			}
+			
+			if (count($uids) == 0) $uids_all = array();
+			else if (count($uids) == 1) $uids_all = $uids[0];
+			else {
+				$uids_all = $uids[0];
+				foreach ($uids as $u) {
+					$uids_all = array_intersect($uids[0], $u);
+				}
+			}
+			$gids = $this->freeTextGroupSearch($json->freetext);	
 		}
 
 
-		$ud = $this->getUserData($uids, array('UserId','FullName','ProfileUrl','ProfilePicture','Memberships','ActiveMemberships','Verv','AktiveVerv'));
+		$ud = $this->getUserData($uids_all, array('UserId','FullName','ProfileUrl','ProfilePicture','Memberships','ActiveMemberships','Verv','AktiveVerv'));
 		$users = array();
 		foreach ($ud as $id => $u) {
 			foreach ($u['Memberships'] as &$m) {
@@ -1391,6 +1407,19 @@ class memberlist_actions extends memberlist {
 		$ids = array();
 		while ($row = $res->fetch_assoc()) {
 			$ids[] = intval($row['ident']);
+		}
+		return $ids;		
+	}
+	
+	function findAllUsersWithActiveMembership($a) {
+		if (strtolower($a) == 'true') {
+			$res = $this->query(sprintf('SELECT user_id FROM %s WHERE date_to="0000-00-00" GROUP BY user_id', $this->table_memberships));
+		} else {
+			$res = $this->query(sprintf('SELECT ident as user_id FROM %s WHERE ident NOT IN (SELECT user_id FROM %s WHERE date_to="0000-00-00" GROUP BY user_id)', $this->table_memberlist, $this->table_memberships));
+		}
+		$ids = array();
+		while ($row = $res->fetch_assoc()) {
+			$ids[] = intval($row['user_id']);
 		}
 		return $ids;		
 	}
@@ -1947,7 +1976,41 @@ class memberlist_actions extends memberlist {
 		$medlemskapOgVerv .= implode($medlemskap);		
 		$medlemskapOgVerv .= "</ul>\n";
 
-		$membershipLength = date("Y",$membershipStart);
+		$membership_overview = array();
+		foreach ( $u['Memberships'] as $mem ) {
+			$ervar = (($mem['EndDate'] == 0) ? 'er' : 'var');
+			$idenneperioden = (($mem['EndDate'] == 0) ? '' : ' i denne perioden');
+			switch ($mem['Kind']) {
+				case 'foresatt':
+					$short_kind = 'foresatt'; 
+					$kind_desc = "Personen $ervar registrert som foresatt til et eller flere medlem$idenneperioden";
+					break;
+				case 'vanlig':
+					$short_kind = 'medlem'; 
+					$kind_desc = "Personen $ervar registrert som medlem i Norges Speiderforbund$idenneperioden";
+					break;
+				case 'ressurs':
+					$short_kind = 'ressursperson';	
+					$kind_desc = "Personen $ervar tilknyttet gruppen som ressursperson, og $ervar ikke nødvendigvis medlem i Norges Speiderforbund$idenneperioden";
+					break;		
+				case 'stottemedlem':
+					$short_kind = 'støttemedlem'; 
+					$kind_desc = "Personen $ervar registrert som støttemedlem$idenneperioden";
+					break;
+				default:
+					$kind = '?';
+					$kind_desc = '?';
+			}
+			$a = array();
+			if ($mem['EndDate'] == 0) $s = 'siden '.strftime("%Y",$mem['StartDate']);
+			else $s = 'fra '.strftime("%Y",$mem['StartDate']).' til '.strftime("%Y",$mem['EndDate']);
+			if (isset($a[$s])) $a[$s][] = '<abbr title="'.$kind_desc.'">'.$short_kind.'</abbr>';
+			else $a[$s] = array('<abbr title="'.$kind_desc.'">'.$short_kind.'</abbr>');
+			foreach ($a as $d => $k) {
+				$membership_overview[] = implode(' og ',$k)." $d";
+			}
+		}
+		$membership_overview = "Registrert som ".implode(' og ',$membership_overview).".";
 
 		$res = $this->query("SELECT body FROM $this->table_memberlistlocal WHERE id='$uid' AND lang='$this->preferred_lang'");
 		if ($res->num_rows == 1) {
@@ -2124,7 +2187,7 @@ class memberlist_actions extends memberlist {
 		$r1a[] = '%label_messagesonforum%';		$r2a[] = $this->label_messagesonforum;
 		$r1a[] = '%label_messagesonwordbox%';	$r2a[] = $this->label_messagesonwordbox;
 		$r1a[] = '%label_memberof%';			$r2a[] = $this->label_memberof;
-		$r1a[] = '%membership_length%';			$r2a[] = $membershipLength;		
+		$r1a[] = '%membership_overview%';		$r2a[] = $membership_overview;		
 		$r1a[] = '%image_dir%';					$r2a[] = $this->image_dir;
 //		$r1a[] = '%imgarchive_imgs%';			$r2a[] = $i_images;
 		//$r1a[] = '%membershiptype%';			$r2a[] = $membershiptype;
@@ -2172,7 +2235,7 @@ class memberlist_actions extends memberlist {
 		%importantinfo%
 		
 		<h3>%title_fullname%</h3>
-		Tilknyttet gruppen siden %membership_length%.<br />
+		%membership_overview%<br />
 
 		<div style="float:left; width: 130px;">
 			<div class="alpha-shadow noframe">
@@ -3093,25 +3156,7 @@ class memberlist_actions extends memberlist {
 
 	}
 	
-	function sendLoginDetails(){
 	
-		if (!$this->allow_editprofile) return $this->permissionDenied();
-
-		$user_id = $this->current_medlem;
-		$user_obj = $this->members[$user_id];
-		
-		return '
-			<h3>'.$user_obj->fullname.': Send innloggingsdetaljer</h3>
-			<form method="post action="'.$this->generateURL('action=sendLoginDetailsDo').'">
-				Vil du sende medlemmets innlogginsdetaljer til '.$user_obj->email.'?
-				<br /><br />
-			
-				<input type="button" value="Avbryt" onclick="window.location=\''.$this->generateURL('action=userOverview',true).'\'" /> 
-				<input type="submit" value="Send" />
-			</form>
-		';
-		
-	}
 	
 	function sendLoginDetailsDo(){
 		global $login;
@@ -3368,16 +3413,16 @@ class memberlist_actions extends memberlist {
 	function userOverview(){
 		global $login;
 
-		if (!$this->allow_viewmemberdetails) return $this->permissionDenied();
-
 		$user_id = $this->current_medlem;
-		$user_obj = $this->members[$user_id];
+		$user_obj = $this->getUserData($user_id,'All');
 
-		if (!$this->myndighet_i($user_obj->memberof)) return $this->permissionDenied(); 
+		if (!$this->allow_viewmemberdetails) return $this->permissionDenied();
+		if (!$this->myndighet_i($user_obj['ActiveGroupMemberships'])) return $this->permissionDenied(); 
 
 		$username = $login->getUsername($user_id);
 		$hasUser = ($username != false);
 		$hasPass = $login->hasPassword($user_id);
+		$accountActive = $login->accountActive($user_id);
 		$loginTime = $login->getLoginTime($user_id);
 		
 		if ($hasUser) {
@@ -3387,11 +3432,12 @@ class memberlist_actions extends memberlist {
 		}
 
 		$info_memberof = "";
-		if (count($user_obj->memberof) == 0){ 
+		if (count($user_obj['ActiveGroupMemberships']) == 0){ 
 			$info_memberof = "<i>Ingen grupper</i>";
 		} else {
-			foreach ($user_obj->memberof as $g){
-				$info_memberof .= '<img src="'.$this->image_dir.'group5.gif" border="0" /> '.call_user_func($this->make_grouplink,$g).'<br />';
+			foreach ($user_obj['ActiveGroupMemberships'] as $mem){
+				$info_memberof .= $mem['Group']['Caption'];
+				//$info_memberof .= '<img src="'.$this->image_dir.'group5.gif" border="0" /> '.call_user_func($this->make_grouplink,$g).'<br />';
 			}
 		}
 		
@@ -3402,8 +3448,8 @@ class memberlist_actions extends memberlist {
 		$groupListSelect .= "</select>\n";
 		
 		$info_pwd = $hasPass ? "Ja" : "Nei";
-		$info_profile = (($user_obj->profilecreated == 1) ? "Opprettet" : "Ikke opprettet");
-		$info_tittel = $user_obj->tittel;
+		//$info_profile = (($user_obj->profilecreated == 1) ? "Opprettet" : "Ikke opprettet");
+		$info_tittel = $user_obj['Title'];
 	
 		$vervobj = $this->vervredigeringInstance();
 		$verv = $vervobj->vervForMember($user_id);
@@ -3427,7 +3473,7 @@ class memberlist_actions extends memberlist {
 		if (!$hasUser) {
 			$info_membershiptype = "<em>ikke bruker</em>";
 		} else {
-			$res2 = $this->query("SELECT description FROM $this->table_membershiptypes WHERE sid='$user_obj->memberstatus'");
+			$res2 = $this->query("SELECT description FROM $this->table_membershiptypes WHERE sid='".$user_obj['Status']."'");
 			if ($res2->num_rows == 0) $info_membershiptype = "<em>Ukjent</em>";
 			else {
 				$row2 = $res2->fetch_assoc();
@@ -3435,9 +3481,9 @@ class memberlist_actions extends memberlist {
 			}
 		}
 				
-		if (count($user_obj->memberof) > 0) {
-			$kat = $this->groups[$user_obj->memberof[0]]->kategori;
-			if ($kat == 'SM' || $kat == 'SP') {
+		if (count($user_obj['ActiveGroupMemberships']) > 0) {
+			$cat = $user_obj['ActiveGroupMemberships'][0]['Group']['Category'];
+			if ($cat == 'SM' || $cat == 'SP') {
 			
 			} else {
 				$this->allow_editforesatte = false;
@@ -3447,8 +3493,8 @@ class memberlist_actions extends memberlist {
 		}
 		
 		if ($this->login_identifier != $user_id){
-			$selectBox = $this->generateGroupSelectBox("nygruppe",!$this->allow_moveuserstononpatruljer,$user_obj->memberof);
-		
+			//$selectBox = $this->generateGroupSelectBox("nygruppe",!$this->allow_moveuserstononpatruljer,$user_obj['ActiveGroupMemberships']);
+			$selectBox = " TEMP DISABLED";
 			$memberof_admin = '
 				<form method="post" action="'.$this->generateURL('action=moveUser').'">
 					'.$selectBox.' <input type="submit" value="Flytt" />
@@ -3462,7 +3508,7 @@ class memberlist_actions extends memberlist {
 			$memberof_admin = "";
 		}
 	    
-		$output = "<h3>Brukerinnstillinger for ".$user_obj->fullname."</h3>";
+		$output = "<h3>Brukerinnstillinger for ".$user_obj['FullName']."</h3>";
         call_user_func(
             $this->add_to_breadcrumb,
             '<a href="'.$this->generateURL('edituser').'">Brukerinnstillinger</a>'
@@ -3472,7 +3518,7 @@ class memberlist_actions extends memberlist {
 	
 			$success = true;
 				
-			if (count($user_obj->memberof) == 0) {
+			if (count($user_obj['ActiveGroupMemberships']) == 0) {
 				$success = false;
 				if ($hasUser) {
 					$output .= $this->infoMessage('Denne personen har brukernavnet <strong>'.$username.'</strong>, 
@@ -3498,11 +3544,11 @@ class memberlist_actions extends memberlist {
 				$success = false;
 				$output .= $this->infoMessage('Denne personen har fått tildelt et brukernavn, men har ikke
 					laget sitt eget passord. Du bør sjekke at e-postadressen 
-					<strong>'.$user_obj->email.'</strong> er i bruk, og deretter sende registreringsmailen
+					<strong>'.$user_obj['Email'].'</strong> er i bruk, og deretter sende registreringsmailen
 					med instruksjoner om hvordan man lager passord på nytt:<br /><br /> 
 					<a href="'.$this->generateURL('action=resendWelcomeMail').'">Send registreringsmail på nytt</a>', 2);
 			}
-			if (empty($user_obj->firstname) || empty($user_obj->lastname) || empty($user_obj->street) || empty($user_obj->streetno) || empty($user_obj->postno) || empty($user_obj->city) || (empty($user_obj->homephone) && empty($user_obj->cellular)) ) {
+			if (empty($user_obj['FirstName']) || empty($user_obj['LastName']) || empty($user_obj['Street']) || empty($user_obj['StreetNo']) || empty($user_obj['PostCode']) || empty($user_obj['City']) || (empty($user_obj['HomePhone']) && empty($user_obj['CellPhone'])) ) {
 				$output .= $this->infoMessage('Kontaktopplysningene til denne personen er mangelfulle. 
 					Du kan oppdatere de i personens medlemsprofil:<br /><br /> 
 					<a href="'.$this->generateURL('action=editUserProfile').'">Rediger medlemsprofil</a>', 2);
@@ -3529,8 +3575,7 @@ class memberlist_actions extends memberlist {
 				}
 			}
 			if ($success) {
-				$output .= $this->infoMessage('Denne personen har fått tildelt brukernavn, aktivert det og 
-					logget inn på nettsiden.', 4);
+				//$output .= $this->infoMessage('Denne personen har fått tildelt brukernavn, aktivert det og logget inn på nettsiden.', 4);
             }
 			if ($this->login_identifier == $user_id){
                 $output .= $this->infoMessage('
@@ -3545,20 +3590,94 @@ class memberlist_actions extends memberlist {
 			(($this->allow_addmember && !empty($m->password) && $m->password != "NOT_SET") ? "<a href='$url_sendlogindetails'>Send innloggingsopplysninger</a>" : "&nbsp;").
 */
 
+		$lastlogin = $login->getLoginTime($user_id);
+		$ldiff = floor((mktime(23,59,59)-$lastlogin)/86400);
+		if ($ldiff < 1) $ldiff = 'i dag';
+		else if ($ldiff == 1) $ldiff = 'i går';
+		else if ($ldiff > 60) $ldiff = 'for '.round($ldiff/30.5).' måneder siden';
+		else $ldiff = 'for '.$ldiff.' dager siden';
+		if (empty($lastlogin)) 
+			$llogin = "<div style='background:url(/images/icns/error.png) no-repeat top left;padding-left:20px;margin:2px;'>Personen har aldri logget inn.</div>";
+		else
+			$llogin = "<div style='background:url(/images/icns/accept.png) no-repeat top left;padding-left:20px;margin:2px;'>Personen var sist innlogget $ldiff.</div>";
+
+
+		$output .= '<fieldset><legend><strong>Innlogging</strong></legend>'.$llogin;
+			if ($accountActive) {
+				$output .= sprintf('
+					<div style="background:url(/images/icns/accept.png) top left no-repeat;padding-left:20px;margin:2px;">
+						Personen kan logge inn med brukernavnet «%s» og eget passord.<br />
+						<input type="button" value="Send innloggingsopplysninger" id="dialog1-show" />
+						<input type="button" value="Steng brukerkonto" id="dialog-closeaccount-show" />
+					</div>
+					
+				',$username);
+			} else if ($hasUser && $hasPass) {
+				$output .= '
+					<div style="background:url(/images/icns/error.png) left no-repeat;padding-left:20px;margin:2px;">Personen kan ikke logge inn fordi brukerkontoen er stengt.</div>
+					<input type="button" value="Gjenåpne brukerkonto" />
+				';
+			} else if ($hasUser) {
+				$output .= '
+					<div style="background:url(/images/icns/error.png) left no-repeat;padding-left:20px;margin:2px;">Personen kan ikke logge inn fordi vedkommende ikke har laget sitt eget passord enda.</div>
+				';
+			} else {
+				$output .= '
+					<div style="background:url(/images/icns/error.png) left no-repeat;padding-left:20px;margin:2px;">Personen kan ikke logge inn fordi vedkommende ikke har fått tildelt brukernavn.</div>
+					<input type="button" value="Tildel brukernavn" />
+				';
+			}
+		$output .= '</fieldset>';
+		
+		$tilknytning = "<table>";		
+		foreach ( $user_obj['Memberships'] as $mem ) {
+			$ervar = (($mem['EndDate'] == 0) ? 'er' : 'var');
+			$idenneperioden = (($mem['EndDate'] == 0) ? '' : ' i denne perioden');
+			switch ($mem['Kind']) {
+				case 'foresatt':
+					$short_kind = 'foresatt'; 
+					$kind_desc = "Personen $ervar registrert som foresatt til et eller flere medlem$idenneperioden";
+					break;
+				case 'vanlig':
+					$short_kind = 'medlem'; 
+					$kind_desc = "Personen $ervar registrert som medlem i Norges Speiderforbund$idenneperioden";
+					break;
+				case 'ressurs':
+					$short_kind = 'ressursperson';	
+					$kind_desc = "Personen $ervar tilknyttet gruppen som ressursperson, og $ervar ikke nødvendigvis medlem i Norges Speiderforbund$idenneperioden";
+					break;		
+				case 'stottemedlem':
+					$short_kind = 'støttemedlem'; 
+					$kind_desc = "Personen $ervar registrert som støttemedlem$idenneperioden";
+					break;
+				default:
+					$kind = '?';
+					$kind_desc = '?';
+			}
+			if ($mem['EndDate'] == 0) {
+				$s = 'siden '.strftime("%Y",$mem['StartDate']);
+				$btn = '<input type="button" value="Avslutt" />';
+			} else {
+				$s = 'fra '.strftime("%Y",$mem['StartDate']).' til '.strftime("%Y",$mem['EndDate']);
+				$btn = '<input type="button" value="Slett" />';
+			}
+			
+			$tilknytning .= '<tr>
+				<td align="right"><abbr title="'.$kind_desc.'">'.$short_kind.'</abbr></td>
+				<td align="left">'.$s.'</td>
+				<td align="left">'.$btn.'</td>
+				</tr>
+				';
+		}
+		$tilknytning .= "</table>
+		<input type='button' value='Opprett ny tilknytning' />
+		";
 		$output .= '
-		
-		<fieldset><legend><strong>Innlogging</strong></legend>
-			
-			'.($hasUser?'<div style="background:url(/images/icns/accept.png) left no-repeat;padding-left:20px;margin:2px;">Har brukernavn</div>'
-				:'<div style="background:url(/images/icns/error.png) left no-repeat;padding-left:20px;margin:2px;">Har ikke brukernavn</div>').'
-			'.($hasPass?'<div style="background:url(/images/icns/accept.png) left no-repeat;padding-left:20px;margin:2px;">Har laget passord</div>'
-				:'<div style="background:url(/images/icns/error.png) left no-repeat;padding-left:20px;margin:2px;">Har ikke laget passord</div>').'
-			<!--<input type="checkbox">Tillatt innlogging-->
-			
+		<fieldset><legend><strong>Tilknytning</strong></legend>
+			'.$tilknytning.'
 		</fieldset>
-		
-		
-		<fieldset><legend><strong>Medlemskap</strong></legend>
+		<fieldset><legend><strong>Gruppemedlemskap</strong></legend>
+
 			Personen er medlem av: 
 			<div style="padding:10px;">'.$info_memberof.'</div>';
 		if ($this->allow_editmemberships) {
@@ -3615,12 +3734,172 @@ class memberlist_actions extends memberlist {
 				</tr>
 				<tr>
 					<td valign="top" align="right">Tilgangsnivå: </td>
-					<td valign="top">'.($this->allow_editrights ? '<a href="'.$this->generateURL('action=editUserRights').'" title="Klikk for å redigere">'.$user_obj->rights.'</a>' : $user_obj->rights).'</td>
+					<td valign="top">'.($this->allow_editrights ? '<a href="'.$this->generateURL('action=editUserRights').'" title="Klikk for å redigere">'.$user_obj['Rights'].'</a>' : $user_obj['Rights']).'</td>
 				</tr>
 			</table>
 		</fieldset>
+		
+		<div id="simpledialog" class="yui3-overlay-loading shadow">
+			<div class="yui3-widget-hd"><span id="simpledialog_title">Ok</span></div>
+			<div class="yui3-widget-bd">
+				<div style="background: url(/images/info_big.gif) no-repeat top left #ffffff; padding: 20px 40px 20px 90px; margin: 5px 0px 5px 0px;">
+					<span id="simpledialog_body">Ok</span>
+				</div>
+			</div>
+			<div class="yui3-widget-ft">
+				<div>
+					<input type="button" id="simpledialog-submit" value="Ok" />
+				</div>
+			</div>
+		</div>
+		
+		<div id="dialog1" class="yui3-overlay-loading shadow">
+			<div class="yui3-widget-hd">Bekreft</div>
+			<div class="yui3-widget-bd">
+				<div style="background: url(/images/question3.jpg) no-repeat top left #ffffff; padding: 20px 40px 20px 90px; margin: 5px 0px 5px 0px;">
+					Personen er registrert med epost-adressen «'.$user_obj['Email'].'».
+				  	Vil du sende personens innloggingsopplysninger til denne adressen?
+				</div>
+			</div>
+			<div class="yui3-widget-ft">
+				<div>
+					<span id="dialog1-pbar" style="padding-right:10px; font-weight:bold;visibility:hidden;">
+						Et øyeblikk... <img src="/images/indicators/indicator10.gif" style="vertical-align:middle;" />
+					</span>
+					<input type="button" id="dialog1-cancel" value="Avbryt">
+					<input type="button" id="dialog1-submit" value="Send" />
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			
+			YUI().use("overlay", "dd-constrain", "widget-anim", function(Y){
+			
+				// Create a new Overlay instance, and add AnimPlugin
+				var simpledialog = new Y.Overlay({
+					srcNode: "#simpledialog",
+					width:"350px",
+					height:"150px",
+					visible:false,
+					shim:false,
+					zIndex: 20,
+					centered: true,
+					plugins : [{fn:Y.Plugin.WidgetAnim, cfg:{duration:0.1}}]
+				}).render();
+				
+				new Y.DD.Drag({
+					node : simpledialog.get("boundingBox"), 
+					handles : [".yui3-widget-hd"]
+				}).plug(Y.Plugin.DDConstrained, { constrain2view : true });
+				
+				function showSimpleDialog(title,body) {
+					Y.one("#simpledialog_title").setContent(title);
+					Y.one("#simpledialog_body").setContent(body);
+					simpledialog.set("centered",true);
+					simpledialog.show();
+				}
+				Y.on("click", function(e){ simpledialog.hide();   }, "#simpledialog-submit");
+			
+				var GeneralDialog = function() {
+				
+					this.disable = function() {
+						Y.one("#"+this.id+"-cancel").set("disabled",true);
+						Y.one("#"+this.id+"-submit").set("disabled",true);				
+					};
+	
+					this.enable = function() {
+						Y.one("#"+this.id+"-cancel").set("disabled",false);
+						Y.one("#"+this.id+"-submit").set("disabled",false);
+					};
+					
+					this.show = function() {
+						this.instance.show();
+						this.instance.set("centered",true);
+						this.enable();
+					};
+	
+					this.hide = function() {
+						this.instance.hide();
+						this.disable();
+					};
+					
+				}
+				
+				var Dialog1 = function() {
+				
+					this.id = "dialog1"
+					
+					// Chain the constructors
+					Dialog1.superclass.constructor.call(this);
+				
+					// Create a new Overlay instance, and add AnimPlugin
+					this.instance = new Y.Overlay({
+						srcNode: "#dialog1",
+						width:"450px",
+						height:"200px",
+						visible:false,
+						shim:false,
+						zIndex: 10,
+						centered: true,
+						plugins : [{fn:Y.Plugin.WidgetAnim, cfg:{duration:0.1}}]
+					}).render();
+					
+					// Make draggable
+					this.drag = new Y.DD.Drag({
+						node : this.instance.get("boundingBox"), 
+						handles : [".yui3-widget-hd"]
+					}).plug(Y.Plugin.DDConstrained, { constrain2view : true });
+					
+					this.submit = function() {
+						this.disable();
+						Y.one("#"+this.id+"-pbar").setStyle("visibility","visible");
+						this.submitted();
+					};
+					
+					this.submitted = function() {
+						Y.one("#"+this.id+"-pbar").setStyle("visibility","hidden");
+						this.hide();
+						showSimpleDialog("Sendingen var vellykket", "Innlogginsopplysninger ble sendt til brukeren.");
+					};
+					
+					var self = this;
+
+					Y.on("click", function(e){ self.show();   }, "#"+this.id+"-show");
+					Y.on("click", function(e){ self.hide();   }, "#"+this.id+"-cancel"); 
+					Y.on("click", function(e){ self.submit(); }, "#"+this.id+"-submit"); 
+					
+				}
+				
+				Y.extend(Dialog1, GeneralDialog);
+				
+				dialog01 = new Dialog1();
+				
+		  });
+
+		</script>
+		
 		';
 		return $output;
+	}
+	function sendLoginDetails(){
+	
+		if (!$this->allow_editprofile) return $this->permissionDenied();
+
+		$user_id = $this->current_medlem;
+		$user_obj = $this->members[$user_id];
+		
+		return '
+			<h3>'.$user_obj->fullname.': Send innloggingsdetaljer</h3>
+			<form method="post action="'.$this->generateURL('action=sendLoginDetailsDo').'">
+				
+				<br /><br />
+			
+				<input type="button" value="Avbryt" onclick="window.location=\''.$this->generateURL('action=userOverview',true).'\'" /> 
+				<input type="submit" value="Send" />
+			</form>
+		';
+		
 	}
 	
 	function memberAdded(){

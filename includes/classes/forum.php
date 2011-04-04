@@ -421,12 +421,15 @@ class forum extends base {
 		$mail_newthreads_checked = $this->mail_newthreads ? "checked='checked' " : "";
 		$mail_onreply_checked = $this->mail_onreply ? "checked='checked' " : "";
 		$post_uri = $this->generateURL(array("noprint=true","forum_savesettings"));
+		
+		$m = $this->getUserData($user_id, array('ProfilePicture'));
+
 		$output .= '
 			<h3>Mine innstillinger</h3>
 			<form method="post" action="'.$post_uri.'">
 				<p>
 					Mitt forumbilde:<br />
-					<img src="'.call_user_func($this->lookup_forumimage,$this->login_identifier).'" style="border: 1px solid #000000; margin:2px;"/><br />
+					<img src="'.$m['ProfilePicture']['SmallThumb'].'" style="border: 1px solid #000000; margin:2px;"/><br />
 					<a href="/medlemsliste/medlemmer/'.$this->login_identifier.'/?editprofile">Endre</a><br /><br />
 				</p>
 				<p>
@@ -491,23 +494,14 @@ class forum extends base {
 		$this->redirect($this->generateCoolURL("/"),'Innstillingene ble lagret');
 	}
 		
-	function makeMemberInfo($id) {
-		$member = call_user_func($this->lookup_member, $id);
-		$rs = $this->query("SELECT count(id) FROM $this->table_posts WHERE author='$member->ident'");
-		$forumpost_count = $rs->fetch_row(); $forumpost_count = $forumpost_count[0];
-
-		$author = empty($member->nickname) ? $member->firstname : $member->nickname;
-		$pstr = "";
-		foreach ($member->memberof as $mid){
-			$g = call_user_func($this->lookup_group,$mid);
-			if ($g->kategori == "SP" || $g->kategori == "SM") $pstr = " i ".$g->caption;
-		}
+	function makeMemberInfo($userId) {
+		$m = $this->getUserData($userId, array('FirstName', 'ProfileUrl', 'ProfilePicture', 'LongTitle', 'ForumPostCount'));
 		return '
 			<div class="smalltext">
-				<strong>'.call_user_func($this->make_memberlink, $member->ident, $author).'</strong><br />
-				'.$member->tittel.$pstr.'
-				<img src="'.call_user_func($this->lookup_forumimage,$member->ident).'" alt="'.$member->firstname.'" style="width:100px; height: 100px; display: block; padding: 0px 15px 0px 15px;" />
-				'.$forumpost_count.' innlegg
+				<strong><a href="'.$m['ProfileUrl'].'">'.$m['FirstName'].'</a></strong><br />
+				'.$m['LongTitle'].'
+				<img src="'.$m['ProfilePicture']['SmallThumb'].'" alt="'.$m['FirstName'].'" style="width:100px; height: 100px; display: block; padding: 0px 15px 0px 15px;" />
+				'.$m['ForumPostCount'].' innlegg
 			</div>
 		';
 	}

@@ -217,6 +217,15 @@ class innlogging extends base {
 		$row = $rs->fetch_assoc();
 		return ($row['pwd'] != 'NOT_SET');
 	}
+	
+	public function accountActive($user_id) {
+		$rs = $this->query("SELECT username, pwd, sperret FROM $this->table_login WHERE user_id=".intval($user_id));
+		if ($rs->num_rows != 1) return false;
+		$row = $rs->fetch_assoc();
+		if ($row['username'] == '') return false;
+		if ($row['pwd'] == 'NOT_SET') return false;
+		return ($row['sperret'] == 0);
+	}
 
 	public function getUsername($user_id = 0) {
 		if ($user_id == 0 && $this->loggedin) $user_id = $this->_loggedinUser->id;
@@ -756,7 +765,7 @@ class innlogging extends base {
 						</label>
 					</div>
 					<div style="float:left;" id="huskdiv">
-						<label for="huskmeg" id="huskmeglabel">
+						<label for="huskmeg" id="huskmeglabel" class="yui3-hastooltip">
 							<input type="checkbox" name="huskmeg" id="huskmeg" />
 							Husk meg
 						</label>
@@ -769,15 +778,33 @@ class innlogging extends base {
 				</form>
 				<script type="text/javascript">
 			    //<![CDATA[	
-			    	YAHOO.util.Event.onContentReady("huskmeglabel", function() {
-						var tt1 = new YAHOO.widget.Tooltip("tt1", { 
-							context:"huskmeglabel",
-                            showdelay: 0,
-                            zIndex: 10,
-							autodismissdelay: 20000,
-							text:"Krysser du av her forblir du innlogget i 30 dager<br /> med mindre du logger ut. Du bør derfor ikke krysse<br /> av her hvis denne maskinen også brukes av andre." 
+					 
+					YUI({ 
+						modules: {
+							"tooltip": { 
+								fullpath: "/jscript/org.18bergen/tooltip.js", 
+								requires:["event-mouseenter", "widget", "widget-position", "widget-stack"] 
+							}
+						} 
+					}).use("tooltip", function (Y) {
+					    /*
+						 * The delegate node to which event listeners should be attached.
+						 * This node should be an ancestor of all trigger nodes bound
+						 * to the instance. By default the document is used.
+						 */
+						var tt = new Y.Tooltip({
+							triggerNodes:".yui3-hastooltip",
+							delegate: "#huskdiv",
+							autoHideDelay: 8000,
+							content: {
+								huskmeglabel: "Krysser du av her forblir du innlogget i 30 dager<br /> med mindre du logger ut. Du bør derfor ikke krysse<br /> av her hvis denne maskinen også brukes av andre."
+							},
+							shim:false,
+							zIndex:9
 						});
-					});
+						tt.render();
+						
+			    	});
 				//]]>
 				</script>
 				

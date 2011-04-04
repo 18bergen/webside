@@ -9,9 +9,9 @@ class MailNotifications {
 			$userId = $login->getUserId();
 	
 			$visInternForum = true;
-			$groups = $memberdb->getActiveGroupMemberships($userId);
-			if (count($groups) == 1){
-				if ($groups[0]['Category'] == "FO") $visInternForum = false;
+			$mem = $memberdb->getActiveGroupMemberships($userId);
+			if (count($mem) == 1){
+				if ($mem[0]['Group']['Category'] == "FO") $visInternForum = false;
 			}
 			
 			$res = $db->query("SELECT

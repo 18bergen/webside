@@ -1646,3 +1646,120 @@ div.auto_complete {
   margin-left:4px;
   background: #ffffee;
 }
+
+
+/** Styling YUI3 overlays **/
+
+
+    /* Hide overlay markup while loading, if js is enabled */
+	.yui3-js-enabled .yui3-overlay-loading {
+		top:-1000em;
+		left:-1000em;
+		position:absolute;
+	}
+	
+	.yui3-widget #dialog1 {
+		display: block;
+		background: #fff;
+	}
+	.shadow {
+		-moz-box-shadow: 2px 2px 10px #444;
+		-webkit-box-shadow: 2px 2px 10px #444;
+		box-shadow: 2px 2px 10px #444;
+		/* For IE 8 */
+		-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000')";
+		/* For IE 5.5 - 7 */
+		filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000');
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		border-radius: 5px;
+	}
+	 
+	/* Overlay Look/Feel */
+	.yui3-overlay-content {
+		/*border:1px solid #000;
+		background-color:#fff;*/
+	}
+	 
+	.yui3-overlay-content .yui3-widget-hd {
+		padding:6px;
+		background-color: #2E8B57; /* Sea Green */
+		color: #fff;
+		padding: 5px;
+		text-align:center;
+		cursor: move;
+		text-shadow: #333 1px 1px 4px;
+		background-image: -webkit-gradient(
+			linear,
+			left bottom,
+			left top,
+			color-stop(0.04, rgb(102,102,102)),
+			color-stop(0.78, rgb(133,133,133))
+		);
+		background-image: -moz-linear-gradient(
+			center bottom,
+			rgb(102,102,102) 4%,
+			rgb(133,133,133) 78%
+		);
+		-webkit-border-top-left-radius: 5px;
+		-webkit-border-top-right-radius: 5px;
+		-moz-border-radius-topleft: 5px;
+		-moz-border-radius-topright: 5px;
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+	}
+	 
+	.yui3-overlay-content .yui3-widget-bd {
+		padding:15px;
+		background-color:#fff;
+		/*
+		border-left: 1px solid #C8C9CA; 
+		border-right: 1px solid #C8C9CA;
+		*/
+	}
+	 
+	.yui3-overlay-content .yui3-widget-ft {
+		padding:10px 15px 10px 15px;
+		background-color:#fff;
+		text-align:right;
+		/*border: 1px solid #C8C9CA;*/
+	}
+	
+	/** YUI3 ToolTip Widget **/
+	
+	 .yui3-tooltip {
+        position:absolute;
+    }
+
+    .yui3-tooltip-content {
+        color: #000;
+        padding: 2px 5px;
+        border-color: #D4C237 #A6982B #A6982B #A6982B;
+        border-width: 1px;
+        border-style: solid;
+        background-color: #FFEE69;
+    }
+
+    .yui3-tooltip-hidden {
+        visibility:hidden;
+    }
+
+    div.yui3-hastooltip {
+        border:1px solid #243356;
+        background-color:#406ED9;
+        color:#ffffff;
+        width:25em;
+        margin:20px 0px;
+        padding:5px;
+        cursor:default;
+    }
+
+    div.yui3-hastooltip span {
+        font-style:italic;
+        font-weight:bold;
+        color:#ABCEFF;
+    }
+
+    .yui3-tooltip-content strong {
+        font-weight:bold;
+    }

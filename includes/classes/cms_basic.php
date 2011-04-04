@@ -51,17 +51,6 @@ class cms_basic extends base {
 	
 	var $_errors = '';
 		
-	var $_templatePageNotFound = '
-		<div class="alpha-shadow" style="float:right;"><div class="inner_div">
-			<img src="%imagedir%scream.gif" alt="Scream" style="width: 100px;" />
-		</div></div>
-		<h2>Skrik!</h2>
-		<p>
-		  Den etterspurte siden ble ikke funnet!
-		</p>
-		<p>
-			%url%
-		</p>';
 
 	
 	var $template_filelisting = "
@@ -257,10 +246,7 @@ class cms_basic extends base {
 	function run(){
 		
 		if ($this->pagenotfound){		
-			$r1a = array();					$r2a = array();
-			$r1a[1]  = "%imagedir%";		$r2a[1]  = $this->image_dir;
-			$r1a[2]  = "%url%";				$r2a[2]  = htmlspecialchars($_SESSION['urlnotfound']);						
-			return str_replace($r1a, $r2a, $this->_templatePageNotFound);
+			return "huh? this function call should not have been made.";
 		}
 		
 		$wLookup = $this->lookup_webmaster;
@@ -403,10 +389,13 @@ class cms_basic extends base {
 		
 			// Page not found
 			$r1a = array();					$r2a = array();
-			$r1a[1]  = "%imagedir%";		$r2a[1]  = $this->image_dir;
-			$r1a[2]  = "%url%";				$r2a[2]  = htmlspecialchars($_SESSION['urlnotfound']);						
-			$this->_errors .= str_replace($r1a, $r2a, $this->_templatePageNotFound);			
+			$r1a[]  = "%imagedir%";			$r2a[]  = $this->image_dir;
+			$r1a[]  = "%url%";				$r2a[]  = htmlspecialchars($_SESSION['urlnotfound']);						
+			$r1a[]  = "%ref%";				$r2a[]  = htmlspecialchars($_SERVER['HTTP_REFERER']);						
+			$template = file_get_contents('../includes/templates/404.php');
+			$this->_errors .= str_replace($r1a, $r2a, $template);
 			return false;
+
 		}
 			
 		$res = $this->query(

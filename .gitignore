@@ -3,3 +3,4 @@
 *.bak
 *.swp
 .svn
+includes/constants.php

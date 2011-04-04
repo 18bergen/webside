@@ -34,8 +34,8 @@ class UserDataCache extends base {
 				'ParentGroup' => intval($row['parent']),
 				'DefaultRights' => intval($row['defaultrights']),
 				'DefaultRang' => intval($row['defaultrang']),
-				'Slug' => intval($row['slug']),
-				'Category' => intval($row['kategori']),
+				'Slug' => $row['slug'],
+				'Category' => $row['kategori'],
 				'GroupPages' => $row['gruppesider'],
 				'ChildGroups' => array(),
 				'Banner' => $row['banner']
@@ -123,113 +123,53 @@ class UserDataCache extends base {
 		return $count;
 	}
 	
+	private function usersNotCached($users, $fieldname = '') {
+		$cached = array(); $notCached = array();
+		foreach ($this->users as $id => $u) {
+			if ($fieldname == '') $cached[] = $id;
+			else if (isset($u[$fieldname])) $cached[] = $id;
+		}
+		foreach ($users as $user_id) {
+			if (!in_array($user_id,$cached)) $notCached[] = $user_id;
+		}
+		return $notCached;
+	}
+	
 	/*
 		Example:
 		$d = getUserData([1,2,3],array('FirstName','ProfilePicture'));
 	*/
 	public function getUserData($users,$fields) {
 
+		if (!is_array($users)) $this->fatalError("Argument to addToUserDataCache should be an array of user id's.");
 		if (!is_array($fields)) $fields = array($fields);
 
-		// Check if basic data is cached for the users, and add to the cache as necessary
-		$usersNotCached = array();
-		$cachedUsers = array_keys($this->users);
-		if (is_array($users)) {
-			foreach ($users as $user_id) {
-				if (!in_array($user_id,$cachedUsers)) $usersNotCached[]=$user_id;
-			}
-		} else {
-			if (!in_array($users,$cachedUsers)) $usersNotCached[]=$users;		
-		}
-		if (count($usersNotCached) != 0)
-			$this->fetchBasicUserData($usersNotCached);
+		// First check if basic data is cached for the users, and add to the cache if necessary
+		
+		$this->fetchBasicUserData($this->usersNotCached($users));
+		
+		// Fetch more data as necessary
+		
+		if (in_array('Status',$fields) or in_array('Memberships',$fields) or in_array('ActiveMemberships',$fields) or in_array('All',$fields))
+			$this->fetchMemberships($this->usersNotCached($users, 'Memberships'));
+		
+		if (in_array('Verv',$fields) or in_array('AktiveVerv',$fields) or in_array('All',$fields))
+			$this->fetchVerv($this->usersNotCached($users, 'Verv'));
 
-		if (in_array('All',$fields) or in_array('Memberships',$fields) or in_array('ActiveMemberships',$fields)) {
-			// Check if memberships data is cached for the users, and add to the cache as necessary
-			$usersNotCached = array();
-			$cachedUsers = array();
-			foreach ($this->users as $id => $u) {
-				if (isset($u['Memberships'])) $cachedUsers[] = $id;
-			}
-			if (is_array($users)) {
-				foreach ($users as $user_id) {
-					if (!in_array($user_id,$cachedUsers)) $usersNotCached[]=$user_id;
-				}
-			} else {
-				if (!in_array($users,$cachedUsers)) $usersNotCached[]=$users;		
-			}
-			if (count($usersNotCached) != 0)
-				$this->fetchMemberships($usersNotCached);
-		}
+		if (in_array('Guardians',$fields) or in_array('Children',$fields) or in_array('All',$fields))
+			$this->fetchUserRelationships($this->usersNotCached($users, 'Guardians'));
 		
-		if (in_array('All',$fields) or in_array('Verv',$fields) or in_array('AktiveVerv',$fields)) {
-			// Check if verv is cached for the users, and add to the cache as necessary
-			$usersNotCached = array();
-			$cachedUsers = array();
-			foreach ($this->users as $id => $u) {
-				if (isset($u['Verv'])) $cachedUsers[] = $id;
-			}
-			if (is_array($users)) {
-				foreach ($users as $user_id) {
-					if (!in_array($user_id,$cachedUsers)) $usersNotCached[]=$user_id;
-				}
-			} else {
-				if (!in_array($users,$cachedUsers)) $usersNotCached[]=$users;		
-			}
-			if (count($usersNotCached) != 0)
-				$this->fetchVerv($usersNotCached);
-		}
-
-		if (in_array('All',$fields) or in_array('Guardians',$fields) or in_array('Children',$fields)) {
-			// Check if verv is cached for the users, and add to the cache as necessary
-			$usersNotCached = array();
-			$cachedUsers = array();
-			foreach ($this->users as $id => $u) {
-				if (isset($u['Guardians'])) $cachedUsers[] = $id;
-			}
-			if (is_array($users)) {
-				foreach ($users as $user_id) {
-					if (!in_array($user_id,$cachedUsers)) $usersNotCached[]=$user_id;
-				}
-			} else {
-				if (!in_array($users,$cachedUsers)) $usersNotCached[]=$users;		
-			}
-			if (count($usersNotCached) != 0)
-				$this->fetchUserRelationships($usersNotCached);
-		}
+		if (in_array('GroupMemberships',$fields) or in_array('ActiveGroupMemberships',$fields) or in_array('LongTitle',$fields) or in_array('All',$fields))
+			$this->fetchGroupMemberships($this->usersNotCached($users, 'GroupMemberships'));
+			
+		if (in_array('ForumPostCount',$fields) or in_array('All',$fields))
+			$this->fetchForumPostCounts($this->usersNotCached($users, 'ForumPostCount'));
 		
-		if (in_array('All',$fields) or in_array('GroupMemberships',$fields) or in_array('ActiveGroupMemberships',$fields)) {
-			// Check if verv is cached for the users, and add to the cache as necessary
-			$usersNotCached = array();
-			$cachedUsers = array();
-			foreach ($this->users as $id => $u) {
-				if (isset($u['GroupMemberships'])) $cachedUsers[] = $id;
-			}
-			if (is_array($users)) {
-				foreach ($users as $user_id) {
-					if (!in_array($user_id,$cachedUsers)) $usersNotCached[]=$user_id;
-				}
-			} else {
-				if (!in_array($users,$cachedUsers)) $usersNotCached[]=$users;		
-			}
-			if (count($usersNotCached) != 0)
-				$this->fetchGroupMemberships($usersNotCached);
+		$toReturn = array();
+		foreach ($users as $user_id) {
+			$toReturn[$user_id] = $this->getSingleUserData($user_id, $fields);				
 		}
-		
-		if (is_array($users)) {
-			$toReturn = array();
-			foreach ($users as $user_id) {
-				$toReturn[$user_id] = $this->getSingleUserData($user_id, $fields);				
-			}
-			return $toReturn;
-		} else {
-			if (!is_numeric($users)) {
-				$this->fatalError("user_id sent to memberlist:getUserData must be numeric!");
-			}
-			$user_id = $users;
-			$toReturn = $this->getSingleUserData($user_id, $fields);
-			return $toReturn;
-		}
+		return $toReturn;
 	}
 
 	private function dumpUserDataCacheKeys() {
@@ -256,9 +196,8 @@ class UserDataCache extends base {
 	}
 
 	private function fetchBasicUserData($users) {
-		if (!is_array($users) || count($users) == 0) {
-			$this->fatalError("Argument to addToUserDataCache should be an array of user id's.");
-		}
+		if (count($users) == 0) return;
+
 		foreach ($users as $user_id) {
 			if (!is_numeric($user_id)) {
 				$this->fatalError("Argument to addToUserDataCache should be an array of <em>numeric</em> values.");
@@ -305,7 +244,7 @@ class UserDataCache extends base {
 				'AccountClosed' => $row['kontosperret'],
 				'Rights'		=> $row['rights'],
 				'Rang'			=> $row['rang'],
-				'Status'		=> $row['memberstatus'],
+				//'Status'		=> $row['memberstatus'], // see the fetchMemberships function below
 				
 				// Site settings:
 				'Voted'			=> $row['voted']	
@@ -343,7 +282,7 @@ class UserDataCache extends base {
 				);
 			} else {
 				$dir = $this->memberImagesDir.$tmp['UserId'].'/';
-				$basename = $tmp['ProfilePicture'];
+				$basename = $tmp['ForumPicture'];
 				$tmp['ForumPicture'] = array(
 					'UploadedPicture' => true,
 					'FileName'        => $basename,
@@ -360,7 +299,6 @@ class UserDataCache extends base {
 			if ((strpos("unknown",$useragent) !== false) || (strpos("Googlebot",$useragent) !== false) || (isset($_GET['simulategoogle']))){
 				$tmp['FirstName'] = $tmp['MiddleName'] = $tmp['LastName'] = "[skjult]";
 			}
-			
 			// Cache full name:
 			$mid = (empty($tmp['MiddleName'])) ? "" : mb_substr($tmp['MiddleName'],0,1,'UTF-8').". ";
 			$tmp['FullName'] = $tmp['FirstName']." $mid".$tmp['LastName'];
@@ -381,44 +319,58 @@ class UserDataCache extends base {
 			$this->users[intval($row['ident'])] = $tmp;
 		}
 	}
-
+		
 	private function fetchMemberships($users) {
-	
+		if (count($users) == 0) return;
 		foreach ($users as $uid) {
 			$this->users[$uid]['Memberships'] = array();
 			$this->users[$uid]['ActiveMemberships'] = array();
 		}
-	
 		// Fill in memberships
 		$m = $this->table_memberships;
 		$d = $this->table_membershiptypes;
 		$res = $this->query("SELECT $m.user_id, $m.kind, $m.date_from, $m.date_to, $d.description 
 			FROM $m,$d
 			WHERE $m.user_id IN (".implode(',',$users).")
-			AND $m.kind=$d.sid");
+			AND $m.kind=$d.sid
+			ORDER BY $m.date_from ASC");
 		while ($row = $res->fetch_assoc()) {
 			$uid = intval($row['user_id']);
 			$df = ($row['date_from']==0) ? 0 : strtotime($row['date_from']);
 			$dt = ($row['date_to']==0) ? 0 : strtotime($row['date_to']);
 			$this->users[$uid]['Memberships'][] = array(
-				'Kind' => $row['kind'],
-				'Description' => $row['description'],
-				'StartDate' => $df,
-				'EndDate' => $dt
+				'Kind' => $row['kind'], 
+				'StartDate' => $df, 
+				'EndDate' => $dt, 
+				'Description' => $row['description']
 			);
 			if ($dt == 0) {
-				$this->users[$uid]['ActiveMemberships'][] = count($this->users[$uid]['Memberships'])-1;
+				$this->users[$uid]['ActiveMemberships'][] = &$this->users[$uid]['Memberships'][count($this->users[$uid]['Memberships'])-1];
 			}
+		}
+		foreach ($users as $uid) {
+			$status = array('pensjonert');
+			foreach ($this->users[$uid]['ActiveMemberships'] as $mem) {
+				$status[] = $mem['Kind'];
+			}
+			usort($status, array('UserDataCache','statusOrder'));
+			$this->users[$uid]['Status'] = $status[0];
 		}
 	}
 	
+	static function statusOrder($a,$b) {
+		if ($a == $b) return 0;
+		$order = array('pensjonert','foresatt','stottemedlem','ressursperson','vanlig');
+		return (array_search($a, $order) > array_search($b, $order)) ? -1 : 1; 
+	}
+	
+	
 	private function fetchGroupMemberships($users) {
-
+		if (count($users) == 0) return;
 		foreach ($users as $uid) {
 			$this->users[$uid]['GroupMemberships'] = array();
 			$this->users[$uid]['ActiveGroupMemberships'] = array();
-		}
-		
+		}		
 		$res = $this->query(
 			"SELECT bruker as user_id, gruppe as group_id, startdate, enddate
 			FROM $this->table_group_memberships
@@ -434,23 +386,30 @@ class UserDataCache extends base {
 			$this->users[$uid]['GroupMemberships'][] = array(
 				'Active' => ($dt != 0),
 				'GroupId' => $gid,
+				'Group' => &$this->groups[$gid],
 				'StartDate' => $df,
 				'EndDate' => $dt			
 			);
-			$gid;
 		}
 		if ($dt == 0) {
-			$this->users[$uid]['ActiveGroupMemberships'][] = count($this->users[$uid]['GroupMemberships'])-1;
+			$this->users[$uid]['ActiveGroupMemberships'][] = &$this->users[$uid]['GroupMemberships'][count($this->users[$uid]['GroupMemberships'])-1];
+		}
+		foreach ($users as $uid) {
+			$this->users[$uid]['LongTitle'] = $this->users[$uid]['Title'];
+			foreach ($this->users[$uid]['ActiveGroupMemberships'] as $membership) {
+				if (in_array($membership['Group']['Category'], array('SP','SM','RO'))) {
+					$this->users[$uid]['LongTitle'] = $this->users[$uid]['Title'].' i '.$membership['Group']['Caption']; // . $this->users[$uid]['Title'].' i '.$agm['Group']['Caption'];
+				}
+			}
 		}
 	}
 	
 	private function fetchVerv($users) {
-
+		if (count($users) == 0) return;
 		foreach ($users as $uid) {
 			$this->users[$uid]['Verv'] = array();
 			$this->users[$uid]['AktiveVerv'] = array();
 		}
-		
 		// Fill in verv
 		$tv = $this->table_verv; $th = $this->table_vervhistorie; $tg = $this->table_groups;
 		$rs = $this->query("SELECT 
@@ -489,18 +448,27 @@ class UserDataCache extends base {
 	}
 	
 	private function fetchUserRelationships($users) {
-
+		if (count($users) == 0) return;
 		foreach ($users as $uid) {
 			$this->users[$uid]['Guardians'] = array();
 			$this->users[$uid]['Children'] = array();
-		}
-		
+		}		
 		$res = $this->query("SELECT medlem, foresatt FROM $this->table_guardians WHERE medlem IN (".implode(',',$users).") OR foresatt IN (".implode(',',$users).")");
 		while ($row = $res->fetch_assoc()){
 			$c = intval($row['medlem']);
 			$g = intval($row['foresatt']);
 			if (isset($this->users[$c])) $this->users[$c]['Guardians'][] = $g;				
 			if (isset($this->users[$g])) $this->users[$g]['Children'][] = $c;				
+		}
+	}
+	
+	private function fetchForumPostCounts($users) {
+		if (count($users) == 0) return;
+		$res = $this->query("SELECT author, count(id) as postcount FROM $this->table_forumposts WHERE author IN (".implode(',',$users).")");
+		while ($row = $res->fetch_assoc()){
+			$uid = intval($row['author']);
+			$cnt = intval($row['postcount']);
+			$this->users[$uid]['ForumPostCount'] = $cnt;
 		}
 	}
 	
@@ -535,7 +503,7 @@ class memberlist extends base {
 	var $table_news = "news";
 	var $table_wordbox = "wordbox";	
 	var $table_onlineusers = "onlineusers";	
-	var $document_title = '';
+	var $document_title = "";
 
 	private $userDataCache;
 	private $activeMembersCache = array();
@@ -830,6 +798,7 @@ class memberlist extends base {
 		$this->userDataCache->table_verv = $this->table_verv;
 		$this->userDataCache->table_vervhistorie = $this->table_vervhistorie;
 		$this->userDataCache->table_rights = $this->table_rights;
+		$this->userDataCache->table_forumposts = $this->table_forumposts;
 	}
 	
 	public function getAllMembers() {
@@ -848,15 +817,11 @@ class memberlist extends base {
 	
 	/* Deprecated */	
 	function getForumImage($id, $size = 'small'){
-		$basename = $this->members[$id]->forumbilde;
-		if (empty($basename)) {
-			return $this->image_dir."unknown.jpg";		
-		}
-		$dir = $this->memberImagesDir.$id.'/';
+		$udata = $this->getUserData($id,'ForumPicture');
 		switch ($size) {
-			case 'small': return '/'.$this->userFilesDir.$dir.'_thumbs140/'.$basename;
-			case 'medium': return '/'.$this->userFilesDir.$dir.'_thumbs490/'.$basename;
-			default: return '/'.$this->userFilesDir.$dir.$basename;
+			case 'small': return $udata['ForumPicture']['SmallThumb'];
+			case 'medium': return $udata['ForumPicture']['MediumThumb'];
+			default: return $udata['ForumPicture']['Original'];
 		}
 	}
 	
@@ -884,15 +849,19 @@ class memberlist extends base {
 	}
 	
 	public function getUserData($users, $fields) {
-		return $this->userDataCache->getUserData($users, $fields);
+		if (is_array($users)) {
+			return $this->userDataCache->getUserData($users, $fields);
+		} else if (is_numeric($users)) {
+			$ud = $this->userDataCache->getUserData(array($users), $fields);
+			return $ud[$users];
+		} else {
+			$this->fatalError("First argument to memberlist:getUserData must be either an array or an integer!");
+		}
 	}
 	
 	public function getActiveGroupMemberships($userId) {
 		$udata = $this->getUserData($userId, 'ActiveGroupMemberships');
-		$groups = array();
-		foreach ($udata['ActiveGroupMemberships'] as $a) {
-			$groups[] = $this->getGroupById($a['GroupId']);
-		}
+		return $udata['ActiveGroupMemberships'];
 	}
 	
 	/* Should be moved to UserDataCache class */

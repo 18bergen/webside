@@ -39,10 +39,13 @@
   <!-- 
   	Unfortunately, using YUILoader 2.8 for loading everything does not work very well.
   	http://yuilibrary.com/forum/viewtopic.php?p=3199
-  -->
   <script type="text/javascript" src="%yui_uri%build/yuiloader-dom-event/yuiloader-dom-event.js"></script>
   <script type="text/javascript" src="%yui_uri%build/container/container-min.js"></script>
-  <link rel="stylesheet" type="text/css" href="%yui_uri%build/assets/skins/sam/skin.css" />
+  -->
+  
+  <!-- YUI 3 -->
+  <link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/3.3.0/build/cssfonts/fonts-min.css" />
+  <script type="text/javascript" src="http://yui.yahooapis.com/3.3.0/build/yui/yui-min.js" charset="utf-8"></script>
   
   <!--
   <script type="text/javascript" src="/yui/build/animation/animation-min.js"></script>
@@ -78,9 +81,11 @@
   <link rel="shortcut icon" href="/favicon.ico" />
 
 </head>
-<body class="yui-skin-sam">
+
+<body class="yui3-skin-sam yui-skin-sam">
 
  <script type="text/javascript">
+    /*
     var loader = new YAHOO.util.YUILoader({
 		base: "%yui_uri%build/",
 		loadOptional: true,
@@ -88,7 +93,8 @@
 		onFailure: function(o) {
 			console.warn("YUI LOADER FAILED: "+o.msg);
 		}
-	});
+	}); 
+	*/
  </script>
 
  <!-- Ikke slett denne! Brukes av calendarpopup -->
