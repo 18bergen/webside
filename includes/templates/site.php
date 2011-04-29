@@ -42,7 +42,6 @@
   -->
   <script type="text/javascript" src="%yui_uri%build/yuiloader-dom-event/yuiloader-dom-event.js"></script>
   <script type="text/javascript" src="%yui_uri%build/container/container-min.js"></script>
-  <link rel="stylesheet" type="text/css" href="%yui_uri%build/assets/skins/sam/skin.css" />
   
   <!--
   <script type="text/javascript" src="/yui/build/animation/animation-min.js"></script>
