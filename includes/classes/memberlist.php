@@ -693,7 +693,8 @@ class memberlist extends base {
 		if (isset($_SERVER['HTTP_USER_AGENT'])) $useragent = $_SERVER['HTTP_USER_AGENT'];
 		if (isset($_SERVER['USER_AGENT'])) $useragent = $_SERVER['USER_AGENT'];
 		while ($row = $res->fetch_assoc()){
-			$id = $row['ident'];
+            $id = $row['ident'];
+            $this->members[$id] = new stdClass(); 
 			foreach ($row as $n => $v){
 				switch ($n) {
 					case 'firstname':
@@ -737,7 +738,8 @@ class memberlist extends base {
 		$this->groups = array();
 		$res = $this->query("SELECT * FROM $this->table_groups ORDER BY position");
 		while ($row = $res->fetch_assoc()){
-			$id = $row['id'];
+            $id = $row['id'];
+            $this->groups[$id] = new stdClass();
 			foreach ($row as $n => $v){
 				$this->groups[$id]->$n = stripslashes($v);
 			}

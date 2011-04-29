@@ -1,6 +1,6 @@
 <?
 
-require_once(BG_LIB_PATH.'simplepie-1.2/simplepie.inc');
+require_once(BG_LIB_PATH.'simplepie/SimplePieAUtoLoader.php');
 
 class FeedFetcher {
 
