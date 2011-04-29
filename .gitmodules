@@ -6,4 +6,4 @@
 	url = git://github.com/yui/yui3.git
 [submodule "www/libs/simplepie"]
 	path = www/libs/simplepie
-	url = https://github.com/simplepie/simplepie.git
+	url = git://github.com/simplepie/simplepie.git
