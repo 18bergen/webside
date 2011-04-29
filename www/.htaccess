@@ -4,7 +4,6 @@ AddDefaultCharset utf-8
 <IfModule mod_rewrite.c>
   
   RewriteEngine on
-  RewriteBase /
 
   # Ignore
   # [L]-flagget angir Last Rule
