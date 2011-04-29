@@ -3,3 +3,17 @@
 *.bak
 *.swp
 .svn
+.bash*
+.inputrc
+.gitconfig
+.mysql_history
+.ssh
+.viminfo
+attachments
+cronlogs
+cache
+_backup
+squirrelmail
+includes/constants.php
+www/userfiles
+www/uimages
