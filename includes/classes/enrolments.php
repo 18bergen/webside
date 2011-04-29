@@ -45,7 +45,10 @@ class enrolments extends base {
 	public $allow_addenrolment = false;
 	public $allow_enrollall = false;
 	public $allow_viewcomments = false;
-	public $allow_enroll = false;
+    public $allow_enroll = false;
+
+    /* Settings */
+    public $force_calendar = 0;
 
 	/* ========================================================================================
 		2. Strings and templates
@@ -487,8 +490,15 @@ class enrolments extends base {
 		$cal_opts = "";
 		$cal_opts .= "<option value='-'>-- Velg fra listen --</option>\n";
 		foreach ($calendars as $id => $c) {
-			$selc = ($id == $defaultCalId) ? " selected='selected'" : "";
-			$cal_opts .= "<option value='".$id."'$selc>".stripslashes($c['caption'])."</option>\n";
+            $selc = ($id == $defaultCalId) ? " selected='selected'" : "";
+            $add_cal = true;
+            if ($this->force_calendar == 0) {
+			    $cal_opts .= "<option value='".$id."'$selc>".stripslashes($c['caption'])."</option>\n";
+            } else {
+                if ($id == $this->force_calendar) {
+                    $cal_opts .= "<option value='".$id."' selected='selected'>".stripslashes($c['caption'])."</option>\n";
+                }
+            }
 		}
 
 		$date_code = $this->makeDateField("closingdate", 0, false);
@@ -538,8 +548,8 @@ class enrolments extends base {
 						array_push($errors,'closingdate_inthepast');					
 					}
 					$ci = $this->cal_instance;
-					$e = $ci->getEventDetails($event_id);
-					if ($e['startdate'] > $closingdate_unix) {
+                    $e = $ci->getEventDetails($event_id);
+					if ($closingdate_unix > $e['startdate']) {
 						array_push($errors,'closingdate_afterstart');					
 					}
 
