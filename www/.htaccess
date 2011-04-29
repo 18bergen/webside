@@ -1,0 +1,27 @@
+
+AddDefaultCharset utf-8
+
+<IfModule mod_rewrite.c>
+  
+  RewriteEngine on
+  RewriteBase /
+
+  # Ignore
+  # [L]-flagget angir Last Rule
+
+  #RewriteRule ^$ nyheter/ [R,L]
+
+  # Treats the TestString as a pathname and tests if it exists and is a directory or a regular file.
+  RewriteCond %{REQUEST_FILENAME} -d [OR]
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule . - [L]
+
+  RewriteRule ^sms-delivery-report /lederverktoy/sms/?noprint=true&sms_action=delivery_report&%{QUERY_STRING} [R,L]
+
+  RewriteRule . index.php?s=0002&%{QUERY_STRING}
+
+</IfModule>
+
+#php_value upload_max_filesize 1M
+#php_value extension_dir "./www/libs/pdflib/bind/php/php-520"
+
