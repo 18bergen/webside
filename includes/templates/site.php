@@ -15,7 +15,6 @@
   <link rel="stylesheet" type="text/css" href="/libs/NiftyCube/niftyCorners.css" />
   <link rel="stylesheet" type="text/css" href="/stylesheets/slideshow.css" media="screen" />
   <link rel="stylesheet" type="text/css" href="/stylesheets/lightbox.css" />
-  <link rel="stylesheet" type="text/css" href="/libs/yui2/build/container/assets/skins/sam/container.css" />
   <!--[if gte ie 5.5000]>
     <link rel="stylesheet" type="text/css" href="/stylesheets/ie.css" />
   <![endif]-->
@@ -43,6 +42,7 @@
   -->
   <script type="text/javascript" src="%yui_uri%build/yuiloader-dom-event/yuiloader-dom-event.js"></script>
   <script type="text/javascript" src="%yui_uri%build/container/container-min.js"></script>
+  <link rel="stylesheet" type="text/css" href="%yui_uri%build/container/assets/skins/sam/container.css" />
   
   <!--
   <script type="text/javascript" src="/yui/build/animation/animation-min.js"></script>

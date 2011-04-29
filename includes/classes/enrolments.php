@@ -111,6 +111,7 @@ class enrolments extends base {
 		    //<![CDATA[	
 
 				function onYuiLoaderComplete() {
+                    console.log("YUI loaded");
 					YAHOO.util.Event.onContentReady("closingdate", function() {
 						(new BG18.datePicker("closingdate", { selectedDate: %date_date_js% } )).init();
 					});
@@ -343,7 +344,8 @@ class enrolments extends base {
 			$tc.$tc_start as dt_start, $tc.$tc_end as dt_end, $tc.$tc_cap as caption,
 			COUNT($tu.id) as paameldte 
 			FROM $te LEFT JOIN $tu ON ($te.id=$tu.enrolment AND $tu.cancelledby=0), $tc
-			WHERE $te.event_id=$tc.id 
+            WHERE $te.page_id=$this->page_id 
+                AND $te.event_id=$tc.id 
 				AND (
 					$te.closing_date > NOW() 
 					OR (ISNULL($te.closing_date) AND $tc.dt_end > NOW())
@@ -370,7 +372,8 @@ class enrolments extends base {
 			$tc.$tc_start as dt_start, $tc.$tc_end as dt_end, $tc.$tc_cap as caption,
 			COUNT($tu.id) as paameldte 
 			FROM $te LEFT JOIN $tu ON ($te.id=$tu.enrolment AND $tu.cancelledby=0), $tc
-			WHERE $te.event_id=$tc.id 
+            WHERE $te.page_id=$this->page_id
+                AND $te.event_id=$tc.id 
 				AND (
 					$te.closing_date < NOW() 
 					OR (ISNULL($te.closing_date) AND $tc.dt_end < NOW())
