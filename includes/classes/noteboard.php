@@ -68,6 +68,8 @@ class noteboard extends comments {
 	
 	var $str_editlink		= "%beginlink%Rediger%endlink%";
 	var $str_deletelink		= "%beginlink%Slett%endlink%";
+	var $str_start_sub      = "%beginlink%Abbonér%endlink%";
+	var $str_stop_sub       = "%beginlink%Stopp abbonement%endlink%";
 
 
 		
@@ -85,7 +87,7 @@ class noteboard extends comments {
 			</div>
 			%body%
 			<div class='footerLinks'>
-				%comments% %editlink% %deletelink%
+				%comments% %editlink% %deletelink% %subscribelink%
 			</div>
 			<div style='clear:both;'><!-- --></div>
 		</div>
@@ -144,6 +146,7 @@ class noteboard extends comments {
 
 	function noteboard(){
 		$this->table_comments = DBPREFIX.'comments';
+		$this->table_subscriptions = DBPREFIX.'subscriptions';
 		$this->table_news = DBPREFIX.$this->table_news;
 		$this->table_imagedirs = DBPREFIX.$this->table_imagedirs;
 		$this->table_images = DBPREFIX.$this->table_images;
@@ -303,25 +306,30 @@ class noteboard extends comments {
 		// Shorten the variables a bit...
 		$tn = $this->table_news;
 		$tc = $this->table_comments;
+		$ts = $this->table_subscriptions;
 		$ti = $this->table_images;
 		$res = $this->query(
 			"SELECT 
-				$tn.$this->table_news_field_id as id,
-				$tn.$this->table_news_field_author as author,
-				$tn.$this->table_news_field_version as version,
-				$tn.$this->table_news_field_image as imageid,".
-				($this->use_subject ? "$tn.$this->table_news_field_subject as subject," : "")."
-				$tn.$this->table_news_field_body as body,
-				$tn.$this->table_news_field_timestamp as timestamp,
+				$tn.id,
+				$tn.creator as author,
+				$tn.version,
+				$tn.img as imageid,".
+				($this->use_subject ? "$tn.subject," : "")."
+				$tn.body,
+				$tn.date as timestamp,
 				$tn.lead_image".
 				($this->enable_comments ? ",
 					COUNT($tc.id) as commentcount" : "").
-			" FROM $tn".
+				", $ts.id as subscription_id
+			FROM $tn".
 			($this->enable_comments ? " LEFT JOIN $tc 
-				ON $tn.$this->table_news_field_id=$tc.parent_id AND $tc.page_id=$this->page_id" : "").
-			" WHERE $tn.$this->table_news_field_page=".$this->page_id.
-			" GROUP BY $tn.$this->table_news_field_id
-			ORDER BY $tn.$this->table_news_field_timestamp DESC
+				ON $tn.id=$tc.parent_id AND $tc.page_id=$this->page_id" : "").
+			" LEFT JOIN $ts
+				ON $ts.parent_id=$tn.id AND $ts.page_id=".$this->page_id.
+				" AND $ts.user_id=".$this->login_identifier. 
+			" WHERE $tn.page=".$this->page_id.
+			" GROUP BY $tn.id
+			ORDER BY $tn.date DESC
 			LIMIT ".(($this->page_no-1)*$this->items_per_page).",$this->items_per_page"
 		);
 		
@@ -341,7 +349,7 @@ class noteboard extends comments {
 		return $output;
 	}
 		
-	function printEntry($row, $realDir, $virtDir,$singleEntry = false){
+	function printEntry($row, $realDir, $virtDir, $singleEntry = false){
 	
 		/*
 			SET lc_time_names = 'nb_NO';
@@ -375,14 +383,23 @@ class noteboard extends comments {
 				</div></div>
 				',$thumbnail,$caption);
 		}
+		$editlinkcode = '';
+		$deletelinkcode = '';
+		$subscribecode = '';
 		if ($singleEntry) {
 			$editlinkcode = (($this->allow_editothersentries) || (($this->allow_editownentries) && ($row['author'] == $this->login_identifier))) 
 				? str_replace(array("%beginlink%","%endlink%"),array('<a href="'.$this->generateCoolURL("/%id%","news_edit").'" class="edit">','</a>'),$this->str_editlink) : '';
 			$deletelinkcode = (($this->allow_deleteothersentries) || (($this->allow_deleteownentries) && ($row['author'] == $this->login_identifier))) 
 				? str_replace(array("%beginlink%","%endlink%"),array('<a href="'.$this->generateCoolURL("/%id%","news_delete").'" class="delete">','</a>'),$this->str_deletelink) : '';
-		} else {
-			$editlinkcode = '';
-			$deletelinkcode = '';
+			
+			if ($this->isLoggedIn()) {
+			    $sid = intval($row['subscription_id']);
+			    if ($sid > 0) {
+        			$subscribecode = str_replace(array("%beginlink%","%endlink%"),array('<a href="'.$this->generateCoolURL("/%id%","action=subscribe").'" class="subscribe">','</a>'),$this->str_stop_sub);
+        		} else {
+        			$subscribecode = str_replace(array("%beginlink%","%endlink%"),array('<a href="'.$this->generateCoolURL("/%id%","action=subscribe").'" class="subscribe">','</a>'),$this->str_start_sub);
+        		}
+		    }
 		}
 		if ($row['commentcount'] == 0) {
 			$commentcode = '<a href="'.$this->generateCoolUrl("/%id%").'#respond" class="comment">'.$this->str_nocomments.'</a>';		
@@ -420,6 +437,7 @@ class noteboard extends comments {
 		}
 		$r1a[] = "%editlink%"; 			$r2a[] = str_replace($r1a, $r2a, $editlinkcode);
 		$r1a[] = "%deletelink%"; 		$r2a[] = str_replace($r1a, $r2a, $deletelinkcode);
+		$r1a[] = "%subscribelink%"; 	$r2a[] = str_replace($r1a, $r2a, $subscribecode);
 		$r1a[] = "%comments%"; 			$r2a[] = str_replace($r1a, $r2a, $commentcode);
 		$r1a[] = "%shorttimestamp%";	$r2a[] = $shortDateStr;
 		$outp = str_replace($r1a, $r2a,	$this->newsListingString);
@@ -909,22 +927,27 @@ class noteboard extends comments {
 		// Print newsentry
 		$tn = $this->table_news;
 		$tc = $this->table_comments;
+		$ts = $this->table_subscriptions;
 		$ti = $this->table_images;
 		$res = $this->query(
 			"SELECT 
-				$tn.$this->table_news_field_id as id,
-				$tn.$this->table_news_field_author as author,
-				$tn.$this->table_news_field_version as version,
-				$tn.$this->table_news_field_image as imageid,".
-				($this->use_subject ? "$tn.$this->table_news_field_subject as subject," : "")."
-				$tn.$this->table_news_field_body as body,
-				$tn.$this->table_news_field_timestamp as timestamp,
+				$tn.id,
+				$tn.creator as author,
+				$tn.version,
+				$tn.img imageid,".
+				($this->use_subject ? "$tn.subject," : "")."
+				$tn.body,
+				$tn.date as timestamp,
 				$tn.lead_image".
 				($this->enable_comments ? ",
 					count($tc.id) as commentcount" : "").
-			" FROM $tn".
+				", $ts.id as subscription_id
+			FROM $tn".
 			($this->enable_comments ? " LEFT JOIN $tc 
-				ON $tn.$this->table_news_field_id=$tc.parent_id AND $tc.page_id=$this->page_id" : "").
+				ON $tn.id=$tc.parent_id AND $tc.page_id=$this->page_id" : "").
+			" LEFT JOIN $ts
+				ON $ts.parent_id=$tn.id AND $ts.page_id=".$this->page_id.
+				" AND $ts.user_id=".$this->login_identifier. 
 			" WHERE 
 				$tn.$this->table_news_field_id='$id' 
 			GROUP BY 
