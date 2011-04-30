@@ -46,6 +46,11 @@
   <!-- YUI 3 -->
   <link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/3.3.0/build/cssfonts/fonts-min.css" />
   <script type="text/javascript" src="http://yui.yahooapis.com/3.3.0/build/yui/yui-min.js" charset="utf-8"></script>
+
+
+  <!-- TRENGS DENNE ??? -->
+  <link rel="stylesheet" type="text/css" href="%yui_uri%build/container/assets/skins/sam/container.css" />
+
   
   <!--
   <script type="text/javascript" src="/yui/build/animation/animation-min.js"></script>

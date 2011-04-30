@@ -871,7 +871,7 @@ class cms_basic extends base {
 					Innstillingen '".stripslashes($row['name'])."' mangler en verdi.");
 				return false;
 			}
-			//print $classname."->".$name." = ".$value."\n";
+			// DEBUG: print "(class $class_id)->$name = $value<br />\n";
 			$instance->$name = $prefix.$value;
 			if ($this->debug) print "$name = $prefix$value\n";
 		}
