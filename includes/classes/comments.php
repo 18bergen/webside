@@ -783,10 +783,10 @@ class Comments extends base {
 		$res = $this->query("SELECT user_id FROM $this->table_subscriptions WHERE page_id=$page_id AND parent_id=$parent_id");
 		while ($row = $res->fetch_assoc()) {
 		    $userId = intval($row['user_id']);
-		    //if ($userId != $this->login_identifier) {
+		    if ($userId != $this->login_identifier) {
                 $user = call_user_func($this->lookup_member, $userId);
                 $this->sendEmailNotification($user, $subject, $plainBody);
-            //}
+            }
 		}
 	}
 	
