@@ -1151,16 +1151,21 @@ class log extends comments {
 	
 	/** COMMENTS **/
 	
-	function subscribeToThread($redirect = true) {
-	    @parent::subscribeToThread($this->current_log, $redirect);
+	function subscribeToThread($post_id = 0, $redirect = true) {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = $this->current_log;
+	    @parent::subscribeToThread($post_id, $redirect);
 	}
 
-	function unsubscribeFromThread() {
-	    @parent::unsubscribeFromThread($this->current_log);
+	function unsubscribeFromThread($post_id = 0, $redirect = true) {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = $this->current_log;
+	    @parent::unsubscribeFromThread($post_id, $redirect);
 	}
 
-	function saveComment() {
-	    $post_id = intval($this->current_log);
+	function saveComment($post_id = 0, $context = '') {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = intval($this->current_log);
 	    if ($post_id <= 0) { $this->fatalError("incorrect input!"); }
 		
 		$tl = $this->table_log;
@@ -1171,11 +1176,7 @@ class log extends comments {
 
 		$row = $res->fetch_assoc();
 		$context = 'loggen «'.$calEvent['caption'].'»';
-	    @parent::saveComment($post_id, $context);	    
-	}
-
-	function deleteComment() {
-	    @parent::deleteComment($this->current_log);
+	    @parent::saveComment($post_id, $context);
 	}
 	
 }

@@ -5239,19 +5239,23 @@ class imagearchive extends comments {
 		return $outp;
 	}
 	
-	
 	/** COMMENTS **/
 	
-	function subscribeToThread($redirect = true) {
-	    @parent::subscribeToThread($this->current_image, $redirect);
+	function subscribeToThread($post_id = 0, $redirect = true) {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = $this->current_image;
+	    @parent::subscribeToThread($post_id, $redirect);
 	}
 
-	function unsubscribeFromThread() {
-	    @parent::unsubscribeFromThread($this->current_image);
+	function unsubscribeFromThread($post_id = 0, $redirect = true) {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = $this->current_image;
+	    @parent::unsubscribeFromThread($post_id, $redirect);
 	}
 
-	function saveComment() {
-	    $post_id = intval($this->current_image);
+	function saveComment($post_id = 0, $context = '') {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = intval($this->current_image);
 	    if ($post_id <= 0) { $this->fatalError("incorrect input!"); }
 		
 		$tf = $this->table_files;
@@ -5262,10 +5266,6 @@ class imagearchive extends comments {
 		$row = $res->fetch_assoc();
 		$context = 'et bilde i bildealbumet «'.stripslashes($row['caption']).'»';
 	    @parent::saveComment($post_id, $context);
-	}
-
-	function deleteComment() {
-	    @parent::deleteComment($this->current_image);
 	}
 
 }
