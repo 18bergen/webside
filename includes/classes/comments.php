@@ -742,7 +742,10 @@ class Comments extends base {
 	    }
 		$res = $this->query("SELECT * FROM $this->table_subscriptions 
 		    WHERE user_id=$this->login_identifier AND page_id=$this->page_id AND parent_id=$id");
-		if ($res->num_rows == 0) return;
+		if ($res->num_rows == 0) {
+			if ($redirect) $this->redirect($this->generateURL(''), 'Du abbonerer ikke på kommentarer for denne posten');
+			return;
+		}
 		$this->query("DELETE FROM $this->table_subscriptions 
 		    WHERE user_id=$this->login_identifier AND page_id=$this->page_id AND parent_id=$id LIMIT 1");
 		if ($redirect) $this->redirect($this->generateURL(''), 'Du vil ikke lenger få beskjed hvis det kommer nye kommentarer her');
