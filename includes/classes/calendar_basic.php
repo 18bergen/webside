@@ -859,7 +859,7 @@ class calendar_basic extends comments {
 		}
 		return $calpages;
 	}
-		
+	
 }
 
 ?>

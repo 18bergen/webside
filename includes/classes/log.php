@@ -144,8 +144,7 @@ class log extends comments {
 	}
 	
 	function initialize() {
-		$this->initialize_base();	
-		$this->initialize_comments();
+	    @parent::initialize();
 		
 		// Stop here if using to create sitemap
 		if (empty($this->lookup_member)) return;
@@ -192,7 +191,8 @@ class log extends comments {
 		$logActions = array(
 			'editLog','saveLog','deleteLog','deleteLogDo','viewLog',
 			'ajaxGetAuthorList',
-			'ajaxGetPhotoAlbumForEventId'
+			'ajaxGetPhotoAlbumForEventId',
+			'saveComment','deleteCommentDo','subscribeToThread','unsubscribeFromThread'
 		);
 		
 		$action = isset($_GET['action']) ? $_GET['action'] : '';
@@ -571,7 +571,8 @@ class log extends comments {
 			VALUES (\"$authors\",$timestamp,$page_id,$cal_id,$event_id)
 		");
 		
-		$id = $this->insert_id();
+		$this->current_log = $this->insert_id();		
+        $this->subscribeToThread(false);
 		
 		$this->redirect($this->generateCoolURL("/$year/$slug","action=editLog"));
 	
@@ -1146,6 +1147,35 @@ class log extends comments {
 		$slug = $calEvent['slug'];
 
 		return $this->generateCoolURL("/$year/$slug");
+	}
+	
+	/** COMMENTS **/
+	
+	function subscribeToThread($redirect = true) {
+	    @parent::subscribeToThread($this->current_log, $redirect);
+	}
+
+	function unsubscribeFromThread() {
+	    @parent::unsubscribeFromThread($this->current_log);
+	}
+
+	function saveComment() {
+	    $post_id = intval($this->current_log);
+	    if ($post_id <= 0) { $this->fatalError("incorrect input!"); }
+		
+		$tl = $this->table_log;
+		$res = $this->query("SELECT event_id FROM $tl WHERE id=$post_id");
+		if ($res->num_rows != 1) $this->fatalError("Loggen ble ikke funnet!");
+		$row = $res->fetch_assoc();
+		$calEvent = $this->calendar_instance->getEventDetails($row['event_id']);
+
+		$row = $res->fetch_assoc();
+		$context = 'loggen «'.$calEvent['caption'].'»';
+	    @parent::saveComment($post_id, $context);	    
+	}
+
+	function deleteComment() {
+	    @parent::deleteComment($this->current_log);
 	}
 	
 }

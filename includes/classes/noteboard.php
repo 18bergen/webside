@@ -68,8 +68,6 @@ class noteboard extends comments {
 	
 	var $str_editlink		= "%beginlink%Rediger%endlink%";
 	var $str_deletelink		= "%beginlink%Slett%endlink%";
-
-
 		
 	/* Templates and localization */
 
@@ -143,7 +141,6 @@ class noteboard extends comments {
 	/* Constructor */
 
 	function noteboard(){
-		$this->table_comments = DBPREFIX.'comments';
 		$this->table_news = DBPREFIX.$this->table_news;
 		$this->table_imagedirs = DBPREFIX.$this->table_imagedirs;
 		$this->table_images = DBPREFIX.$this->table_images;
@@ -157,14 +154,19 @@ class noteboard extends comments {
 	function initialize(){
 		@parent::initialize(); //$this->initialize_base(); $this->initialize_comments();
 		
-		array_push($this->getvars,'news_edit','save_news','news_delete','news_page','news_image',
-			'def_image','news_article','makerss','errs','fullname','email','body','parent',
-			'comment_id','cropimage','docropimage');
-
 		$res = $this->query("SELECT COUNT(*) FROM $this->table_news WHERE $this->table_news_field_page=".$this->page_id);
 		$count = $res->fetch_array(); 
 		$this->item_count = $count[0];
 		
+		$this->action = "";
+		if (isset($_GET['action']))
+			$this->action = $_GET['action'];
+
+        $this->currentArticle = 0;
+		if (isset($this->coolUrlSplitted[0]) && is_numeric($this->coolUrlSplitted[0])){
+			$this->currentArticle = intval($this->coolUrlSplitted[0]);
+		}
+
 	}
 	
 	function sitemapListAllPages(){
@@ -225,13 +227,20 @@ class noteboard extends comments {
 
 		$this->setRssUrl($this->generateCoolURL("/rss"));
 
-		if (isset($this->coolUrlSplitted[0]) && is_numeric($this->coolUrlSplitted[0])){
-			$this->currentArticle = $this->coolUrlSplitted[0];
-		} else if (isset($_GET['news_article']) && is_numeric($_GET['news_article'])){
-			$this->currentArticle = $_GET['news_article'];		
-		}
+        switch ($this->action) {
+            case 'saveComment':
+                return $this->saveComment();
+            case 'deleteCommentDo':
+                return $this->deleteCommentDo();
+            case 'subscribeToThread':
+                return $this->subscribeToThread();
+            case 'unsubscribeFromThread':
+                return $this->unsubscribeFromThread();
+            
+        }
+        
 		if (isset($_GET['save_news'])){
-			return $this->saveEntry($this->currentArticle);
+			return $this->saveEntry();
 		} else if (isset($_GET['cropimage'])){
 			return $this->cropImageForm();
 		} else if (isset($_GET['docropimage'])){
@@ -246,7 +255,7 @@ class noteboard extends comments {
 		} else if (isset($_GET['news_delete'])){
 			return $this->confirmDeleteEntry($this->currentArticle);
 		
-		} else if (isset($this->currentArticle)){
+		} else if ($this->currentArticle > 0){
 			return $this->printDetails($this->currentArticle);
 
 		} else {
@@ -277,7 +286,7 @@ class noteboard extends comments {
 			}
 		}
 	}
-
+	
 	function printEntries(){
 		
 		$output = "";
@@ -306,22 +315,22 @@ class noteboard extends comments {
 		$ti = $this->table_images;
 		$res = $this->query(
 			"SELECT 
-				$tn.$this->table_news_field_id as id,
-				$tn.$this->table_news_field_author as author,
-				$tn.$this->table_news_field_version as version,
-				$tn.$this->table_news_field_image as imageid,".
-				($this->use_subject ? "$tn.$this->table_news_field_subject as subject," : "")."
-				$tn.$this->table_news_field_body as body,
-				$tn.$this->table_news_field_timestamp as timestamp,
+				$tn.id,
+				$tn.creator as author,
+				$tn.version,
+				$tn.img as imageid,".
+				($this->use_subject ? "$tn.subject," : "")."
+				$tn.body,
+				$tn.date as timestamp,
 				$tn.lead_image".
 				($this->enable_comments ? ",
-					COUNT($tc.id) as commentcount" : "").
-			" FROM $tn".
+					COUNT($tc.id) as commentcount" : "")."
+			FROM $tn".
 			($this->enable_comments ? " LEFT JOIN $tc 
-				ON $tn.$this->table_news_field_id=$tc.parent_id AND $tc.page_id=$this->page_id" : "").
-			" WHERE $tn.$this->table_news_field_page=".$this->page_id.
-			" GROUP BY $tn.$this->table_news_field_id
-			ORDER BY $tn.$this->table_news_field_timestamp DESC
+				ON $tn.id=$tc.parent_id AND $tc.page_id=$this->page_id" : "").
+			" WHERE $tn.page=".$this->page_id.
+			" GROUP BY $tn.id
+			ORDER BY $tn.date DESC
 			LIMIT ".(($this->page_no-1)*$this->items_per_page).",$this->items_per_page"
 		);
 		
@@ -341,7 +350,7 @@ class noteboard extends comments {
 		return $output;
 	}
 		
-	function printEntry($row, $realDir, $virtDir,$singleEntry = false){
+	function printEntry($row, $realDir, $virtDir, $singleEntry = false){
 	
 		/*
 			SET lc_time_names = 'nb_NO';
@@ -375,15 +384,8 @@ class noteboard extends comments {
 				</div></div>
 				',$thumbnail,$caption);
 		}
-		if ($singleEntry) {
-			$editlinkcode = (($this->allow_editothersentries) || (($this->allow_editownentries) && ($row['author'] == $this->login_identifier))) 
-				? str_replace(array("%beginlink%","%endlink%"),array('<a href="'.$this->generateCoolURL("/%id%","news_edit").'" class="edit">','</a>'),$this->str_editlink) : '';
-			$deletelinkcode = (($this->allow_deleteothersentries) || (($this->allow_deleteownentries) && ($row['author'] == $this->login_identifier))) 
-				? str_replace(array("%beginlink%","%endlink%"),array('<a href="'.$this->generateCoolURL("/%id%","news_delete").'" class="delete">','</a>'),$this->str_deletelink) : '';
-		} else {
-			$editlinkcode = '';
-			$deletelinkcode = '';
-		}
+		$editlinkcode = '';
+		$deletelinkcode = '';
 		if ($row['commentcount'] == 0) {
 			$commentcode = '<a href="'.$this->generateCoolUrl("/%id%").'#respond" class="comment">'.$this->str_nocomments.'</a>';		
 		} else if ($row['commentcount'] == 1) {
@@ -735,7 +737,9 @@ class noteboard extends comments {
 		
 	}
 	
-	function saveEntry($id){		
+	function saveEntry(){		
+
+		$id = $this->currentArticle;
 		
 		/** CHECK PERMISSION **/
 		
@@ -799,10 +803,11 @@ class noteboard extends comments {
 					($this->use_subject ? ",'$subject'" : "")."
 				)"
 			);
-			$id = $this->insert_id();
+			$this->currentArticle = $this->insert_id();
 			$tsubject = empty($subject) ? "<em style='color:#aaa;'>Uten tittel</em>":$subject;
-			$this->addToActivityLog('skrev nyheten <a href="'.$this->generateCoolURL("/$id").'">'.$tsubject.'</a>',false,'major');
-			$this->logEvent('ADDED_NEWS_ENTRY', $this->login_identifier, 0, '<a href="'.$this->generateCoolURL("/$id").'">'.$tsubject.'</a>');
+
+			$this->addToActivityLog('skrev nyheten <a href="'.$this->generateCoolURL("/$this->currentArticle").'">'.$tsubject.'</a>',false,'major');
+			$this->logEvent('ADDED_NEWS_ENTRY', $this->login_identifier, 0, '<a href="'.$this->generateCoolURL("/$this->currentArticle").'">'.$tsubject.'</a>');
 			
 			/*
 			if ($image_is_uploaded) {
@@ -810,7 +815,9 @@ class noteboard extends comments {
 			} else {
 				$this->redirect($this->generateCoolURL("/$id"),"Nyheten ble lagret");
 			}*/
-			$this->redirect($this->generateCoolURL("/$id"),"Nyheten ble lagret");
+
+            $this->subscribeToThread(false);
+			$this->redirect($this->generateCoolURL("/$this->currentArticle"),"Nyheten ble lagret");
 		
 		} else {
 		
@@ -913,19 +920,19 @@ class noteboard extends comments {
 		$ti = $this->table_images;
 		$res = $this->query(
 			"SELECT 
-				$tn.$this->table_news_field_id as id,
-				$tn.$this->table_news_field_author as author,
-				$tn.$this->table_news_field_version as version,
-				$tn.$this->table_news_field_image as imageid,".
-				($this->use_subject ? "$tn.$this->table_news_field_subject as subject," : "")."
-				$tn.$this->table_news_field_body as body,
-				$tn.$this->table_news_field_timestamp as timestamp,
+				$tn.id,
+				$tn.creator as author,
+				$tn.version,
+				$tn.img imageid,".
+				($this->use_subject ? "$tn.subject," : "")."
+				$tn.body,
+				$tn.date as timestamp,
 				$tn.lead_image".
 				($this->enable_comments ? ",
-					count($tc.id) as commentcount" : "").
-			" FROM $tn".
+					count($tc.id) as commentcount" : "")."
+			FROM $tn".
 			($this->enable_comments ? " LEFT JOIN $tc 
-				ON $tn.$this->table_news_field_id=$tc.parent_id AND $tc.page_id=$this->page_id" : "").
+				ON $tn.id=$tc.parent_id AND $tc.page_id=$this->page_id" : "").
 			" WHERE 
 				$tn.$this->table_news_field_id='$id' 
 			GROUP BY 
@@ -1085,6 +1092,33 @@ class noteboard extends comments {
 </rdf:RDF>
 ";
 	exit();
+	}
+
+	/** COMMENTS **/
+	
+	function subscribeToThread($redirect = true) {
+	    @parent::subscribeToThread($this->currentArticle, $redirect);
+	}
+
+	function unsubscribeFromThread() {
+	    @parent::unsubscribeFromThread($this->currentArticle);
+	}
+
+	function saveComment() {
+	    $post_id = intval($this->currentArticle);
+	    if ($post_id <= 0) { $this->fatalError("incorrect input!"); }
+		
+		$tn = $this->table_news;
+		$res = $this->query("SELECT subject FROM $tn WHERE id=$post_id");
+		if ($res->num_rows != 1) $this->fatalError("Nyheten ble ikke funnet!");
+
+		$row = $res->fetch_assoc();
+		$context = 'nyheten «'.stripslashes($row['subject']).'»';
+	    @parent::saveComment($post_id, $context);	    
+	}
+
+	function deleteComment() {
+	    @parent::deleteComment($this->currentArticle);
 	}
 
 }

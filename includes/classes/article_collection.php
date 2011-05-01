@@ -178,6 +178,27 @@ class article_collection extends comments {
 		} else { 
 			$this->page_no = 1;
 		}
+
+		$this->action = "default";
+		if (isset($_GET['add_article'])) $this->action = 'add_article';
+		else if (isset($_GET['save_article'])) $this->action = 'save_article';
+		else if (isset($_GET['edit_article'])) $this->action = 'edit_article';
+		else if (isset($_GET['update_article'])) $this->action = 'update_article';
+		else if (isset($_GET['view_article'])) $this->action = 'view_article';
+		else if (isset($this->coolUrlSplitted[0])) $this->action = 'view_article';
+		
+		if (isset($_GET['action']))
+			$this->action = $_GET['action'];
+					
+		$this->currentArticleId = 0;
+		if (isset($this->coolUrlSplitted[0])) {
+			$slug = addslashes($this->coolUrlSplitted[0]);
+			$res = $this->query("SELECT id FROM $this->table_articles WHERE slug=\"$slug\"");
+			if ($res->num_rows != 1) return $this->notSoFatalError("Siden finnes ikke.");
+			$row = $res->fetch_assoc();
+			$this->currentArticleId = intval($row['id']);		
+		}				
+
 	}
 	
 	function sitemapListAllPages(){
@@ -209,23 +230,6 @@ class article_collection extends comments {
 	function run(){
 		$this->initialize();
 
-		$article_id = 0;
-		if (isset($this->coolUrlSplitted[0])) {
-			$slug = addslashes($this->coolUrlSplitted[0]);
-			$res = $this->query("SELECT id FROM $this->table_articles WHERE slug=\"$slug\"");
-			if ($res->num_rows != 1) return $this->notSoFatalError("Siden finnes ikke.");
-			$row = $res->fetch_assoc();
-			$article_id = intval($row['id']);		
-		}
-		
-		$this->action = "default";
-		if (isset($_GET['add_article'])) $this->action = 'add_article';
-		else if (isset($_GET['save_article'])) $this->action = 'save_article';
-		else if (isset($_GET['edit_article'])) $this->action = 'edit_article';
-		else if (isset($_GET['update_article'])) $this->action = 'update_article';
-		else if (isset($_GET['view_article'])) $this->action = 'view_article';
-		else if (isset($this->coolUrlSplitted[0])) $this->action = 'view_article';	
-		
 		switch ($this->action) {
 			
 			case 'add_article':
@@ -237,16 +241,26 @@ class article_collection extends comments {
 				break;
 				
 			case 'edit_article':
-				return $this->editArticleForm($article_id);
+				return $this->editArticleForm($this->currentArticleId);
 				break;
 				
 			case 'update_article':
-				return $this->updateArticle($article_id);
+				return $this->updateArticle($this->currentArticleId);
 				break;
 
 			case 'view_article':
-				return $this->viewArticle($article_id);
+				return $this->viewArticle($this->currentArticleId);
 				break;
+				
+			case 'saveComment':
+                return $this->saveComment();
+            case 'deleteCommentDo':
+                return $this->deleteCommentDo();
+            case 'subscribeToThread':
+                return $this->subscribeToThread();
+            case 'unsubscribeFromThread':
+                return $this->unsubscribeFromThread();
+
 				
 			default:
 				return $this->printArticleLeads();
@@ -577,9 +591,8 @@ class article_collection extends comments {
 			VALUES ($author_id,\"$lang\",$timestamp,\"$topic\",\"$slug\",".$this->page_id."
 			)
 		");
-		
-		$id = $this->insert_id();
-				
+		$this->currentArticleId = $this->insert_id();		
+        $this->subscribeToThread(false);
 		$this->redirect($this->generateCoolURL("/$slug","editarticle"));
 	
 	}
@@ -702,6 +715,33 @@ class article_collection extends comments {
 		
 		$this->addToActivityLog('har skrevet et speidertips: <a href="'.$url.'">'.$topic.'</a>',false,'major');
 
+	}
+    
+    /** COMMENTS **/
+	
+	function subscribeToThread($redirect = true) {
+	    @parent::subscribeToThread($this->currentArticleId, $redirect);
+	}
+
+	function unsubscribeFromThread() {
+	    @parent::unsubscribeFromThread($this->currentArticleId);
+	}
+
+	function saveComment() {
+	    $post_id = intval($this->currentArticleId);
+	    if ($post_id <= 0) { $this->fatalError("incorrect input!"); }
+		
+		$tn = $this->table_articles;
+		$res = $this->query("SELECT topic FROM $tn WHERE id=$post_id");
+		if ($res->num_rows != 1) $this->fatalError("Artikkelen ble ikke funnet!");
+
+		$row = $res->fetch_assoc();
+		$context = 'speidertipset «'.stripslashes($row['topic']).'»';
+	    @parent::saveComment($post_id, $context);
+	}
+
+	function deleteComment() {
+	    @parent::deleteComment($this->currentArticleId);
 	}
 	
 }

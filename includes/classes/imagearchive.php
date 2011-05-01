@@ -855,7 +855,8 @@ class imagearchive extends comments {
 		);
 		$photoActions = array('hidePhoto','unhidePhoto',
 			'deletePhoto','deletePhotoDo','movePhoto','movePhotoDo','ajaxSavePhotoTitle',
-			'ajaxTagUser','ajaxUntagUser','rotateLeft','rotateRight'
+			'ajaxTagUser','ajaxUntagUser','rotateLeft','rotateRight',
+			'saveComment','deleteCommentDo','subscribeToThread','unsubscribeFromThread'
 		);
 		
 		$action = isset($_GET['action']) ? $_GET['action'] : '';
@@ -5236,6 +5237,35 @@ class imagearchive extends comments {
 		$outp .= str_replace($r1a, $r2a, $this->str_after_imagethumbs);
 		
 		return $outp;
+	}
+	
+	
+	/** COMMENTS **/
+	
+	function subscribeToThread($redirect = true) {
+	    @parent::subscribeToThread($this->current_image, $redirect);
+	}
+
+	function unsubscribeFromThread() {
+	    @parent::unsubscribeFromThread($this->current_image);
+	}
+
+	function saveComment() {
+	    $post_id = intval($this->current_image);
+	    if ($post_id <= 0) { $this->fatalError("incorrect input!"); }
+		
+		$tf = $this->table_files;
+		$td = $this->table_dirs;
+		$res = $this->query("SELECT $td.caption FROM $td,$tf WHERE $tf.id=$post_id AND $tf.directory=$td.id");
+		if ($res->num_rows != 1) $this->fatalError("albumet ble ikke funnet!");
+
+		$row = $res->fetch_assoc();
+		$context = 'et bilde i bildealbumet «'.stripslashes($row['caption']).'»';
+	    @parent::saveComment($post_id, $context);
+	}
+
+	function deleteComment() {
+	    @parent::deleteComment($this->current_image);
 	}
 
 }
