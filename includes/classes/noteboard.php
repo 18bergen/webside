@@ -1098,16 +1098,21 @@ class noteboard extends comments {
 
 	/** COMMENTS **/
 	
-	function subscribeToThread($redirect = true) {
-	    @parent::subscribeToThread($this->currentArticle, $redirect);
+	function subscribeToThread($post_id = 0, $redirect = true) {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = $this->currentArticle;
+	    @parent::subscribeToThread($post_id, $redirect);
 	}
 
-	function unsubscribeFromThread() {
-	    @parent::unsubscribeFromThread($this->currentArticle);
+	function unsubscribeFromThread($post_id = 0, $redirect = true) {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = $this->currentArticle;
+	    @parent::unsubscribeFromThread($post_id, $redirect);
 	}
 
-	function saveComment() {
-	    $post_id = intval($this->currentArticle);
+	function saveComment($post_id = 0, $context = '') {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = intval($this->currentArticle);
 	    if ($post_id <= 0) { $this->fatalError("incorrect input!"); }
 		
 		$tn = $this->table_news;
@@ -1117,10 +1122,6 @@ class noteboard extends comments {
 		$row = $res->fetch_assoc();
 		$context = 'nyheten «'.stripslashes($row['subject']).'»';
 	    @parent::saveComment($post_id, $context);	    
-	}
-
-	function deleteComment() {
-	    @parent::deleteComment($this->currentArticle);
 	}
 
 }

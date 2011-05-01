@@ -2356,19 +2356,23 @@ END:VEVENT
 		
 	}
 
-
-	/** COMMENTS **/
+    /** COMMENTS **/
 	
-	function subscribeToThread($redirect = true) {
-	    @parent::subscribeToThread($this->event_id, $redirect);
+	function subscribeToThread($post_id = 0, $redirect = true) {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = $this->event_id;
+	    @parent::subscribeToThread($post_id, $redirect);
 	}
 
-	function unsubscribeFromThread() {
-	    @parent::unsubscribeFromThread($this->event_id);
+	function unsubscribeFromThread($post_id = 0, $redirect = true) {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = $this->event_id;
+	    @parent::unsubscribeFromThread($post_id, $redirect);
 	}
 
-	function saveComment() {
-	    $post_id = intval($this->event_id);
+	function saveComment($post_id = 0, $context = '') {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = intval($this->event_id);
 	    if ($post_id <= 0) { $this->fatalError("incorrect input!"); }
 		
 		$tc = $this->table_calendar;
@@ -2378,10 +2382,6 @@ END:VEVENT
 		$row = $res->fetch_assoc();
 		$context = 'hendelsen «'.stripslashes($row['topic']).'»';
 	    @parent::saveComment($post_id, $context);
-	}
-
-	function deleteComment() {
-	    @parent::deleteComment($this->event_id);
 	}
 	
 }

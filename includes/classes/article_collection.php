@@ -719,16 +719,21 @@ class article_collection extends comments {
     
     /** COMMENTS **/
 	
-	function subscribeToThread($redirect = true) {
-	    @parent::subscribeToThread($this->currentArticleId, $redirect);
+	function subscribeToThread($post_id = 0, $redirect = true) {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = $this->currentArticleId;
+	    @parent::subscribeToThread($post_id, $redirect);
 	}
 
-	function unsubscribeFromThread() {
-	    @parent::unsubscribeFromThread($this->currentArticleId);
+	function unsubscribeFromThread($post_id = 0, $redirect = true) {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = $this->currentArticleId;
+	    @parent::unsubscribeFromThread($post_id, $redirect);
 	}
 
-	function saveComment() {
-	    $post_id = intval($this->currentArticleId);
+	function saveComment($post_id = 0, $context = '') {
+	    $post_id = intval($post_id);
+	    if ($post_id == 0) $post_id = intval($this->currentArticleId);
 	    if ($post_id <= 0) { $this->fatalError("incorrect input!"); }
 		
 		$tn = $this->table_articles;
@@ -738,10 +743,6 @@ class article_collection extends comments {
 		$row = $res->fetch_assoc();
 		$context = 'speidertipset «'.stripslashes($row['topic']).'»';
 	    @parent::saveComment($post_id, $context);
-	}
-
-	function deleteComment() {
-	    @parent::deleteComment($this->currentArticleId);
 	}
 	
 }
