@@ -48,16 +48,12 @@
  <a href="http://www.dhtmlgoodies.com/index.html?whichScript=image-crop">bildebeskjæring</a> 
  av Alf Magne Kalleland (DHTMLGoodies).</li>
 </ul>
-<h3>Vil du være med og bygge kulisser?</h3>
+<h3>Kan jeg se på koden?</h3>
 <p>
-  Vi benytter versjonskontrollsystemet Subversion (SVN), så det
-  er enkelt å samarbeide om kodeutvikling. Siden webhotellet vårt
-  ikke tilbyr SVN-server, ligger SVN-lageret vårt på 
-  <a href="https://bergenvs.unfuddle.com/">bergenvs.unfuddle.com</a>.
-  Hvis du har lyst til å titte på koden, og kanskje bli med å bidra
-  til utviklingen av siden, kan du ta 
-  <a href="http://www.18bergen.org/kontakt/webmaster">kontakt med webmaster</a> 
-  for å få brukernavn og passord til unfuddle.
+  Ja, vi benytter versjonskontrollsystemet <a href="http://git-scm.com/">Git</a>, og koden ligger åpent ute på GitHub:
+  <a href="https://github.com/18bergen/webside">github.com/18bergen/webside</a>.
+  Det ligger imidlertid ikke noen beskrivelse av databasen der. 
+  Bare ta kontakt hvis du er interessert i dette for å sette opp en lokal kopi av nettsiden.
 <p>
 </div>
 </body>
