@@ -47,8 +47,8 @@ class Comments extends base {
 	var $template_dir 					= "../includes/templates/email/";
 	var $template_newcomment 			= "comment_newcomment.txt";
 
-	var $str_start_sub      = "%beginlink%Abbonér på kommentarer%endlink%";
-	var $str_stop_sub       = "%beginlink%Stopp kommentarabbonement%endlink%";
+	var $str_start_sub      = "%beginlink%Abonnér på kommentarer%endlink%";
+	var $str_stop_sub       = "%beginlink%Stopp kommentarabonnement%endlink%";
 	
 	var $template_editcommentlink		= "| %beginlink%%edit%%endlink%";
 	var $template_deletecommentlink		= "| %beginlink%%delete%%endlink%";
