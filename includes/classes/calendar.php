@@ -249,7 +249,8 @@ class calendar extends calendar_basic {
 		);
 		$eventActions = array(
 			'viewEvent','editEvent','saveEvent','deleteEvent','deleteEventDo','cancelEvent','cancelEventDo',
-			'ajaxAutocompleteSubject','ajaxAutocompleteLocation','ajaxGetAuthorList'
+			'ajaxAutocompleteSubject','ajaxAutocompleteLocation','ajaxGetAuthorList',
+			'saveComment','deleteCommentDo','subscribeToThread','unsubscribeFromThread'
 		);
 		
 		if ($settingsPage){
@@ -260,7 +261,7 @@ class calendar extends calendar_basic {
 			if (!in_array($action,$calendarActions)) $action = 'viewCalendar';
 		}
 		return call_user_func(array($this,$action));
-			
+		
 	}
 	
 	function generateTimeField($form, $identifier, $value = "-1", $className = ""){
@@ -647,7 +648,6 @@ class calendar extends calendar_basic {
 	
 	function saveEvent() {
 	
-
 		$isNewEvent = !(isset($this->event_id) && $this->event_id != 0);
 		$id = $isNewEvent ? 0 : $this->event_id;
 		
@@ -778,10 +778,12 @@ class calendar extends calendar_basic {
 			if (!$res) {
 				print "database insert error";
 			}
-			$id = $this->insert_id();
+			$this->event_id = $this->insert_id();
 			
 			$url = $this->generateCoolURL("/$year/$slug");
 			$this->addToActivityLog("opprettet hendelsen <a href=\"".$url."\">$subject</a>",false,'major');
+
+            $this->subscribeToThread(false);
 
 			$this->redirect($url,"Hendelsen er opprettet.");
 
@@ -2354,6 +2356,34 @@ END:VEVENT
 		
 	}
 
+
+	/** COMMENTS **/
+	
+	function subscribeToThread($redirect = true) {
+	    @parent::subscribeToThread($this->event_id, $redirect);
+	}
+
+	function unsubscribeFromThread() {
+	    @parent::unsubscribeFromThread($this->event_id);
+	}
+
+	function saveComment() {
+	    $post_id = intval($this->event_id);
+	    if ($post_id <= 0) { $this->fatalError("incorrect input!"); }
+		
+		$tc = $this->table_calendar;
+		$res = $this->query("SELECT caption FROM $tc WHERE id=$post_id");
+		if ($res->num_rows != 1) $this->fatalError("Artikkelen ble ikke funnet!");
+
+		$row = $res->fetch_assoc();
+		$context = 'hendelsen «'.stripslashes($row['topic']).'»';
+	    @parent::saveComment($post_id, $context);
+	}
+
+	function deleteComment() {
+	    @parent::deleteComment($this->event_id);
+	}
+	
 }
 
 ?>

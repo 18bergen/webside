@@ -1,0 +1,11 @@
+
+%author_name% har skrevet en ny kommentar til %context%:
+
+%comment%
+
+-- 
+Vis alle kommentarer og svar her:
+%post_url%
+
+Stopp varsling for denne posten her:
+%unsubscribe_url%

@@ -47,8 +47,8 @@ class base {
 	}
 	
 	function initialize_base(){
-		$this->getvars[] = "noprint";
-		$this->getvars[] = "msg";
+
+		array_push($this->getvars,'noprint','msg','action');
 
 		if ($this->useCoolUrls){
 			$this->findInterestingStuffInCoolUrl();

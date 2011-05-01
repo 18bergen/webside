@@ -701,6 +701,7 @@ div.commentFooter {
 .footerLinks a.comments { background-image: url(../images/icns/comments.png); padding-left:26px; }
 .footerLinks a.comment { background-image: url(../images/icns/comment.png); padding-left:24px; }
 .footerLinks a.reply, .footerLinks a.replyall { background-image: url(../images/message_reply_icon.gif); padding-left:26px; }
+.footerLinks a.subscribe { background-image: url(../images/icns/eye.png); padding-left:24px; }
 
 .commentform .textinput {
 	width: 360px;

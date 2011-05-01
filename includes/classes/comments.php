@@ -1,5 +1,5 @@
 <?
-class comments extends base {
+class Comments extends base {
 
 	var $enable_comments = true;
 	
@@ -44,7 +44,11 @@ class comments extends base {
 		
 	var $label_error_intro						= "Det oppstod en eller flere feil:";
 	
+	var $template_dir 					= "../includes/templates/email/";
+	var $template_newcomment 			= "comment_newcomment.txt";
 
+	var $str_start_sub      = "%beginlink%Abbonér på kommentarer%endlink%";
+	var $str_stop_sub       = "%beginlink%Stopp kommentarabbonement%endlink%";
 	
 	var $template_editcommentlink		= "| %beginlink%%edit%%endlink%";
 	var $template_deletecommentlink		= "| %beginlink%%delete%%endlink%";
@@ -127,7 +131,7 @@ class comments extends base {
 			</table>
 	";
 	var $editcomment_template = '
-		<form id="commentform" method="post" action="%posturl%" class="commentform">
+		<form method="post" action="%posturl%" id="commentform" class="commentform">
 			<input type="hidden" name="parent_id" value="%parent_id%" />
  			<input type="hidden" name="comment_id" value="%id%" />
  			<input type="hidden" name="parent_desc" value="%parent_desc%" />
@@ -141,7 +145,7 @@ class comments extends base {
 			%comment%
 		</div>
 		<form method="post" action="%posturl%">
-			<input type="hidden" name="deletecomment" value="%id%" />
+			<input type="hidden" name="commentId" value="%id%" />
 			<input type="submit" value="     %yes%      " /> 
 			<input type="button" value="     %no%      " onclick="window.location=\'%referer%\'" />
 		</form>
@@ -155,9 +159,9 @@ class comments extends base {
 	}
 		
 	function initialize_comments(){
-		
-		array_push($this->getvars,'editcomment','deletecomment');
 
+		array_push($this->getvars, 'editComment', 'deleteComment');
+		
 		$this->errorMessages['empty_name'] = $this->label_error_emptyname;
 		$this->errorMessages['empty_email'] = $this->label_error_emptyemail;
 		$this->errorMessages['empty_body'] = $this->label_error_emptybody;
@@ -167,16 +171,12 @@ class comments extends base {
 		$this->errorMessages['expired'] = "Expired";
 		$this->errorMessages['invalid_time'] = "Du brukte for kort eller lang tid på å skrive kommentaren. For at kommentaren skal bli lagret, må du bruke mellom 4 sekunder og 2 timer på å skrive den. Dette tiltaket er iverksatt for å beskytte mot automatisert spam.";
 		$this->errorMessages['invalid_checkcode'] = $this->label_error_invalidverify;
-		
-		if (isset($_POST['comment_id'])){
-			$this->saveComment($_POST['comment_id']);
-		} else if (isset($_POST['deletecomment'])){
-			$this->deleteComment($_POST['deletecomment']);
-		}
 	}
 
 	function initialize() {
 		@parent::initialize(); //$this->initialize_base();
+		$this->table_comments = DBPREFIX.'comments';
+		$this->table_subscriptions = DBPREFIX.'subscriptions';
 		$this->initialize_comments();
 	}
 	
@@ -314,18 +314,35 @@ class comments extends base {
 		return intval($row['ccount']);
 	}
 
-	function printComments($id){
+	function printComments($post_id){
 		$output = "";
-		if (!is_numeric($id)){ $this->fatalError("incorrect input!"); }
-		if (isset($_GET['editcomment'])){
-			$this->comment_id = $_GET['editcomment'];
-		} if (isset($_GET['deletecomment'])){
-			return $this->confirmDeleteComment($_GET['deletecomment']);
+		$post_id = intval($post_id);
+		if (!is_numeric($post_id)){ $this->fatalError("incorrect input!"); }
+        if (isset($_GET['editComment'])){
+			return $this->editCommentForm($post_id);
+		} else if (isset($_GET['deleteComment'])){
+			return $this->deleteCommentForm();
 		}
+		
+		$subscribecode = "";
+        if ($this->isLoggedIn()) {
+            $ts = $this->table_subscriptions;
+            $res = $this->query(
+                "SELECT timestamp FROM $ts WHERE page_id=".$this->page_id."
+                    AND parent_id=".$post_id." AND user_id=".$this->login_identifier);
+            if ($res->num_rows == 0) {
+                $subscribecode = str_replace(array("%beginlink%","%endlink%"),array('<a href="'.$this->generateURL("action=subscribeToThread").'" class="subscribe">','</a>'),$this->str_start_sub);
+            } else {
+                $subscribecode = str_replace(array("%beginlink%","%endlink%"),array('<a href="'.$this->generateURL("action=unsubscribeFromThread").'" class="subscribe">','</a>'),$this->str_stop_sub);
+            }
+        }
+
 		$output .= "<h3 id='respond' name='respond'>$this->label_comments</h3>";
+        $output .= "<div class='footerLinks' style='margin-bottom:12px;'>$subscribecode</div>";		
+
 		$res = $this->query("SELECT id,parent_id,author_id,author_name,author_email,timestamp,body
 			FROM $this->table_comments
-			WHERE page_id=$this->page_id AND parent_id=$id
+			WHERE page_id=$this->page_id AND parent_id=$post_id
 			ORDER BY timestamp");
  		if ($res->num_rows == 0){
  			$output .= "<div style='color:#999;padding:5px;'>$this->label_nocomments</div>";
@@ -334,7 +351,7 @@ class comments extends base {
 				$output .= $this->outputComment($row);
 			}
 		}
-		$output .= $this->editComment($this->comment_id,$id);
+		$output .= $this->editCommentForm($post_id);
 		return $output;
  	}
 
@@ -352,9 +369,9 @@ class comments extends base {
 		//$dateStr = date("d",$row["timestamp"]).". ".$this->months[date("m",$row["timestamp"])-1]." ".date("Y",$row["timestamp"]);
 		
 		$editlinkcode = ($this->allow_editotherscomments || (($this->allow_editowncomments) && ($row['author_id'] == $this->login_identifier))) 
-			? str_replace(array("%beginlink%","%edit%","%endlink%"),array("<a href=\"".$this->generateURL("editcomment=%id%")."#respond\">",$this->label_editcomment,"</a>"),$this->template_editcommentlink) : "";
+			? str_replace(array("%beginlink%","%edit%","%endlink%"),array("<a href=\"".$this->generateURL(array("editComment=%id%"))."#respond\">",$this->label_editcomment,"</a>"),$this->template_editcommentlink) : "";
 		$deletelinkcode = (($this->allow_deleteotherscomments) || (($this->allow_deleteowncomments) && ($row['author_id'] == $this->login_identifier))) 
-			? str_replace(array("%beginlink%","%delete%","%endlink%"),array("<a href=\"".$this->generateURL("deletecomment=%id%")."#respond\">",$this->label_deletecomment,"</a>"),$this->template_deletecommentlink) : "";
+			? str_replace(array("%beginlink%","%delete%","%endlink%"),array("<a href=\"".$this->generateURL(array("deleteComment=%id%"))."#respond\">",$this->label_deletecomment,"</a>"),$this->template_deletecommentlink) : "";
 		$r1a[0] = "%id%";			$r2a[0] = $row['id'];
 		$r1a[2] = "%body%";			$r2a[2] = $this->prepare_comment_body($row['body']);
 		$r1a[1] = "%author%";		$r2a[1] = $author;
@@ -411,7 +428,12 @@ class comments extends base {
 	}
 
 	
- 	function editComment($id, $parent_id = '0'){
+ 	function editCommentForm($post_id = 0){
+
+        $comment_id = '_new';
+		if (isset($_GET['editComment'])){
+			$comment_id = intval($_GET['editComment']);
+		}
  	
  		$output = "";
  		
@@ -420,27 +442,27 @@ class comments extends base {
 		$default_verify = "";
 		$default_email = "";
 		$default_body = "";
- 		if ($id == '_new'){
+ 		if ($comment_id == '_new'){
 			if (!$this->allow_addcomment) return $this->permissionDenied();
-			if (!is_numeric($parent_id)){ $this->fatalError("incorrect input!"); }
-			$parent_id = intval($parent_id);
+			if (!is_numeric($post_id)){ $this->fatalError("incorrect input!"); }
+			$post_id = intval($post_id);
  			$output .= "<h4>$this->label_newcomment</h4>"; // "<h3>Skriv ny kommentar:</h3>";
  		} else {
- 			if (!is_numeric($id)){ $this->fatalError("incorrect input!"); }
- 			$id = intval($id);
+ 			if ($comment_id <= 0){ $this->fatalError("incorrect input!"); }
  			$res = $this->query("SELECT parent_id,author_id,author_name,author_email,body
 				FROM $this->table_comments
-				WHERE id=$id");
+				WHERE id=$comment_id");
 			if ($res->num_rows != 1) return $this->notSoFatalError($this->label_commentdoesntexist); 
 			$row = $res->fetch_assoc();
 			$allowed = (($this->allow_editotherscomments) || (($this->allow_editowncomments) && ($row['author_id'] == $this->login_identifier)));
 			if (!$allowed) return $this->permissionDenied();
-			$parent_id = intval($row['parent_id']);
+			$post_id = intval($row['parent_id']);
 			$default_fullname = stripslashes($row["author_name"]);
 			$default_email = stripslashes($row["author_email"]);
 			$default_body = stripslashes($row["body"]);
 			$default_body = str_replace("<br />\r\n","\r\n",$default_body);
 			$default_body = str_replace("<br />\n","\n",$default_body);
+			$output .= "<h3 id='respond' name='respond'>$this->label_comments</h3>";
 			$output .= "<h4>$this->label_editcomment:</h4>"; // "<h3>Endre kommentar:</h3>";
  		}
  	
@@ -466,12 +488,12 @@ class comments extends base {
 
 
  		$r1a   = array();					$r2a   = array();
-		$r1a[] = "%id%";					$r2a[] = $id;
+		$r1a[] = "%id%";					$r2a[] = $comment_id;
+		$r1a[] = "%comment_id%";			$r2a[] = $comment_id;
 		$r1a[] = "%errors%";				$r2a[] = $errstr;
 		$r1a[] = "%body%";					$r2a[] = htmlspecialchars($default_body);
-		$r1a[] = "%parent_id%";				$r2a[] = $parent_id;
-		$r1a[] = "%posturl%";				$r2a[] = $this->generateURL("noprint=true");
-		$r1a[] = "%comment_id%";			$r2a[] = $id;
+		$r1a[] = "%parent_id%";				$r2a[] = $post_id;
+		$r1a[] = "%posturl%";				$r2a[] = $this->generateURL('action=saveComment');
 		$r1a[] = "%fullname%";				$r2a[] = htmlspecialchars($default_fullname);
 		$r1a[] = "%email%";					$r2a[] = htmlspecialchars($default_email);
 		$r1a[] = "%verify%";				$r2a[] = htmlspecialchars($default_verify);
@@ -493,8 +515,8 @@ class comments extends base {
 		return $output;
 	}
  	 	
- 	function saveComment($id){
- 		
+ 	function saveComment($post_id, $context){
+ 		$id = $_POST['comment_id'];
  		if (!is_numeric($id) && $id != '_new') $this->fatalError("invalid input .1");
  		if (empty($this->login_identifier) && $id != '_new') $this->fatalError("invalid input .2");
  		
@@ -564,9 +586,7 @@ class comments extends base {
 		else
 			$body = ""; // This will cause validation error later
 		
-		if (!isset($_POST['parent_id'])) $this->fatalError("invalid input .671");
-		$parent_id = intval($_POST['parent_id']);
-		if ($parent_id <= 0) $this->fatalError("invalid input .671");
+		if ($post_id <= 0) $this->fatalError("invalid input .671");
 		
 		$timestamp = time();
 		if (empty($this->login_identifier)){
@@ -619,17 +639,20 @@ class comments extends base {
 		$email = addslashes(strip_tags($email));
 
 		if ($id == "_new"){
-	
 			
 			$this->query("INSERT INTO $this->table_comments
 				(page_id,parent_id,author_id,author_name,author_email,timestamp,body)
-				VALUES ($this->page_id,$parent_id,$author_id,\"$fullname\",\"$email\",NOW(),\"$body\")"
+				VALUES ($this->page_id,$post_id,$author_id,\"$fullname\",\"$email\",NOW(),\"$body\")"
 			);
 			$id = $this->insert_id();
 			
 			$this->addToActivityLog("skrev en kommentar til <a href=\"".$this->generateURL("")."\">$parent_desc</a>",false,"comment");
 			unset($_SESSION['co_expiration']);
-			$this->redirect($this->generateURL("").'#respond', $this->label_commentsaved);
+			
+			$this->notifySubscribers($id, $context, $body);
+    	    comments::subscribeToThread($post_id, false);
+    	    
+			$this->redirect($this->generateURL('').'#respond', $this->label_commentsaved);
 
 		} else {
 
@@ -648,7 +671,8 @@ class comments extends base {
 		}
  	}
 
-	function deleteComment($id){
+	function deleteCommentDo(){
+	    $id = intval($_POST['commentId']);
 		if (!is_numeric($id)){ $this->fatalError("incorrect input! 041"); }
 		$id = intval($id);
 		if ($this->allow_deleteotherscomments){
@@ -668,9 +692,9 @@ class comments extends base {
 		}
 	}
 
-	function confirmDeleteComment($id){
-		if (!is_numeric($id)){ $this->fatalError("incorrect input! 031"); }
-		$id = intval($id);
+	function deleteCommentForm(){
+	    $id = intval($_GET['deleteComment']);
+		if ($id <= 0){ $this->fatalError("incorrect input! 031"); }
 		$res = $this->query("SELECT id,parent_id,author_id,author_name,author_email,timestamp,body
 			FROM $this->table_comments
 			WHERE page_id=$this->page_id AND id=$id"
@@ -682,7 +706,7 @@ class comments extends base {
 			$r1a[0] = "%id%";			$r2a[0] = $id;
 			$r1a[1] = "%comment%";		$r2a[1] = $this->outputComment($row,false);
 			$r1a[3] = "%referer%";		$r2a[3] = $_SERVER['HTTP_REFERER'];
-			$r1a[4] = "%posturl%";		$r2a[4] = $this->generateURL("noprint=true");
+			$r1a[4] = "%posturl%";		$r2a[4] = $this->generateURL('action=deleteCommentDo');
 			$r1a[5] = "%paragraph%";	$r2a[5] = $this->label_confirmdeletecomment_paragraph;
 			$r1a[6] = "%yes%";			$r2a[6] = $this->label_yes;
 			$r1a[7] = "%no%";			$r2a[7] = $this->label_no;
@@ -692,6 +716,103 @@ class comments extends base {
 			return $this->notSoFatalError("You're not allowed to execute the operation.");
 		}
 	}
+	
+	function subscribeToThread($id, $redirect = true) {
+	    $id = intval($id);
+	    if (!$this->isLoggedIn()) {
+    	    return "Du er ikke logga inn";
+	    }
+		$res = $this->query("SELECT * FROM $this->table_subscriptions 
+		    WHERE user_id=$this->login_identifier AND page_id=$this->page_id AND parent_id=$id");
+		if ($res->num_rows > 0) {
+			if ($redirect) $this->redirect($this->generateURL(''), 'Du abbonerer allerede på kommentarer for denne posten');
+			return;
+		}
+		$this->query("INSERT INTO $this->table_subscriptions
+				(user_id,parent_id,page_id,timestamp)
+				VALUES ($this->login_identifier,$id,$this->page_id,NOW())"
+			);
+		if ($redirect) $this->redirect($this->generateURL(''), 'Du vil nå få beskjed hvis det kommer nye kommentarer her');
+	}
+
+	function unsubscribeFromThread($id, $redirect = true) {
+	    $id = intval($id);
+	    if (!$this->isLoggedIn()) {
+    	    return "Du er ikke logga inn";
+	    }
+		$res = $this->query("SELECT * FROM $this->table_subscriptions 
+		    WHERE user_id=$this->login_identifier AND page_id=$this->page_id AND parent_id=$id");
+		if ($res->num_rows == 0) return;
+		$this->query("DELETE FROM $this->table_subscriptions 
+		    WHERE user_id=$this->login_identifier AND page_id=$this->page_id AND parent_id=$id LIMIT 1");
+		if ($redirect) $this->redirect($this->generateURL(''), 'Du vil ikke lenger få beskjed hvis det kommer nye kommentarer her');
+	}
+
+	function notifySubscribers($comment_id, $context, $comment_body) {
+		$comment_id = intval($comment_id);
+		$res = $this->query("SELECT
+			page_id,parent_id,author_id,author_name,author_email,timestamp,body
+			FROM $this->table_comments 
+			WHERE id=$comment_id"
+		);
+		$row = $res->fetch_assoc();
+		$parent_id = intval($row['parent_id']);
+		$page_id = intval($row['page_id']);
+        if ($row['author_id'] != 0){
+            $author = call_user_func($this->lookup_member, $row['author_id']);
+            $author_html = call_user_func($this->make_memberlink, $author->ident, $author->firstname);
+            $author_plain = $author->firstname;
+        } else {
+            $author_html = $row['author_name']. " (gjest)";
+            $author_plain = $row['author_name']. " (gjest)";
+        }
+        
+    	$subject = '[18. Bergen] Ny kommentar til '.$context;
+
+		$server = "http://".$_SERVER['SERVER_NAME'];
+
+		$template = file_get_contents($this->template_dir.$this->template_newcomment);
+        $r1a = array(); $r2a = array();
+        $r1a[] = '%author_name%';		$r2a[] = $author_plain;
+        $r1a[] = '%context%';			$r2a[] = $context;
+        $r1a[] = '%comment%';			$r2a[] = $comment_body;
+        $r1a[] = '%post_url%';			$r2a[] = $server.$this->generateURL('');
+        $r1a[] = '%unsubscribe_url%';	$r2a[] = $server.$this->generateURL('action=unsubscribeFromThread');
+        $plainBody = str_replace($r1a, $r2a, $template);
+
+		$res = $this->query("SELECT user_id FROM $this->table_subscriptions WHERE page_id=$page_id AND parent_id=$parent_id");
+		while ($row = $res->fetch_assoc()) {
+		    $userId = intval($row['user_id']);
+		    //if ($userId != $this->login_identifier) {
+                $user = call_user_func($this->lookup_member, $userId);
+                $this->sendEmailNotification($user, $subject, $plainBody);
+            //}
+		}
+	}
+	
+	function sendEmailNotification($member, $subject, $body){
+
+		$from_name = $this->mailSenderName;
+		$from_addr = $this->mailSenderAddr;
+
+        $to_name = $member->fullname;
+        $to_addr = $member->email;
+        $recipients = array($to_name => $to_addr);
+				
+		// Send mail
+		require_once("../htmlMimeMail5/htmlMimeMail5.php");
+		$mail = new htmlMimeMail5();
+		$mail->setFrom("$from_name <$from_addr>");
+		$mail->setReturnPath($from_addr);
+		$mail->setSubject($subject);
+		$mail->setText($body);
+		//$mail->setHTML($htmlBody);
+		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
+		$mail->send($recipients, $type = 'smtp');	
+		
+	}
+
+	
 /*
 	function printLastComments(){
 		
