@@ -153,7 +153,11 @@ class noteboard extends comments {
 
 	function initialize(){
 		@parent::initialize(); //$this->initialize_base(); $this->initialize_comments();
-		
+
+        array_push($this->getvars,'news_edit','save_news','news_delete','news_page','news_image',
+			'def_image','news_article','makerss','errs','fullname','email','body','parent',
+			'comment_id','cropimage','docropimage');
+			
 		$res = $this->query("SELECT COUNT(*) FROM $this->table_news WHERE $this->table_news_field_page=".$this->page_id);
 		$count = $res->fetch_array(); 
 		$this->item_count = $count[0];
