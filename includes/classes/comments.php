@@ -649,7 +649,7 @@ class Comments extends base {
 			$this->addToActivityLog("skrev en kommentar til <a href=\"".$this->generateURL("")."\">$parent_desc</a>",false,"comment");
 			unset($_SESSION['co_expiration']);
 			
-			$this->notifySubscribers($id, $context, $body);
+			$this->notifySubscribers($id, $context,stripslashes($body));
     	    comments::subscribeToThread($post_id, false);
     	    
 			$this->redirect($this->generateURL('').'#respond', $this->label_commentsaved);
@@ -812,7 +812,6 @@ class Comments extends base {
 		//$mail->setHTML($htmlBody);
 		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
 		$mail->send($recipients, $type = 'smtp');	
-		
 	}
 
 	
