@@ -7,7 +7,9 @@ class messagecenter extends base {
 	var $table_messages = 'messages';
 	var $table_user = 'messages_users';	
 	var $table_attachments = 'messages_attachments';
-	var $table_useroptions = 'cms_useroptions';
+    var $table_useroptions = 'cms_useroptions';
+
+    var $table_images = 'images';
 	
 	var $template_dir 					= "templates/email/";
 	var $template_safe_plain 			= "mailschema_safe.txt";
@@ -137,7 +139,8 @@ class messagecenter extends base {
 		$this->table_messages = DBPREFIX.$this->table_messages;
 		$this->table_user = DBPREFIX.$this->table_user;
 		$this->table_attachments = DBPREFIX.$this->table_attachments;
-		$this->table_useroptions = DBPREFIX.$this->table_useroptions;
+        $this->table_useroptions = DBPREFIX.$this->table_useroptions;
+		$this->table_images = DBPREFIX.$this->table_images;
 	}
 	
 	function initialize(){
