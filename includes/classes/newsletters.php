@@ -435,7 +435,6 @@ class newsletters extends base {
 			//$mail->addEmbeddedImage(new fileEmbeddedImage($email_header, 'image/jpeg', new Base64Encoding()));
 			//$mail->addAttachment(new fileAttachment('example.zip', 'application/zip', new Base64Encoding()));
 			if (!$mail->send(array($udata['name']." <".$udata['email'].">"),$type = 'smtp')) {
-                //$this->addToErrorLog("Et nyhetsbrev kunne ikke sendes til ".$udata['name']." (".$udata['email'].")");
 				$this->addToErrorLog("Et nyhetsbrev kunne ikke sendes til ".$udata['name']." (".$udata['email']."). Feil: ".var_export($mail->errors,true));
 			}
 			unset($mail);
