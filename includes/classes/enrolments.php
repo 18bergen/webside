@@ -576,7 +576,7 @@ class enrolments extends base {
 		}
 		
 		$this->query("INSERT INTO $this->table_enrolments 
-			(calendar_id,event_id,closing_date,guestsallowed) VALUES ($cal_id,$event_id,\"$closingdate\",$guestsallowed)"
+			(calendar_id,event_id,closing_date,guestsallowed,page_id) VALUES ($cal_id,$event_id,\"$closingdate\",$guestsallowed,$this->page_id)"
 		);
 		$id = $this->insert_id();
 
