@@ -23,7 +23,7 @@ define('BG_CLASS_PATH',dirname(__FILE__).'/classes/');
 define('BG_WWW_PATH',dirname(dirname(__FILE__)).'/www/');
 define('BG_LIB_PATH',dirname(dirname(__FILE__)).'/www/libs/');
 
-define('LIB_CKFINDER_URI', '/libs/ckfinder-2.0.1/');
+define('LIB_CKFINDER_URI', '/libs/ckfinder-2.0.2/');
 define('LIB_CKEDITOR_URI', '/libs/ckeditor-3.5.3/');
 define('LIB_YUI_URI', 'http://yui.yahooapis.com/2.9.0/');
 

@@ -108,7 +108,7 @@
  %webmaster_tools%
  
  <div id='header'>
-	<div style="position:absolute;left:31px;top:8px;"><a href="/"><img src="/images/logo.png" alt="18. Bergens banner" border="0" /></a></div>
+	<div style="position:absolute;left:31px;top:8px;"><a href="/"><img src="/images/logo2.png" alt="18. Bergens våpenskjold" border="0" /></a></div>
 	<map name="map1" id="map1">
 	   <area shape="rect" href="/" coords="50,20,200,117" alt="Gå til forsiden" title="Gå til forsiden" />
 	   <area shape="rect" href="http://www.hordalandsspeiderne.no/" coords="715,20,810,100" alt="Hordaland Krins" title="Besøk Hordaland Krins" />

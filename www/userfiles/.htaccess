@@ -1,0 +1,14 @@
+Options -Indexes
+
+RewriteEngine on
+RewriteCond %{HTTP_REFERER} !^$
+RewriteCond %{HTTP_REFERER} !^http://(www\.)?18bergen.org/.*$ [NC]
+RewriteCond %{HTTP_REFERER} !^http://(www\.)?18bergen.no/.*$ [NC]
+RewriteRule \.(gif|jpg|js|css)$ - [F]
+
+<IfModule mod_php5.c>
+  php_value engine off
+</IfModule>
+<IfModule mod_php4.c>
+  php_value engine off
+</IfModule>
