@@ -352,7 +352,8 @@ class messagecenter extends base {
 				return $this->notSoFatalError("Denne meldingen ble sendt fra en 
 				ikke-innlogget bruker. Du kan dessverre ikke svare på den
 				via ".$this->site_name."s mail-system. Du kan isteden svare ved 
-				å sende en epost til <a href=\"mailto:$sender_email\">$sender_email</a>.");
+				å sende en epost til <a href=\"mailto:$sender_email\">$sender_email</a>.",
+				array('logError' => false));
 			}
 			
 			$replyToMsgId = $row['id'];
