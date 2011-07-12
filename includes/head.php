@@ -64,7 +64,7 @@ if (!isset($_SERVER['HTTP_REFERER'])) $_SERVER['HTTP_REFERER'] = "/";
 $printTemplate = !((isset($_GET["noprint"])) && ($_GET["noprint"] == 'true'));
 if (strpos($_SERVER['SCRIPT_NAME'],"/rss") !== false) $printTemplate = false;
 
-require_once(BG_INC_PATH.'constants.php');
+require_once(BG_INC_PATH.'config.php');
 require_once(BG_INC_PATH.'whoisonline.php');
 require_once(BG_INC_PATH.'functions/parse_bbcode.php');
 require_once(BG_INC_PATH.'functions/parse_emoticons.php');
