@@ -14,7 +14,7 @@ if (!isset($_SERVER['SERVER_NAME'])) $_SERVER['SERVER_NAME'] = "www.18bergen.org
 
 //echo '  User: '.$_SERVER['USER'].', term: '.$_SERVER['TERM']."\n";
 
-require_once("includes/constants.php");
+require_once("includes/config.php");
 require_once("includes/whoisonline.php");
 require_once("includes/functions/parse_bbcode.php");
 require_once("includes/functions/parse_emoticons.php");

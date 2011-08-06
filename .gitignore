@@ -14,5 +14,5 @@ cronlogs
 cache
 _backup
 squirrelmail
-includes/constants.php
+includes/config.php
 www/uimages
