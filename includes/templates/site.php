@@ -120,13 +120,14 @@
 			
 	<img src="/_design/header/header8_01.png" width="940" height="117" border="0" alt="" usemap="#map1" style="float:left;" />
 	<img src="/_design/header/header8_02.png" width="292" height="54" border="0" alt="" style="float:left;" usemap="#map2" />
-	
-	<div style="position:absolute;left:700px;top:118px;z-index:1;">
+
+	<div style="position:absolute;left:590px;top:118px;z-index:1;">
 	  <a href="/tropp/konkurranser/patruljekonkurranse-2011"><img src="/_design/banners/patruljekonk2011.png" alt="Patruljekonk!" style="border:none;" /></a>
 	</div>
-	<div style="position:absolute;left:605px;top:58px;z-index:2;">
-      <a href="/nyheter/387"><img src="/_design/banners/tastetrykk2010.png" alt="" style="border:none;" /></a>
+	<div style="position:absolute;left:780px;top:85px;z-index:2;">
+      <a href="http://www.speiding.no/nyheter/?liste=arkiv;dato=200400;id=2233"><img src="/_design/banners/jubileumsmerket_2011.png" alt="" style="border:none;" /></a>
     </div>
+
 	<div style="background:url(/_design/header/header8_03.png);float:left;width:648px;height:53px;padding-top:1px;">
 		<div id="infofelt">
 			<p align="center">
