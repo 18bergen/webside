@@ -24,6 +24,8 @@ class frontpage extends base {
 	var $show_upcomingflokk = false;
 	var $show_upcomingtropp = false;
 	
+	var $upcoming_events_days = 14;
+	
 	function get_newest_logs() {
 			
         $logs = new log(); 
@@ -59,7 +61,7 @@ class frontpage extends base {
 	
 	function get_upcoming_events() {
 		$cal = $this->initializeCalendarInstance();
-		$events = $cal->getCalendarEvents(0, array( 'onlyFutureEvents' => true, 'maxFutureDays' => 14 ));
+		$events = $cal->getCalendarEvents(0, array( 'onlyFutureEvents' => true, 'maxFutureDays' => $this->upcoming_events_days ));
 		if (count($events) == 0) return '<li><em>Det store intet</em></li>';
 		$output = '';
 		foreach ($events as $event) {
