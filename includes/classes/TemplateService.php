@@ -29,6 +29,10 @@ class TemplateService extends base {
 			'krins' => array(
 				'url' => 'http://www.hordalandsspeiderne.no/news/rss',
 				'short_title' => 'krinsen'
+			),
+			'speiderbasen' => array( 
+			    'url' => 'http://www.speiderbasen.no/rss/?ord=',
+			    'short_title' => 'speiderbasen'
 			)
 		);
 	
