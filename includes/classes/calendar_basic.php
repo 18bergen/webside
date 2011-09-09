@@ -675,7 +675,14 @@ class calendar_basic extends comments {
 	/*
 		Function getCalendarEvents
 		Utility function that only requires page inspecific initialization
-		options: { selected: int, onlyFutureEvents:bool, onlyPastEvents:bool, noLogExists:bool, addSelectedIfNotFound:bool }
+		options: { 
+		    selected: int, 
+		    onlyFutureEvents:bool, 
+		    onlyPastEvents:bool, 
+		    noLogExists:bool, 
+		    addSelectedIfNotFound:bool,
+		    maxFutureDays: int
+		}
 	*/
 	function getCalendarEvents($cal_id = 0, $options = array()) {
 		$tct = $this->table_calendar;
@@ -685,10 +692,15 @@ class calendar_basic extends comments {
 		$whereClause = "WHERE $tct.cancelled=0";
 		$whereClause .= " AND $tct.calendar_id = $tcct.id";
 		if ($cal_id != 0) $whereClause .= " AND $tct.calendar_id=$cal_id";
-		if (isset($options['onlyFutureEvents']) && ($options['onlyFutureEvents'])) 
-			$whereClause .= " AND $tct.dt_end > NOW()";
-		else if (isset($options['onlyPastEvents']) && ($options['onlyPastEvents'])) 
+		
+		if (isset($options['onlyPastEvents']) && ($options['onlyPastEvents'])) {
 			$whereClause .= " AND $tct.dt_start < NOW()";
+		} else {
+		    if (isset($options['onlyFutureEvents']) && ($options['onlyFutureEvents'])) 
+			    $whereClause .= " AND $tct.dt_end > NOW()";
+			if (isset($options['maxFutureDays']) && ($options['maxFutureDays'])) 
+			    $whereClause .= " AND $tct.dt_start < DATE_ADD(NOW(), INTERVAL ".intval($options['maxFutureDays'])." DAY)";
+        }
 		if (isset($options['noLogExists']) && ($options['noLogExists'])) 
 			$whereClause .= " AND $tct.log = '0'";
 		

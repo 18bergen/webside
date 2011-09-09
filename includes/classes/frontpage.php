@@ -31,6 +31,7 @@ class frontpage extends base {
         $logs->initializeCalendar();
         $last_logs = $logs->getLastLogsGlobal(4);
 
+        $output = '';
         foreach ($last_logs as $log) {
             
             $dsa = getdate($log['cal_event']['startdate']);
@@ -44,21 +45,21 @@ class frontpage extends base {
             } else {
                 $dss = strftime("%e. %B – ",$log['cal_event']['startdate']).strftime("%e. %B",$log['cal_event']['enddate']);
             }
-            $logs .= "<li class='".$log['flag']."'>".
+            $output .= "<li class='".$log['flag']."'>".
                 $log['short_caption'].': '.
                 '<a href="'.$log['uri'].'">'.$log['cal_event']['caption'].' '.$dss.'</a>'.
                 ' <small>(skrevet '.strftime("%e. %B",$log['lastmodified']).')</small>'.
                 '</li>';
         }
         if (empty($logs)) {
-            $logs = '<li><em>Ingen logger er publisert enda</em></li>';
+            $output = '<li><em>Ingen logger er publisert enda</em></li>';
         }
-        return $logs;
+        return $output;
 	}
 	
 	function get_upcoming_events() {
 		$cal = $this->initializeCalendarInstance();
-		$events = $cal->getCalendarEvents(0, array( 'onlyFutureEvents' => true ));
+		$events = $cal->getCalendarEvents(0, array( 'onlyFutureEvents' => true, 'maxFutureDays' => 14 ));
 		if (count($events) == 0) return '<li><em>Det store intet</em></li>';
 		$output = '';
 		foreach ($events as $event) {
@@ -142,52 +143,7 @@ class frontpage extends base {
 			</script>
 
 			<div style="height:1px; clear:both;"><!-- --></div>
-		';	
-
-/*		if ($this->show_upcomingtropp) {
-			
-
-		}
-		if ($this->show_upcomingflokk) {
-
-				$this->flokk_kal_instance = new calendar_basic(); 
-				call_user_func($this->prepare_classinstance, $this->flokk_kal_instance, $this->flokk_kal);
-				$this->flokk_kal_instance->use_log = false;
-				$this->flokk_kal_instance->use_iarchive = false;
-				$this->flokk_kal_instance->initialize();		
-				$this->flokk_kal_instance->entries_per_page = 3;
-				$this->flokk_kal_instance->noentries_future_template = '<i>Ingen hendelser</i>';
-				$this->flokk_kal_instance->calview_template = '
-					%noentries% %entries%
-				';
-				$this->flokk_kal_instance->calview_entry_template = '
-						<div>
-							<a href="%detailsurl%" class="icn smallicn" style="background-image:url(/images/calendar_red.gif);">%subject% (%shortdate%)</a>
-						</div>
-				';
-
-				$output .= '
-					<div style="padding:2px;font-weight:bold">Nærmer seg (flokk):</div>
-					<div style="text-align:left">
-						'.$this->flokk_kal_instance->viewCalendar().'
-					</div>
-				';
-		}
-		$output .= '
-			</table>
-			
-			<script type="text/javascript">
-			//<![CDATA[
-				YAHOO.util.Event.onDOMReady(function() {
-					Nifty("div#aktuelt1");
-					Nifty("div#aktuelt2");
-				});
-			//]]>
-			</script>
-
-			<div style="height:1px; clear:both;"><!-- --></div>
-		';	
-		*/
+		';
 
 		$this->noteboard_instance = new noteboard(); 
 		call_user_func($this->prepare_classinstance, $this->noteboard_instance, $this->noteboard);
