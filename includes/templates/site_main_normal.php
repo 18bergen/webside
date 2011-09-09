@@ -32,7 +32,7 @@
 			<div class="col_above"></div>
 			<div class="inner_col">
 				<a href="/grasrotandelen">
-					<img src="/images/grasrotandelen.png" style="display: block; margin-left:auto; margin-right:auto; width: 150px;" />
+					<img src="/images/grasrotandelen.png" style="display: block; margin-left:auto; margin-right:auto; width: 150px; border:none;" />
 				</a>
 			</div>
 			<div class="col_below"></div>	    	
