@@ -21,7 +21,9 @@ class log extends comments {
 	public $table_log_field_eventid = "event_id";
 	
 	var $table_imagedirs = "cms_pages";
-
+	
+	var $table_calendars = "cal_calendars";
+	
 	var $table_images = "images";
 	var $table_images_field_id = "id";
 	var $table_images_field_extension = "extension";
@@ -141,6 +143,7 @@ class log extends comments {
 		$this->table_images = DBPREFIX.$this->table_images;
 		$this->table_imagedirs = DBPREFIX.$this->table_imagedirs;
 		$this->table_comments = DBPREFIX.'comments';
+		$this->table_calendars = DBPREFIX.$this->table_calendars;
 	}
 	
 	function initialize() {
@@ -1093,11 +1096,14 @@ class log extends comments {
 	
 	public function getLastLogsGlobal($count) {
 		$cal = $this->calendar_instance->def_calendar;
-        $res = $this->query("SELECT id,authors,lead,lead_img,
-                calendar_id,event_id, log_page
-			FROM $this->table_log
-			WHERE published='1'
-			ORDER BY created DESC LIMIT $count
+	    $tl = $this->table_log;
+	    $tc = $this->table_calendars;
+        $res = $this->query("SELECT $tl.id, $tl.authors, $tl.lead, $tl.lead_img,
+                $tl.lastmodified, $tl.calendar_id, $tl.event_id,
+                $tl.log_page, $tc.short_caption, $tc.flag
+			FROM $tl,$tc
+			WHERE $tl.published='1' AND $tl.calendar_id = $tc.id
+			ORDER BY $tl.created DESC LIMIT $count
 			"
 		);
 		$logs = array();

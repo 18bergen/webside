@@ -214,6 +214,17 @@ class base {
 		';
 	}
 	
+	public function initializeCalendarInstance($cal_page = 0) {
+		$calObj = new calendar_basic();
+		if ($cal_page == 0) {
+			call_user_func($this->prepare_classinstance,$calObj);
+		} else {
+			call_user_func($this->prepare_classinstance,$calObj,$cal_page);
+			$calObj->initialize_base();
+		}
+		return $calObj;
+	}
+	
 	function preparePageInstance($page_id) {
 		global $dp0;
 		$page_id = intval($page_id);

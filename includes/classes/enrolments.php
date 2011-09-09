@@ -443,7 +443,7 @@ class enrolments extends base {
 		$cal_id = intval($_POST['cal_id']);
 		$default_event_id = intval($_POST['event_id']);
 		$this->cal_instance = $this->initializeCalendarInstance();
-		$dropdown = $this->cal_instance->getCalendarEvents($cal_id, array(
+		$dropdown = $this->cal_instance->getCalendarEventsAsOptionList($cal_id, array(
 			'onlyFutureEvents' => true,
 			'selected' => $default_event_id,
 			'addSelectedIfNotFound' => false
@@ -1527,17 +1527,6 @@ class enrolments extends base {
 		return $calendars;
 		
 	}
-	
-	private function initializeCalendarInstance($cal_page = 0) {
-		$calObj = new calendar_basic();
-		if ($cal_page == 0) {
-			call_user_func($this->prepare_classinstance,$calObj);
-		} else {
-			call_user_func($this->prepare_classinstance,$calObj,$cal_page);
-			$calObj->initialize_base();
-		}
-		return $calObj;
-	}	
 	
 	private function outputEnrolled($l) {
 		global $memberdb;

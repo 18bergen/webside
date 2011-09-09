@@ -677,24 +677,20 @@ class calendar_basic extends comments {
 		Utility function that only requires page inspecific initialization
 		options: { selected: int, onlyFutureEvents:bool, onlyPastEvents:bool, noLogExists:bool, addSelectedIfNotFound:bool }
 	*/
-	function getCalendarEvents($cal_id, $options = array()) {
-		$cal_id = intval($cal_id);
+	function getCalendarEvents($cal_id = 0, $options = array()) {
 		$tct = $this->table_calendar;
 		$tcct = $this->table_calendars;
+		$cal_id = intval($cal_id);
 
 		$whereClause = "WHERE $tct.cancelled=0";
-		$whereClause .= " AND $tct.calendar_id = $tcct.id AND $tct.calendar_id=$cal_id";
-		$selected = -1;
-		if (isset($options['selected'])) $selected = intval($options['selected']);
+		$whereClause .= " AND $tct.calendar_id = $tcct.id";
+		if ($cal_id != 0) $whereClause .= " AND $tct.calendar_id=$cal_id";
 		if (isset($options['onlyFutureEvents']) && ($options['onlyFutureEvents'])) 
 			$whereClause .= " AND $tct.dt_end > NOW()";
 		else if (isset($options['onlyPastEvents']) && ($options['onlyPastEvents'])) 
 			$whereClause .= " AND $tct.dt_start < NOW()";
 		if (isset($options['noLogExists']) && ($options['noLogExists'])) 
 			$whereClause .= " AND $tct.log = '0'";
-		$addSelectedIfNotFound = true;
-		if (isset($options['addSelectedIfNotFound']))
-			$addSelectedIfNotFound = ($options['addSelectedIfNotFound'] == true);
 		
 		$orderBy = "$tct.dt_start";
 		$limit = "";
@@ -703,7 +699,12 @@ class calendar_basic extends comments {
 				$tct.id,
 				UNIX_TIMESTAMP($tct.dt_start) as startdate,
 				UNIX_TIMESTAMP($tct.dt_end) as enddate,
-				$tct.caption as caption
+				$tct.caption as caption,
+				$tct.slug as slug,
+				$tct.calendar_id,
+				$tcct.short_caption as cal_name_short,
+				$tcct.flag,
+				$tcct.default_cal_page
 			FROM 
 				$tct,$tcct
 			$whereClause
@@ -711,6 +712,31 @@ class calendar_basic extends comments {
 			$limit
 			"
 		);
+		
+		$rlist = array();
+		while ($row = $res->fetch_assoc()){
+			$year = date('Y',$row['startdate']);
+			$row['uri'] = $this->getUrlToPage($row['default_cal_page'])."/$year/".$row['slug'];
+		    $rlist[] = $row;
+		}
+		return $rlist;
+	}	
+	
+	/*
+		Function getCalendarEventsAsOptionList
+		Utility function that only requires page inspecific initialization
+		options: { selected: int, onlyFutureEvents:bool, onlyPastEvents:bool, noLogExists:bool, addSelectedIfNotFound:bool }
+	*/
+	function getCalendarEventsAsOptionList($cal_id = 0, $options = array()) {
+		$cal_id = intval($cal_id);
+		$events = $this->getCalendarEvents($cal_id, $options);
+
+		$selected = -1;
+		if (isset($options['selected'])) $selected = intval($options['selected']);
+		$addSelectedIfNotFound = true;
+		if (isset($options['addSelectedIfNotFound']))
+			$addSelectedIfNotFound = ($options['addSelectedIfNotFound'] == true);
+				
 		$clist = "";
 		$foundDef = false;
 		$cur_mon = 0;
@@ -719,19 +745,19 @@ class calendar_basic extends comments {
 			return '<option disabled="disabled" value="-1">Ingen hendelser</option>';
 		}*/
 		
-		while ($row = $res->fetch_assoc()){
-			$caption = stripslashes($row["caption"]);
-			$dt_start = date("j.n.y",$row['startdate']);
-			$dt_end = date("j.n.y",$row['enddate']);
+		foreach ($events as $event) {
+			$caption = stripslashes($event["caption"]);
+			$dt_start = date("j.n.y",$event['startdate']);
+			$dt_end = date("j.n.y",$event['enddate']);
 			$dt = ($dt_start == $dt_end) ? $dt_start : "$dt_start - $dt_end";
 			$caption = "$caption ($dt)";
-			if ($cur_mon != date("n",$row['startdate'])) {
+			if ($cur_mon != date("n",$event['startdate'])) {
 				if ($cur_mon != 0) $clist .= "</optgroup>";
-				$cur_mon = date("n",$row['startdate']);
-				$clist .= "<optgroup label='".strftime('%B %Y',$row['startdate'])."'>";
+				$cur_mon = date("n",$event['startdate']);
+				$clist .= "<optgroup label='".strftime('%B %Y',$event['startdate'])."'>";
 			}
-			$clist .= "<option value='".$row["id"]."' ".(($selected == $row['id']) ? "selected='selected'" : "").">$caption</option>\n				";			
-			if ($selected == $row['id']) $foundDef = true;
+			$clist .= "<option value='".$event["id"]."' ".(($selected == $event['id']) ? "selected='selected'" : "").">$caption</option>\n				";			
+			if ($selected == $event['id']) $foundDef = true;
 		}
 		$clist .= "</optgroup>";
 		

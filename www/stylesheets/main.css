@@ -1351,21 +1351,72 @@ ul.simpleAuthorList {
 
 /******* FRONTPAGE *******/
 
+/*
 #aktuelt {
  margin: 5px;
 }
 #aktuelt1, #aktuelt2 {
 	background: #fff;
 	color: #3C0012;
-	text-align: center;
 	width: 240px;
-	font: 11px Arial,sans-serif;
+	font: 12px Arial,sans-serif;
 }
 #aktuelt1sub, #aktuelt2sub {
 	padding: 10px;
 }
 #aktuelt1 {
 	float:right;
+}
+*/
+#aktuelt1, #aktuelt2 {
+	background: #fff;
+	width:100%;
+	color: #3C0012;
+	padding: 6px;
+	margin-bottom:15px;
+}
+
+#aktuelt {
+
+}
+#aktuelt th, #aktuelt td {
+    padding: 3px;
+}
+#aktuelt th {
+    text-align: right;
+    vertical-align: top;
+    font-weight: bold;
+    white-space: nowrap; 
+}
+#aktuelt ul {
+    list-style-type:none;
+      margin:0px;
+      padding:0px;
+      background:none;
+}
+#aktuelt li {
+      list-style-type:none;
+      display:block;
+      margin:0;
+      padding: 2px 2px 2px 20px;
+}
+#aktuelt li.green {
+      background: url(/images/icns/flag_green.png) left center no-repeat;
+}
+#aktuelt li.purple {
+      background: url(/images/icns/flag_purple.png) left center no-repeat;
+}
+#aktuelt li.yellow {
+      background: url(/images/icns/flag_yellow.png) left center no-repeat;
+}
+#aktuelt li.blue {
+      background: url(/images/icns/flag_blue.png) left center no-repeat;
+}
+#aktuelt li.orange {
+      background: url(/images/icns/flag_orange.png) left center no-repeat;
+}
+#aktuelt li.idea {
+      background: url(/images/icns/lightbulb.png) left center no-repeat;
 }
 
 /***** MEMBERLIST ******/
@@ -1624,8 +1675,6 @@ div.auto_complete {
  padding-left: 5px;
  font-size:10px;
 }
-#aktuelt a { display:block; }
-#aktuelt a:hover { text-decoration:none; }
 
 /************* MESSAGECENTER / MELDINGSSENTER **********/
 
