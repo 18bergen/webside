@@ -10,22 +10,21 @@
 								<th class="label">
 									<div%error_subject%>Hva?</div>
 								</th><td class="data">
-									<input autocomplete="off" id="cal_subject" name="cal_subject" type="text" value="%subject%" class="inp" />
-									<div class="auto_complete" id="subject_auto_complete"></div>
-									<script type="text/javascript">
-										new Ajax.Autocompleter("cal_subject", "subject_auto_complete", "%url_autocomplete_subject%", { });
-									</script>
+                                    <div id="cal_subject_container" class="ac_container">
+                                        <input autocomplete="off" id="cal_subject" name="cal_subject" type="text" value="%subject%" class="inp" />
+                                        <div id="cal_subject_ac"></div>
+                                    </div>
+									
 								</td>
 							</tr>
 							<tr>
 								<th class="label">
 									<div%error_location%>Hvor?</div>
 								</th><td class="data">
-									<input autocomplete="off" id="cal_location" name="cal_location" type="text" value="%location%" class="inp" />
-									<div class="auto_complete" id="location_auto_complete"></div>
-									<script type="text/javascript">
-										new Ajax.Autocompleter("cal_location", "location_auto_complete", "%url_autocomplete_location%", { });
-									</script>
+                                    <div id="cal_location_container" class="ac_container">
+    									<input autocomplete="off" id="cal_location" name="cal_location" type="text" value="%location%" class="inp" />
+    									<div id="cal_location_ac"></div>
+    								</div>
 								</td>
 							</tr>
 							<tr>
@@ -148,6 +147,7 @@
 
 			var startTimeButton, endTimeButton;
 			var startDatePicker, endDatePicker;
+			
 			function onYuiLoaderComplete() {
 				YAHOO.util.Event.onContentReady("startdate", function() {
 					startDatePicker = new BG18.datePicker("startdate", { selectedDate: %startdate_js% } );
@@ -161,8 +161,56 @@
 					endDatePicker.init();
 				});
 				initTogglers();
+				initAutoComplete();				
 				new YAHOO.widget.Button("lagreKnapp");
 			}
+			
+			YAHOO.example.BasicRemote = function(field, url) {
+                var oDS = new YAHOO.util.XHRDataSource(url, {
+                    responseType: YAHOO.util.XHRDataSource.TYPE_TEXT,
+                    responseSchema: {
+                        recordDelim: "\n",
+                        fieldDelim: "\t"
+                    },
+                    maxCacheEntries: 5
+                });                
+                var oAC = new YAHOO.widget.AutoComplete(field, field+"_ac", oDS);
+                oAC.generateRequest = function(sQuery) {
+                    return "&" + field +"=" + sQuery;
+                };
+                oAC.animSpeed = 0.2;
+                return {
+                    oDS: oDS,
+                    oAC: oAC
+                };
+            }
+                
+            //define your itemSelect handler function:
+            var subjectSelectHandler = function(sType, aArgs) {
+                //console.log(sType); // this is a string representing the event;
+                                  // e.g., "itemSelectEvent"
+                var oMyAcInstance = aArgs[0]; // your AutoComplete instance
+                var elListItem = aArgs[1]; // the <li> element selected in the suggestion
+                                           // container
+                var oData = aArgs[2]; // object literal of data for the result
+                console.log(oData[0]);
+                switch (oData[0]) {
+                    case 'Patruljemøte':
+                    case 'Troppsmøte':
+                    case 'Småspeidermøte':
+                        if ($('startdate_time').selectedIndex == 0) $('startdate_time').selectedIndex = 25;
+                        if ($('enddate_time').selectedIndex == 0) $('enddate_time').selectedIndex = 29;
+                        if ($('cal_location').value == '') $('cal_location').value = 'Speiderlokalet';
+                        break;
+                }                
+                onSubjectChange();
+            };
+            
+			function initAutoComplete() {
+                ac1 = YAHOO.example.BasicRemote("cal_subject", "%url_autocomplete_subject%");
+                ac2 = YAHOO.example.BasicRemote("cal_location", "%url_autocomplete_location%");
+                ac1.oAC.itemSelectEvent.subscribe(subjectSelectHandler);
+            }
 
 			loader.require("button","menu","calendar","connection","json","autocomplete");
 			loader.insert();
@@ -196,7 +244,7 @@
 			YAHOO.util.Event.onDOMReady(initCKeditor);				
 
 			YAHOO.util.Event.onDOMReady(function() {
-				YAHOO.util.Event.addListener("cal_subject","keyup",onSubjectChange);
+				YAHOO.util.Event.addListener("cal_subject","change",onSubjectChange);
 			});
 					
 			/* http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.html#instanceReady */
