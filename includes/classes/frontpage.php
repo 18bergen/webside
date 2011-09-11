@@ -89,7 +89,7 @@ class frontpage extends base {
 		$this->setRssUrl("/nyheter/rss");
 
 		$output = "
-			<table id='aktuelt'>
+			<table>
 		";
         		
 		if ($this->show_upcomingtropp) {
@@ -132,14 +132,14 @@ class frontpage extends base {
 		}
 
         $output .= '</table>';
-        $output = '<div id="aktuelt1">'.$output.'</div>';
+        $output = '<div id="aktuelt">'.$output.'</div>';
 		$output .= '
 			</table>
 			
 			<script type="text/javascript">
 			//<![CDATA[
 				YAHOO.util.Event.onDOMReady(function() {
-					Nifty("div#aktuelt1");
+					Nifty("div#aktuelt");
 				});
 			//]]>
 			</script>

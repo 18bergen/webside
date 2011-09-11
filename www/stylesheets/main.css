@@ -1368,16 +1368,12 @@ ul.simpleAuthorList {
 	float:right;
 }
 */
-#aktuelt1, #aktuelt2 {
+#aktuelt {
 	background: #fff;
-	width:100%;
 	color: #3C0012;
 	padding: 6px;
 	margin-bottom:15px;
-}
-
-#aktuelt {
-
+	font: 11px sans-serif;
 }
 #aktuelt th, #aktuelt td {
     padding: 3px;
@@ -1398,7 +1394,7 @@ ul.simpleAuthorList {
       list-style-type:none;
       display:block;
       margin:0;
-      padding: 2px 2px 2px 20px;
+      padding: 3px 2px 3px 20px;
 }
 #aktuelt li.green {
       background: url(/images/icns/flag_green.png) left center no-repeat;
