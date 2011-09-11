@@ -1352,7 +1352,7 @@ ul.simpleAuthorList {
 /******* FRONTPAGE *******/
 
 #aktuelt {
-    background: #E6D35E;
+    background: #fff;
 	padding: 6px;
 	margin-bottom:15px;
 	margin-top: -8px;
@@ -1364,12 +1364,10 @@ ul.simpleAuthorList {
 }
 
 #aktuelt a:link {
- color: #666;
  text-decoration: none;
-border-bottom: 1px dotted;
+ border-bottom: 1px dotted;
 }
 #aktuelt a:hover {
- color: #666;
  text-decoration: none;
  border-bottom: 1px solid;
 }
