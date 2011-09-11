@@ -681,7 +681,7 @@ class calendar extends calendar_basic {
 		$location = addslashes(stripslashes($_POST['cal_location']));
 		$slug = addslashes($_POST['cal_slug']);
 		$calendarId = intval($_POST['cal_calendar']);
-		$isprivate = (isset($_POST['cal_private']) && ($_POST['cal_private'] == 'on')) ? "1" : "0";
+		$isprivate = (isset($_POST['cal_private']) && ($_POST['cal_private'] == 'on')) ? 1 : 0;
 		$startdate = $this->parseDateTimeFromPOST('startdate');
 		$startdate_unix = strtotime($startdate);
 		$enddate = $this->parseDateTimeFromPOST('enddate');
