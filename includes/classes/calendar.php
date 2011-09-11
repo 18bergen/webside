@@ -1747,9 +1747,14 @@ class calendar extends calendar_basic {
 		$val = addslashes($_GET['cal_subject'])."%";
 		$res = $this->query(
 			"SELECT id,caption FROM $this->table_calendar WHERE caption LIKE \"$val\"
+			AND calendar_id IN (".$this->show_calendars.")
 			GROUP BY caption ORDER BY COUNT(id) DESC, caption ASC LIMIT 20"
 		);
-		header("Content-Type: text/html; charset=utf-8"); 
+		header("Content-Type: text/html; charset=utf-8");
+		if ($res->num_rows == 1) {
+		    $row = $res->fetch_assoc();
+		    if (stripslashes($row['caption']) == $val) exit();
+		}  
 		while ($row = $res->fetch_assoc()) {
 			print stripslashes($row['caption'])."\n";
 		}
