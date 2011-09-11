@@ -993,16 +993,6 @@ class cms extends base {
 			),true));
 		}
 		/* Validate Input END */
-
-
-		$f = explode("/",$_SERVER['SCRIPT_FILENAME']);
-		array_pop($f);
-		$image_dir = rtrim(implode("/",$f),"/").$this->pathToImages;
-		$image_dir .= implode("/",$this->coolUrlSplitted);
-		if (count($this->coolUrlSplitted) > 0) $image_dir .= "/";
-		$image_dir .= $slug;
-		
-		mkdir($image_dir);		
 		
 		$res = $this->query(
 			"SELECT owner,ownergroup FROM $this->table_pages WHERE id='$page'"
