@@ -48,7 +48,7 @@ class frontpage extends base {
                 $dss = strftime("%e. %B – ",$log['cal_event']['startdate']).strftime("%e. %B",$log['cal_event']['enddate']);
             }
             $output .= "<li class='".$log['flag']."'>".
-                $log['short_caption'].': '.
+                $log['caption'].': '.
                 '<a href="'.$log['uri'].'">'.$log['cal_event']['caption'].' '.$dss.'</a>'.
                 ' <small>(skrevet '.strftime("%e. %B",$log['lastmodified']).')</small>'.
                 '</li>';

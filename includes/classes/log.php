@@ -1100,7 +1100,7 @@ class log extends comments {
 	    $tc = $this->table_calendars;
         $res = $this->query("SELECT $tl.id, $tl.authors, $tl.lead, $tl.lead_img,
                 $tl.lastmodified, $tl.calendar_id, $tl.event_id,
-                $tl.log_page, $tc.short_caption, $tc.flag
+                $tl.log_page, $tc.caption, $tc.flag
 			FROM $tl,$tc
 			WHERE $tl.published='1' AND $tl.calendar_id = $tc.id
 			ORDER BY $tl.created DESC LIMIT $count

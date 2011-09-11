@@ -714,7 +714,7 @@ class calendar_basic extends comments {
 				$tct.caption as caption,
 				$tct.slug as slug,
 				$tct.calendar_id,
-				$tcct.short_caption as cal_name_short,
+				$tcct.caption as cal_name_short,
 				$tcct.flag,
 				$tcct.default_cal_page
 			FROM 
