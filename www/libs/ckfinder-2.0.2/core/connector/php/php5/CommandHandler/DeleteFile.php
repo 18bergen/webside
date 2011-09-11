@@ -73,6 +73,15 @@ class CKFinder_Connector_CommandHandler_DeleteFile extends CKFinder_Connector_Co
 
         $filePath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_currentFolder->getServerPath(), $fileName);
 
+		/*************************** Modified by DM BEGIN ****************************/
+		global $bg18;
+	
+		if (!$bg18->allowWrite($filePath)) {
+	        $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UNAUTHORIZED);		
+		}
+	
+		/**************************** Modified by DM END *****************************/            
+
         $bDeleted = false;
 
         if (!file_exists($filePath)) {
@@ -94,6 +103,14 @@ class CKFinder_Connector_CommandHandler_DeleteFile extends CKFinder_Connector_Co
             $this->_connectorNode->addChild($oDeleteFileNode);
 
             $oDeleteFileNode->addAttribute("name", $fileName);
+            
+            /*************************** Modified by DM BEGIN ****************************/
+
+			global $baseDir;	
+			$bg18->fileDeleted($filePath,$baseDir);
+	
+			/**************************** Modified by DM END *****************************/            
+
         }
     }
 }

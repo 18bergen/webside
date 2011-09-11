@@ -173,6 +173,14 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
         }
 
         if (!$_config->checkSizeAfterScaling()) {
+
+			/*************************** Modified by DM BEGIN ****************************/
+			if ($iErrorNumber == CKFINDER_CONNECTOR_ERROR_NONE) {
+				global $bg18;
+				$bg18->fileUploaded($sFilePath);
+			}
+			/**************************** Modified by DM END *****************************/
+        
             $this->_errorHandler->throwError($iErrorNumber, true, false);
         }
 
@@ -192,6 +200,14 @@ class CKFinder_Connector_CommandHandler_FileUpload extends CKFinder_Connector_Co
                 $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UPLOADED_TOO_BIG);
             }
             else {
+
+				/*************************** Modified by DM BEGIN ****************************/
+				if ($iErrorNumber == CKFINDER_CONNECTOR_ERROR_NONE) {
+					global $bg18;
+					$bg18->fileUploaded($sFilePath);
+				}
+				/**************************** Modified by DM END *****************************/
+
                 $this->_errorHandler->throwError($iErrorNumber, true, false);
             }
         }
