@@ -1608,14 +1608,12 @@ class calendar extends calendar_basic {
 		exit();
 		*/
 
-		$val = addslashes($_POST['cal_location'])."%";
+		$val = addslashes($_GET['cal_location'])."%";
 		$res = $this->query("SELECT caption FROM $this->table_locations WHERE caption LIKE \"$val\" LIMIT 20");
 
-		print "<ul>\n";
 		while ($row = $res->fetch_assoc()) {
-			print "<li>".stripslashes($row['caption'])."</li>\n";
+			print stripslashes($row['caption'])."\n";
 		}
-		print "</ul>\n";
 		exit();
 	
 	}
@@ -1746,17 +1744,15 @@ class calendar extends calendar_basic {
 		exit();
 		*/
 
-		$val = addslashes($_POST['cal_subject'])."%";
+		$val = addslashes($_GET['cal_subject'])."%";
 		$res = $this->query(
 			"SELECT id,caption FROM $this->table_calendar WHERE caption LIKE \"$val\"
-			GROUP BY caption LIMIT 20"
+			GROUP BY caption ORDER BY COUNT(id) DESC, caption ASC LIMIT 20"
 		);
 		header("Content-Type: text/html; charset=utf-8"); 
-		print "<ul>\n";
 		while ($row = $res->fetch_assoc()) {
-			print "<li>".stripslashes($row['caption'])."</li>\n";
+			print stripslashes($row['caption'])."\n";
 		}
-		print "</ul>\n";
 		exit();
 	
 	}

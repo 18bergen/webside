@@ -24,6 +24,9 @@
 	font-size: 10pt;
 	padding: 4px;
 }
+.calendar_form .ac_container {
+    height:26px;
+}
 .calendar_form select.inp {
 	width: 400px;
 	border: 1px solid #AAAAAA;
