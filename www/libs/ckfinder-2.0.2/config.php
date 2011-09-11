@@ -18,6 +18,9 @@
  *
  * @return boolean
  */
+
+if (!isset($_SESSION)) session_start();
+
 function CheckAuthentication()
 {
 	// WARNING : DO NOT simply return "true". By doing so, you are allowing
