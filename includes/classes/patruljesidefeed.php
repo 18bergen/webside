@@ -17,7 +17,7 @@ class patruljesidefeed {
 	
 	function printPatuljer(){
 		global $db, $login, $memberdb, $months;
-		print("<h2>Om patruljene</h2>\n");
+		print("<h1>Om patruljene</h1>\n");
 		print("18. Bergen V-S har for tiden tre patruljer og en roverpatrulje. ");
 		print("Klikk på patruljene for å se hva patruljeledelsen har skrevet om patruljen sin.");
 		print("<ul>\n");
@@ -58,12 +58,12 @@ class patruljesidefeed {
 
 	function printPage($data){
 		if ($data['mime'] == 'text/html'){
-			print("<h2>".$data['grpcaption']."</h2>\n");
-			print("<h3>".stripslashes($data['caption'])."</h3>\n");
+			print("<h1>".$data['grpcaption']."</h1>\n");
+			print("<h2>".stripslashes($data['caption'])."</h2>\n");
 			print(stripslashes($data['content']));
 		} else if ($data['mime'] == 'db/gb'){
-			print("<h2>".$data['grpcaption']."</h2>\n");
-			print("<h3>".stripslashes($data['caption'])."</h3>\n");
+			print("<h1>".$data['grpcaption']."</h1>\n");
+			print("<h2>".stripslashes($data['caption'])."</h2>\n");
 			print("<a href='index.php?s=0006&amp;g='".$data['gruppe']."'>Klikk her for å gå til denne gjesteboken</a>\n");
 		}
 	}

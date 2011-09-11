@@ -73,7 +73,7 @@ class referat extends base {
 		if ($res->num_rows < 1){ 
 			$res = $this->query("SELECT content FROM $this->table_pages WHERE id='$this->page_id'");
 			if ($res->num_rows < 1){ 
-				print "<h2>Siden finnes ikke</h2>";
+				print "<h1>Siden finnes ikke</h1>";
 				return; 
 			}
 		}

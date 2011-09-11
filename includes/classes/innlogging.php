@@ -346,12 +346,12 @@ class innlogging extends base {
 			$output .= $this->lostPassword($_GET['lost_pass']);
 		} else if (isset($_GET['loginfailed'])){
 			$output .= "
-				<h2>Innloggingen ble avbrutt</h2>
+				<h1>Innloggingen ble avbrutt</h1>
 			";
 			switch ($_GET['loginfailed']) {
 				case "PWD_NOT_CONFIRMED":
 					$output .= "
-						<h3>Passordet ditt er ikke bekreftet</h3>
+						<h2>Passordet ditt er ikke bekreftet</h2>
 						<p>
 							Du har ikke bekreftet passordet ditt enda. Du skal ha mottatt en epost med en 
 							link som du må trykke på for å bekrefte passordet ditt. Om du ikke har det, ta
@@ -361,7 +361,7 @@ class innlogging extends base {
 					break;
 				case "PWD_NOT_SET":
 					$output .= '
-						<h3>Du har ikke laget passord enda</h3>
+						<h2>Du har ikke laget passord enda</h2>
 						<p>
 							Brukerkontoen din er opprettet, men du må lage ditt eget passord for å kunne logge inn.
 							En epost med instruksjoner for å gjøre dette har blitt sendt deg tidligere. Dersom du ikke
@@ -374,7 +374,7 @@ class innlogging extends base {
 					break;
 				case "ACCOUNT_LOCKED":
 					$output .= "
-						<h3>Kontoen din er sperret</h3>
+						<h2>Kontoen din er sperret</h2>
 						<p>
 							Kontoen din er sperret, kanskje pga. misbruk. Ta kontakt med webmaster for å
 							få fjernet sperringen.
@@ -383,7 +383,7 @@ class innlogging extends base {
 					break;
 				case "NO_MEMBERSHIPS":
 					$output .= "
-						<h3>Manglende tilknytning</h3>
+						<h2>Manglende tilknytning</h2>
 						<p>
 							Brukeren din er ikke knyttet til noe medlemskap.
 							Dette skyldes antakelig at du har sluttet i speideren.
@@ -399,7 +399,7 @@ class innlogging extends base {
 				default:
 					if (isset($_SESSION['brukernavn'])) {
 						$output .= '
-							<h3>Brukernavnet eller passordet du skrev inn var feil</h3>
+							<h2>Brukernavnet eller passordet du skrev inn var feil</h2>
 							<p>
 								<a href="'.$this->generateURL('sendlogininfo='.$_SESSION['brukernavn']).'">Trykk her</a> 
 								hvis du har glemt innloggingsopplysningene dine.
@@ -408,7 +408,7 @@ class innlogging extends base {
 						unset($_SESSION['brukernavn']);
 					} else {
 						$output .= '
-							<h3>Brukernavnet eller passordet du skrev inn var feil</h3>
+							<h2>Brukernavnet eller passordet du skrev inn var feil</h2>
 							<p>
 								<a href="'.$this->generateURL('sendlogininfo=').'">Trykk her</a> 
 								hvis du har glemt innloggingsopplysningene dine.
@@ -419,7 +419,7 @@ class innlogging extends base {
 			}
 		} else if (isset($_GET['passwordsent'])){
 			$output .= '
-				<h2>Passord sendt!</h2>
+				<h1>Passord sendt!</h1>
 				<p>
 					Passordet ditt er sendt til '.$_GET['passwordsent'].' og vil antakelig være fremme ganske raskt. 
 					NB! Det kan være det havner i mappen "Useriøs epost", "Junk mail" eller lignende. 
@@ -455,7 +455,7 @@ class innlogging extends base {
 			$info = 'Hvem er du? '.$this->memberdb->generateMemberSelectBox('lost_pass',$def);
 		}
 		return '
-			<h2>Glemt brukernavn og/eller passord</h2>
+			<h1>Glemt brukernavn og/eller passord</h1>
 			<form method="get" action="'.$this->generateURL("").'">
 				<p>
 					'.$info.'
@@ -478,8 +478,8 @@ class innlogging extends base {
 		$m = $this->memberdb->getMemberById($id);
 		if (!$this->hasUsername($id)){
 			return '
-				<h2>Hjelp til innlogging</h2>
-				<h3>Ops, du mangler brukernavn</h3>
+				<h1>Hjelp til innlogging</h1>
+				<h2>Ops, du mangler brukernavn</h2>
 				<p>
 					Du er registrert i vårt system, men du ikke har ikke blitt tildelt et brukernavn til
 					å logge inn med enda. <a href="/kontakt/webmaster" class="icn" style="background-image:url(/images/icns/email.png);">Kontakt webmaster</a> for å få tildelt 
@@ -489,8 +489,8 @@ class innlogging extends base {
 		}
 		if (!$this->hasPassword($id)){
 			return '
-				<h2>Hjelp til innlogging</h2>
-				<h3>Du har ikke laget passord enda</h3>
+				<h1>Hjelp til innlogging</h1>
+				<h2>Du har ikke laget passord enda</h2>
 				<p>
 					Brukerkontoen din er opprettet, men du må lage ditt eget passord for å kunne logge inn.
 					En epost med instruksjoner for å gjøre dette har blitt sendt deg tidligere. Dersom du ikke
@@ -502,7 +502,7 @@ class innlogging extends base {
 			';			
 		}
 		$output = '
-			<h2>Glemt brukernavn og/eller passord</h2>
+			<h1>Glemt brukernavn og/eller passord</h1>
 			<form method="post" action="'.$this->generateURL(array('noprint=true','sendpwd=true')).'">
 				<p>
 					Vi kan sende brukernavn og passord til e-postadressen registrert på

@@ -158,7 +158,7 @@ class rent extends base {
 		$hallName = stripslashes($row['caption']);
 		print "
 			<a href=\"".$this->generateCoolUrl("/","hall=$hall")."\">&lt;&lt; Tilbake</a>
-			<h3>$hallName - $day. ".$this->months[$month-1]."</h3>
+			<h2>$hallName - $day. ".$this->months[$month-1]."</h2>
 			<div id='soknader'>
 		";
 		print $this->fetchApplications($hall,$year,$month,$day);
@@ -180,7 +180,7 @@ class rent extends base {
 					<a onclick=\"toggleForm(true); return false;\" href='".$this->generateCoolUrl("/book/","hall=$hall&amp;month=$month&amp;day=$day")."'>Ny søknad</a>
 				</div>
 				<div id='bookForm' style='display:none;'>
-					<h3>Ny søknad om leie av lokale</h3>
+					<h2>Ny søknad om leie av lokale</h2>
 					<table><tr><td valign='top'><strong>Tidspunkt:</strong></td><td valign='top'>
 						<input type='checkbox' name='allday' id='allday' onchange='allDay(this.checked)' /><label for='allday'>Hele dagen</label>
 						<div id='timeSelector'>
@@ -357,7 +357,7 @@ class rent extends base {
 	function listApplications() {
 		if (!$this->allow_approve) { $this->permissionDenied(); return false; }
 		print "<a href=\"".$this->generateCoolUrl("/")."\">&lt;&lt; Tilbake</a>";
-		print "<h3>Ubehandlede søknader</h3>";
+		print "<h2>Ubehandlede søknader</h2>";
 		$res = $this->query("SELECT $this->table_calendar.id,$this->table_calendar.startdate,$this->table_calendar.enddate,$this->table_calendar.user,$this->table_calendar.comment,$this->table_calendar.allday,$this->table_halls.caption FROM $this->table_calendar,$this->table_halls 
 			WHERE approved=0 AND $this->table_calendar.hall=$this->table_halls.id ORDER BY $this->table_calendar.startdate
 		");

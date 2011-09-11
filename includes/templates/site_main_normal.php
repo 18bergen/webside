@@ -4,13 +4,13 @@
    				<!--[if lte IE 6]>
 					<style type="text/css">
 						#ie6msg{border:3px solid #090; margin:8px 0; background:#cfc; color:#000;}
-						#ie6msg h4{margin:8px; padding:0;}
+						#ie6msg h3{margin:8px; padding:0;}
 						#ie6msg p{margin:8px; padding:0;}
 						#ie6msg p a.getie7{font-weight:bold; color:#006;}
 						#ie6msg p a.ie6expl{font-weight:normal; color:#006;}
 					</style>
 					<div id="ie6msg">
-						<h4>Tips fra oss: Du har en eldre versjon av nettleseren Internet Explorer.</h4>
+						<h3>Tips fra oss: Du har en eldre versjon av nettleseren Internet Explorer.</h3>
 						<p>
 							For å få en best mulig opplevelse av å bruke våre nettsider,<br />
 							kan du gratis <a class="getie7" href="http://www.microsoft.com/norge/windows/downloads/ie/getitnow.mspx" target="_blank">hente en nyere versjon av Internet Explorer</a>.<br />
@@ -43,10 +43,10 @@
 			<div class="col_above"></div>
 			<div class="inner_col">
 		
-				<h2 style='display:none'>Sidefelt:</h2>
+				<h1 style='display:none'>Sidefelt:</h1>
 					
 				<div id='snikksnakk_content'>
-					<h3>Snikk snakk</h3>
+					<h2>Snikk snakk</h2>
 					%wordbox%
 				</div>
 			</div>
@@ -57,7 +57,7 @@
 			<div class="inner_col">
 				
 				<div id='poll'>
-					<h3 class='small'>Ukens spørsmål</h3>
+					<h2 class='small'>Ukens spørsmål</h2>
 					%poll%
 				</div>
 		
@@ -76,7 +76,7 @@
 			<div class="inner_col">
 							
 				<div id="updates">
-					<h3 class='small'>Nytt på 18bergen.org:</h3>
+					<h2 class='small'>Nytt på 18bergen.org:</h2>
 					<div id='siste_oppdateringer_content'>
 					%updates%
 					</div>
@@ -93,7 +93,7 @@
 		
 				&nbsp;
 				<div id="statistikk">
-					<h3 class="small">Hvem er her nå?</h3>
+					<h2 class="small">Hvem er her nå?</h2>
 					%whoisonline%
 				</div>        	
 				

@@ -7,7 +7,7 @@ class commonfunctions {
 		print("<form method='post' action='index.php?s=$page&amp;noprint=true'>\n");
 		print("<input type='hidden' name='confirmed' value='1' />");
 		print("<input type='hidden' name='confirmedData' value='$extraInformation' />");
-		print("<h2>Bekreft</h2>\n");
+		print("<h1>Bekreft</h1>\n");
 		print("<p>$text</p>\n");
 		print("<input type='submit' value='    Ja    ' /> <input type='button' value='    Nei    ' onclick='window.location=\"".$_SERVER['HTTP_REFERER']."\"' />\n");
 		print("</form>\n");

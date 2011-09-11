@@ -109,7 +109,7 @@
 	
 	%notifications%
 
-<h2 style='display:none'>Sidefelt:</h2>
+<h1 style='display:none'>Sidefelt:</h1>
 
 	<div style="text-align:center;padding:2px 10px 4px 10px;">
 		<div id="landsleir" style="background-color:#fff;">
@@ -126,24 +126,24 @@
 	</div>
 
 	<div id='snikksnakk_content'>
-		<h3 id='snikksnakk_header' class='small'>Snikk snakk</h3>
+		<h2 id='snikksnakk_header' class='small'>Snikk snakk</h2>
 		%wordbox%
 	</div>
 	
 	<div id='poll'>
-		<h3 class='small'>Ukens spørsmål</h3>
+		<h2 class='small'>Ukens spørsmål</h2>
 		%poll%
 	</div>
 	
 	<div id="statistikk">
-		<h3 class="small">Hvem er her nå?</h3>
+		<h2 class="small">Hvem er her nå?</h2>
 		%whoisonline%
 	</div>
 	
 	%rss%
 	
 	<div id="updates">
-		<h3 class='small'>Nytt på 18bergen.org:</h3>
+		<h2 class='small'>Nytt på 18bergen.org:</h2>
 		<div id='siste_oppdateringer_content'>
 		%updates%
 		</div>

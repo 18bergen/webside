@@ -214,7 +214,7 @@ class poll extends base {
 		if (!$this->allow_createnewpoll) return $this->permissionDenied();
 
 		$output .= "
-			<h3>Opprett ny avstemning</h3>
+			<h2>Opprett ny avstemning</h2>
 			<p>
 				Her kan du opprette en ny avstemning. Skriv inn et spørsmål og fyll ut så mange svaralternativer du ønsker (maks 10). Om du vil bruke mindre enn ti svaralternativer, lar du de resterende feltene stå blanke.
 			</p>

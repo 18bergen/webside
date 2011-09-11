@@ -109,7 +109,7 @@ class newsletters extends base {
 		}
 		
 		$output = "
-			<h3>Skriv nytt nyhetsbrev</h3>
+			<h2>Skriv nytt nyhetsbrev</h2>
 		";
 		
 		if (!$this->isLoggedIn()) {
@@ -361,7 +361,7 @@ class newsletters extends base {
 		$newsletter['plain_body'] = $tmp[0];
 		$newsletter['html_body'] = $tmp[1];
 		
-		$output = '<h3>Forhåndsvisning</h3>'.
+		$output = '<h2>Forhåndsvisning</h2>'.
 			'<p><strong>Dette er en forhåndsvisning! Nyhetsbrevet er ikke sendt enda.</strong></p> 
 			<form method="post" action="'.$this->generateUrl('sendletter').'" style="padding:20px;">
 				<table class="skjema"><tr><td>
@@ -541,7 +541,7 @@ class newsletters extends base {
 			</p>
 		";
 		
-		$output .= "<h3>Meldingsarkiv:</h3>";
+		$output .= "<h2>Meldingsarkiv:</h2>";
 		if ( $this->newslettercount > 0) {
 			$output .= "
 				<table class='forum' width='100%'>
@@ -633,7 +633,7 @@ class newsletters extends base {
 		);
 
 		return '
-			<h3>Mine innstillinger</h3>
+			<h2>Mine innstillinger</h2>
 			<form method="post" action="'.$post_uri.'">
 				<p>
 					<label for="receive_newsletter">

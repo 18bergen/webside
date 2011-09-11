@@ -90,7 +90,7 @@ class sms extends base {
 		$url_post = $this->generateURL("sms_action=calculate_price");
 		
 		return '
-			<h3>Send SMS</h3>
+			<h2>Send SMS</h2>
 			<form method="post" action="'.$url_post.'">
 				<input type="hidden" name="current_row" id="current_row" value="'.$this->current_row.'" />
 				<table>
@@ -115,7 +115,7 @@ class sms extends base {
 				<input type="submit" value="Beregn pris" />
 			</form>
 			
-			<h3>Info</h3>
+			<h2>Info</h2>
 			<p>
 				En SMS kan maks inneholde 158 tegn. Hvis du overstiger dette vil meldingen bli sendt som to SMS. De fleste nyere mobiler
 				vil slå meldingene sammen når de mottas, slik at de fremstår som en - men prisen vil bli dobbel.
@@ -172,7 +172,7 @@ class sms extends base {
 
 		$url_post = $this->generateURL(array("noprint=true","sms_action=send"));
 		$output = '
-			<h3>Bekreft sending</h3>
+			<h2>Bekreft sending</h2>
 			<p style="border: 1px dashed black; background: #fff; padding: 10px;">'.nl2br($msg).'</p>
 			<p>
 				Meldingen vil bli sendt til '.$rcpt_len.' mottakere.<br />
@@ -374,13 +374,13 @@ class sms extends base {
 			<p>
 				Vi får statusmeldinger tilbake fra TM4B. Ved å trykke på \"Detaljer\" kan du se hvem som har mottatt meldingene og hvem som ikke har det.
 			</p>
-			<h3>Kontostatus</h3>
+			<h2>Kontostatus</h2>
 			<p>
 				Vi har akkurat nå $credits kreditter, som tilsvarer ca. $NOK kr / $messages meldinger.
 			</p>
 		";
 		$output .= "
-			<h3>Arkiv</h3>			
+			<h2>Arkiv</h2>			
 			<table class='forum' cellpadding='2' cellspacing='0' width='100%'>
 				<tr>
 					<th>Dato</th>
@@ -436,7 +436,7 @@ class sms extends base {
 				<a href=\"".$this->generateURL("")."\">Tilbake til oversikt</a>
 			</p>
 			
-			<h3>Detaljer for sending</h3>
+			<h2>Detaljer for sending</h2>
 			<p>
 				<strong>Broadcast ID: </strong> $broadcast_id<br />
 				<strong>Sendt: </strong> $datesent<br />
@@ -470,7 +470,7 @@ class sms extends base {
 		}
 		$output .= "
 			</table>
-			<h3>Possible delivery states:</h3>
+			<h2>Possible delivery states:</h2>
 			<ul>
 				
 				<li>NOT_SENT<br />

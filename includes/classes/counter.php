@@ -24,7 +24,7 @@ class counter {
 			if ($row['name'] == "hits") $hits = $row['value'];
 			if ($row['name'] == "visitors") $visitors = $row['value'];
 		}
-		print("<h3 class=\"small\">Besøksstatistikk</h3>\n");
+		print("<h2 class=\"small\">Besøksstatistikk</h2>\n");
 		print("$visitors unike besøkende har vært innom. $hits sider har blitt vist. ");
 
 	}

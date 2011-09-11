@@ -116,7 +116,7 @@ function who(){
 	
 	$res = $db->query($q1);
 	$buffer = "";
-	$output = "<h3>Folk</h3>";
+	$output = "<h2>Folk</h2>";
 	while($record = $res->fetch_object()){
 		if(session_id() == $record->sessionid ){
 			$you_pr = "<strong>";
@@ -159,7 +159,7 @@ function who(){
 	
 	$res = $db->query($q2);
 	$buffer = "";
-	$output .= "<h3>Søkemotorer, etc..</h3>";
+	$output .= "<h2>Søkemotorer, etc..</h2>";
 	while($record = $res->fetch_object()){
 		if(session_id() == $record->sessionid ){
 			$you_pr = "<strong>";

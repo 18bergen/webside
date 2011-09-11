@@ -153,7 +153,7 @@ class calendar_basic extends comments {
 					<div style="width:10px;height:10px;background:%cal_color%; margin-top:3px;" title="%cal_name%"><!-- --></div>
 				</td><td valign="top" style="width: 240px;">
 					<em>%longdate%</em> %log_icon% %imagearchive_icon% %enrolment_icon% %private_icon%
-					<h4><a href="%detailsurl%">%subject%</a></h4>
+					<h3><a href="%detailsurl%">%subject%</a></h3>
 					<div style="padding-left:0px;color:#666;font-size:9px;">Ansvarlig: %responsible%</div>
 				</td><td valign="top">
 					<p>%lead%</p>

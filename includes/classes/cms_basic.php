@@ -55,7 +55,7 @@ class cms_basic extends base {
 		<div class="alpha-shadow" style="float:right;"><div class="inner_div">
 			<img src="%imagedir%scream.gif" alt="Scream" style="width: 100px;" />
 		</div></div>
-		<h2>Skrik!</h2>
+		<h1>Skrik!</h1>
 		<p>
 		  Den etterspurte siden ble ikke funnet!
 		</p>
@@ -276,7 +276,7 @@ class cms_basic extends base {
 		if (substr($_SERVER['REQUEST_URI'],strlen(ROOT_DIR)) == '/') 
 			return "18. Bergen";
 		else
-			return "18. Bergen: ".$this->page_title;
+			return $this->page_title.' – '."18. Bergen";
 	}
 
 	/* ############################################### PERMISSION SYSTEM ################################################################*/
@@ -415,7 +415,7 @@ class cms_basic extends base {
 		);
 		
 		if ($res->num_rows < 1){ 
-			$this->_errors .= "<h2>Siden eller mappen finnes ikke</h2>
+			$this->_errors .= "<h1>Siden eller mappen finnes ikke</h1>
 			<p>
 				Siden du etterspurte ble ikke funnet. Ikke godt å si hvor den har tatt veien, men 
 				webmaster kan kanskje svare om du spør. 
@@ -517,7 +517,7 @@ class cms_basic extends base {
 				$output .= $this->permissionDenied();
 			} else {
 				$output .= "<div id='edit_page_div' style='float:right'></div>";
-				if ($this->print_header) $output .= "<h2>".$this->current_instance->header."</h2>\n";				
+				if ($this->print_header) $output .= "<h1>".$this->current_instance->header."</h1>\n";				
 				$output .= $this->current_instance->run();
 				if (isset($this->current_instance->document_title) && !empty($this->current_instance->document_title))
 					$this->page_title .= ': '. $this->current_instance->document_title;
@@ -543,7 +543,7 @@ class cms_basic extends base {
 	function listDir() {
 		$header = $this->getHeader($this->_pageId);
 		$output = "
-			<h2>$header</h2>
+			<h1>$header</h1>
 		";
 		$lp = $this->listPages();
 		if ($lp == "empty") {

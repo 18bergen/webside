@@ -1,10 +1,10 @@
-		<h3>%editarticle%</h3>
+		<h2>%editarticle%</h2>
 
 		<form method="post" action="%posturl%" style="margin-top:20px;">
 			<input type="hidden" name="log_id" value="%id%" />
 			
 					<div class="postbox closed">
-						<h3 class="handle">Ingress</h3>
+						<h2 class="handle">Ingress</h2>
 						<div class="inside">
 						  <p>En ingress er en kort introduksjon til loggen. Hvis du bruker 
 						  ingress-feltet må leseren trykke «Les mer» for å komme til selve loggen.
@@ -19,7 +19,7 @@
 					</div>
 					
 					<div class="postbox">
-						<h3 class="handle">Arrangement og bilder</h3>
+						<h2 class="handle">Arrangement og bilder</h2>
 						<div class="inside">
 						
 							<div style="padding:10px;">
@@ -58,7 +58,7 @@
 					</div>
 
 					<div class="postbox">
-						<h3 class="handle">Forfattere</h3>
+						<h2 class="handle">Forfattere</h2>
 						<div class="inside">
 							%author_list%
 							<div style="clear:both;"><!-- --></div>
@@ -105,7 +105,7 @@
 			// ============================ (2) INIT PANELS ====================================
 			
 			function initTogglers() {
-				var handles = YAHOO.util.Dom.getElementsByClassName('handle','h3','main_col');
+				var handles = YAHOO.util.Dom.getElementsByClassName('handle','h2','main_col');
 				for (i = 0; i < handles.length; i++) {
 					YAHOO.util.Event.addListener(handles[i],'click',clickHandle);
 				}

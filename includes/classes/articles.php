@@ -22,7 +22,7 @@ class articles extends base {
 	}
 
 	function printArticle($article){
-		print("<h2>".stripslashes($article['subject'])."</h2>\n");
+		print("<h1>".stripslashes($article['subject'])."</h1>\n");
 		print("  <p>\n");
 		print("  ".stripslashes($article['body'])."\n");
 		print("  </p>\n");
@@ -49,12 +49,12 @@ class articles extends base {
 			if ($article['creator'] != $login->ident) ErrorMessageAndExit("Du er ikke skribent av denne artikkelen!");
 			$subject = stripslashes($article['subject']);
 			$body = stripslashes(str_replace("<br />","\r\n",$article['body']));
-			print("<h2>Rediger artikkel</h2>\n");
+			print("<h1>Rediger artikkel</h1>\n");
 			print("<input type=\"hidden\" name=\"i\" value=\"".$article_no."\" />\n");
 		} else {
 			$subject = "";
 			$body = "";
-			print("<h2>Ny artikkel</h2>\n");
+			print("<h1>Ny artikkel</h1>\n");
 		}
 		print "
 			<table>
@@ -121,7 +121,7 @@ class articles extends base {
 			if ($Result->num_rows != 1) ErrorMessageAndExit("Artikkelen eksisterer ikke!");
 			$Row = $Result->fetch_assoc();
 			if ($Row['creator'] != $login->ident) ErrorMessageAndExit("Du er ikke skribent av denne artikkelen!");
-			print("<h2>Bekreft</h2><p>Er du sikkert på at du vil slette artikkelen \"".$Row['subject']."\"?</p>");
+			print("<h1>Bekreft</h1><p>Er du sikkert på at du vil slette artikkelen \"".$Row['subject']."\"?</p>");
 			print("<form method='post' action='index.php?s=0040&delete=1&amp;noprint=true&amp;i=$article_no&amp;delconf=true'>\n");
 			print("<input type='submit' value='     Ja      ' /> <input type='button' value='     Nei      ' onclick=\"window.location='".$_SERVER['HTTP_REFERER']."'\"/>\n");
 			print("</form>");

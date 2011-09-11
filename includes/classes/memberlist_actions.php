@@ -147,7 +147,7 @@ class memberlist_actions extends memberlist {
 	var $hidecontactinfo_template = '<em>%label_onlyforloggedin%</em>';
 	
 	var $deleteuser_template = '
-		<h3>Slett bruker</h3>
+		<h2>Slett bruker</h2>
 		<p>Er du sikker på at du vil SLETTE brukeren \"%name%\"? Dersom brukeren har sluttet i patruljen sin, skal du isteden <a href="index.php?s=0021&amp;u=%id%">avslutte alle medlemskap</a> for brukeren! Hvis du sletter en bruker, blir alle referansepunkter til brukeren ugyldig, noe som kan føre til feilmeldinger. Du bør KUN slette brukere som aldri har vært aktive på troppsportalen!</p>
 		<form method="post" action="%posturl%">
 			<input type="submit" value="     Ja      " /> 
@@ -155,7 +155,7 @@ class memberlist_actions extends memberlist {
 		</form>
 	';
 	var $resendwelcomemail_template = '
-		<h3>Send påminnelse om aktivering av brukerkonto</h3>
+		<h2>Send påminnelse om aktivering av brukerkonto</h2>
 		<p>&nbsp;</p>
 		<form method="post" action="%posturl%">
 			<input type="hidden" name="usertoretr" value="%userid%" />
@@ -165,7 +165,7 @@ class memberlist_actions extends memberlist {
 		<pre style="border: 1px solid #ddd; background: #fff; padding: 8px;">%mail_preview%</pre>
 	';
 	var $fixrights_template = '
-		<h3>Reparer rang og rettigheter</h3>
+		<h2>Reparer rang og rettigheter</h2>
 		<p>Vil du sette rang og rettigheter til gruppe-default for %name%?</p>
 		<form method="post" action="%posturl%">
 			<input type="hidden" name="usertoretr" value="%userid%" />
@@ -1305,7 +1305,7 @@ class memberlist_actions extends memberlist {
 		}
 		
 		return '
-			<h3>Velkommen '.$this->members[$u]->fullname.'!</h3>
+			<h2>Velkommen '.$this->members[$u]->fullname.'!</h2>
 			<form method="post" action="'.$url_post.'">
 				<p>
 					Velkommen til '.$this->site_name.' sin internettportal! 
@@ -1362,14 +1362,14 @@ class memberlist_actions extends memberlist {
 	function pwdSaved(){
 		if (!$this->isLoggedIn()){
 			return "
-				<h3>Passord lagret</h3>
+				<h2>Passord lagret</h2>
 				<p>
 					Nå kan du prøve å logge inn med brukernavnet du fikk på e-post og passordet du nettopp laget.
 				</p>
 			";
 		} else {
 			return '
-				<h3>Gratulerer, du er nå logget inn!</h3>
+				<h2>Gratulerer, du er nå logget inn!</h2>
 			<p>
 			En av de første tingene du bør gjøre på '.$this->server_name.', er å oppdatere 
 			medlemsprofilen din med korrekte opplysninger. Telefonnr. og adresse er det viktig at du legger
@@ -1564,10 +1564,10 @@ class memberlist_actions extends memberlist {
 		
 		if ($this->use_imagearchive) {
 			$this->initializeImageArchive();
-		 	$this->iarchive_instance->str_before_imagethumbs = '<h4>Fra bildearkivet:</h4><div>';
+		 	$this->iarchive_instance->str_before_imagethumbs = '<h3>Fra bildearkivet:</h3><div>';
 			$this->iarchive_instance->str_after_imagethumbs = '</div>
 				<p style="clear:both;padding-top:30px;"><a href="'.$this->generateURL("images").'" class="icn" style="background-image:url(/images/icns/photos.png);">Vis alle bilder med '.$profile->firstname.' (Totalt %count% stk.)</a></p>';
-		/* 	$this->iarchive_instance->str_before_imagethumbs = '<div style="float:right; width:170px; border-left:1px solid #ccc; padding-left:5px;margin-left:5px; margin-bottom:10px;"><h4 style="margin:0px;padding:0px; text-align:center;">Fra bildearkivet:</h4><div>
+		/* 	$this->iarchive_instance->str_before_imagethumbs = '<div style="float:right; width:170px; border-left:1px solid #ccc; padding-left:5px;margin-left:5px; margin-bottom:10px;"><h3 style="margin:0px;padding:0px; text-align:center;">Fra bildearkivet:</h3><div>
 		 	';
 			$this->iarchive_instance->str_after_imagethumbs = '</div><p style="text-align:center; font-size:80%"><a href="'.$this->generateURL("images").'">Vis alle bilder med '.$profile->firstname.' (Totalt %count% stk.)</a></p></div>
 			';
@@ -1746,7 +1746,7 @@ class memberlist_actions extends memberlist {
 		$template = '
 		%importantinfo%
 		
-		<h3>%title_fullname%</h3>
+		<h2>%title_fullname%</h2>
 		Tilknyttet gruppen siden %membership_length%.<br />
 
 		<div style="float:left; width: 130px;">
@@ -1780,13 +1780,13 @@ class memberlist_actions extends memberlist {
 
 		$output .= str_replace($r1a, $r2a, $template);
 		
-		$output .= "<h4>$this->label_membershipsandposts:</h4>\n";
+		$output .= "<h3>$this->label_membershipsandposts:</h3>\n";
 		$output .= $medlemskapOgVerv;
 		
 		$foresatte = $this->foresatteTil($id);
 		if (count($foresatte) > 0){
 			$output .= "
-				<h4>Foresatt(e):</h4>
+				<h3>Foresatt(e):</h3>
 			";
 			
 			if ($this->isLoggedIn()){
@@ -1805,7 +1805,7 @@ class memberlist_actions extends memberlist {
 		$foresatte = $this->foresattFor($id);
 		if (count($foresatte) > 0){
 			$output .= "
-				<h4>Foresatt for:</h4>
+				<h3>Foresatt for:</h3>
 			";
 			if ($this->isLoggedIn()){
 				$output .= "
@@ -1840,7 +1840,7 @@ class memberlist_actions extends memberlist {
 		$this->document_title = 'Bilder av '.$member->firstname;
 		if ($this->use_imagearchive) {
 			$this->initializeImageArchive();
-		 	$this->iarchive_instance->str_before_imagethumbs = '<h3>Bilder av '.$member->firstname.' (%count% stk.)</h3><p><a href="'.$this->generateURL("").'">Tilbake til medlemsprofil</a></p><div>
+		 	$this->iarchive_instance->str_before_imagethumbs = '<h2>Bilder av '.$member->firstname.' (%count% stk.)</h2><p><a href="'.$this->generateURL("").'">Tilbake til medlemsprofil</a></p><div>
 		 	';
 			$this->iarchive_instance->str_after_imagethumbs = '</div>';
 			$i_images = $this->iarchive_instance->getRandomMemberImages($id, 999);
@@ -2364,7 +2364,7 @@ class memberlist_actions extends memberlist {
 		$this->initializeImagesInstance();
 
         if (empty($this->members[$user_id]->profilbilde)) {
-            return '<h3>Profilbilde ble ikke lastet opp</h3>
+            return '<h2>Profilbilde ble ikke lastet opp</h2>
                 <p>Det oppstod en (ukjent) feil under opplasting av profilbilde.</p>';
         }
 
@@ -2375,7 +2375,7 @@ class memberlist_actions extends memberlist {
 
         if ($img_id == 0) {
             return '
-                <h3>Vi beklager</h3>
+                <h2>Vi beklager</h2>
                 <p>
                     Det ser ut som du har forsøkt å laste opp et bilde, men at noe gikk 
                     galt underveis. Forsøk gjerne på nytt, og ta kontakt med webmaster
@@ -2386,7 +2386,7 @@ class memberlist_actions extends memberlist {
 
 		// Aspect ratio: 105/140 = .75
 		return '
-			<h3>Beskjær opplastet profilbilde</h3>
+			<h2>Beskjær opplastet profilbilde</h2>
 			<form method="post" action="'.$this->generateURL($q).'">
 			'.$this->imginstance->outputCropForm($img_id, .75).'
 			</form>
@@ -2451,7 +2451,7 @@ class memberlist_actions extends memberlist {
 
 		// Aspect ratio: 100/100 = 1
 		return '
-			<h3>Beskjær opplastet forumbilde</h3>
+			<h2>Beskjær opplastet forumbilde</h2>
 			<form method="post" action="'.$this->generateURL(array("noprint=true","docrop_forumimage")).'">
 			'.$this->imginstance->outputCropForm($img_id, 1).'
 			</form>
@@ -2778,7 +2778,7 @@ class memberlist_actions extends memberlist {
 		);
 		
 		return '
-			<h3>'.$m->fullname.': Send innloggingsdetaljer</h3>
+			<h2>'.$m->fullname.': Send innloggingsdetaljer</h2>
 			<form method="post action="'.$url_post.'">
 				Vil du sende medlemmets innlogginsdetaljer til '.$m->email.'?
 				<br /><br />
@@ -2824,7 +2824,7 @@ class memberlist_actions extends memberlist {
 		}
 		
 		return '
-			<h3>'.$m->fullname.': Medlemskapsstatus</h3>
+			<h2>'.$m->fullname.': Medlemskapsstatus</h2>
 			<form method="post" action="'.$url_post.'">
 				<p>
 					'.$inputs.'
@@ -2874,7 +2874,7 @@ class memberlist_actions extends memberlist {
 		}
 		
 		return '
-			<h3>'.$m->fullname.': Tilgangsnivå</h3>
+			<h2>'.$m->fullname.': Tilgangsnivå</h2>
 			<form method="post" action="'.$url_post.'">
 				<p>
 					'.$inputs.'
@@ -3003,7 +3003,7 @@ class memberlist_actions extends memberlist {
 				<input type='text' name='nytittelvalue' size='30'/></div>";
 		
 		return '
-			<h3>'.$m->fullname.': Rolle</h3>
+			<h2>'.$m->fullname.': Rolle</h2>
 			<form method="post" action="'.$url_post.'">
 				'.$selectList.'
 				<br />
@@ -3216,7 +3216,7 @@ class memberlist_actions extends memberlist {
 			$memberof_admin = "";
 		}
 	    
-		$output = "<h3>Brukerinnstillinger for ".$m->fullname."</h3>";
+		$output = "<h2>Brukerinnstillinger for ".$m->fullname."</h2>";
         call_user_func(
             $this->add_to_breadcrumb,
             '<a href="'.$this->generateURL('edituser').'">Brukerinnstillinger</a>'
@@ -3400,7 +3400,7 @@ class memberlist_actions extends memberlist {
 		
 		$isForesatt = $this->isForesatt($id);
 		return '
-			<h3>Personen er lagt til i medlemsregisteret</h3>
+			<h2>Personen er lagt til i medlemsregisteret</h2>
 			<p>
 				Har '.$m->fullname.' en e-post-adresse?<br />
 				Isåfall bør du opprette en brukerkonto, så 
@@ -3435,7 +3435,7 @@ class memberlist_actions extends memberlist {
 		}
 		
 		return '
-			<h3>'.$m->fullname.': Frigjør brukernavn</h3>
+			<h2>'.$m->fullname.': Frigjør brukernavn</h2>
 			<form method="post" action="$url_post">
 				Bekreft frigjøring av brukernavn.
 				<br /><br />
@@ -3482,7 +3482,7 @@ class memberlist_actions extends memberlist {
 		}
 
 		$output = '
-			<h3>'.$m->fullname.': Opprett brukerkonto</h3>';
+			<h2>'.$m->fullname.': Opprett brukerkonto</h2>';
 		if (isset($errorS)) $output .= $this->notSoFatalError($errorS);
 		$output .= '
 			<form method="post" action="'.$url_post.'">
@@ -3563,7 +3563,7 @@ class memberlist_actions extends memberlist {
 		$isForesatt = $this->isForesatt($id);
 		
 		return '
-			<h3>'.$m->fullname.': Brukerkonto opprettet!</h3>
+			<h2>'.$m->fullname.': Brukerkonto opprettet!</h2>
 			<p>
 				Vi har nå sendt en e-post til medlemmet med instruksjoner om hvordan han/hun kan logge inn på troppsportalen.
 			</p>
@@ -3596,7 +3596,7 @@ class memberlist_actions extends memberlist {
 		$foresatte = $this->foresatteTil($id);
 		
 		$output = "
-			<h3>$m->fullname: Foresatte</h3>
+			<h2>$m->fullname: Foresatte</h2>
 			<ul class='custom_icons'>
 		";
 		foreach ($foresatte as $fi){
@@ -3658,7 +3658,7 @@ class memberlist_actions extends memberlist {
 		$url_post = $this->generateURL(array("noprint=true","saveforesatt"));
 		$url_back = $this->generateURL("edituser");
 		return '
-			<h3>'.$m->fullname.': Legg til foresatt</h3>
+			<h2>'.$m->fullname.': Legg til foresatt</h2>
 			<form method="post" action="'.$url_post.'">
 				<select name="nyforesatt">
 					'.$options_list.'
@@ -3709,7 +3709,7 @@ class memberlist_actions extends memberlist {
 			}
 		}
 		return '
-			<h3>Legg til medlem i '.$g->caption.'</h3>
+			<h2>Legg til medlem i '.$g->caption.'</h2>
 			<form method="post" action="'.$url_post.'">
 				<table>
 					'.($erforesatt ? "<tr><td>Foresatt til: </td><td>".$foresattil->fullname."<input type='hidden' name='foresattil' value='".$foresattil->ident."' /></td></tr>" : "").'
@@ -3781,7 +3781,7 @@ class memberlist_actions extends memberlist {
 		}
 
 		return '
-			<h3>Utnevn ny peff i '.$g->caption.'</h3>
+			<h2>Utnevn ny peff i '.$g->caption.'</h2>
 			<form method="post" action="'.$url_post.'">
 				<p>
 					'.$current_peff.'
@@ -3878,7 +3878,7 @@ class memberlist_actions extends memberlist {
 		}
 
 		return '
-			<h3>Utnevn ny ass i '.$g->caption.'</h3>
+			<h2>Utnevn ny ass i '.$g->caption.'</h2>
 			<form method="post" action="'.$url_post.'">
 				<p>
 					'.$current_ass.'
@@ -3959,7 +3959,7 @@ class memberlist_actions extends memberlist {
 			$optionsList .= "<option value=\"".$this->groups[$i]->id."\">".$this->groups[$i]->caption."</option>";
 		}
 		return '
-			<h3>Endre grupperekkefølge</h3>
+			<h2>Endre grupperekkefølge</h2>
 			<p>
 				Velg en gruppe, trykk deretter flytt opp eller flytt ned for å bevege gruppen opp eller ned på posisjonslisten. 
 				<br /><br />
@@ -4084,7 +4084,7 @@ class memberlist_actions extends memberlist {
 		$url_savegroupsettings = $this->generateURL(array("doaddgroup","noprint=true"));
 
 		return '
-			<h3>Opprett ny gruppe</h3>
+			<h2>Opprett ny gruppe</h2>
 			<form method="post" action="'.$url_savegroupsettings.'">
 				<table class="skjema">
 					<tr>
@@ -4114,7 +4114,7 @@ class memberlist_actions extends memberlist {
 					</tr>
 				</table>				
 				
-				<h3>Innstillinger for nye medlemmer</h3>
+				<h2>Innstillinger for nye medlemmer</h2>
 				
 				<p>Medlemmer som meldes inn i denne gruppen vil automatisk få disse innstillingene:</p>
 				<table class="skjema">
@@ -4318,7 +4318,7 @@ class memberlist_actions extends memberlist {
 		$oldest = date("Y",strtotime($first['startdate']));
 
 		return '
-			<h3>'.$gruppe->caption.': Historie</h3>
+			<h2>'.$gruppe->caption.': Historie</h2>
 			<p>
 				Totalt '.$member_count.' personer er eller har vært medlem i '.$gruppe->caption.'.
 				Første registrerte medlem ble med i '.$oldest.'.
@@ -4373,7 +4373,7 @@ class memberlist_actions extends memberlist {
 		else if ($gruppe->kategori == "RO") $caption = 'Roverpatruljen '.$caption;
 				
 		$output .= '
-			<h3>'.$caption.'</h3>
+			<h2>'.$caption.'</h2>
 			
 			<div style="padding-top:10px;"><img src="/images/mail.gif" alt="Epost" /> <a href="'.$mailUrlMembers.'">Send en melding til gruppens medlemmer</a></div>
 			';
@@ -4415,7 +4415,7 @@ class memberlist_actions extends memberlist {
 		';
 		$tmp = array_unique($gruppe->members);
 		$membercount = count($tmp);
-		$output .= "<h4>$gruppe->caption har for tiden $membercount medlemmer:</h4>";
+		$output .= "<h3>$gruppe->caption har for tiden $membercount medlemmer:</h3>";
 
 		if (isset($_GET['errors'])){
 			$errors = explode(",",$_GET['errors']);
@@ -4495,7 +4495,7 @@ class memberlist_actions extends memberlist {
 
 
 		if ($this->allow_editgroupsettings){
-			$output .= "<h4>Gruppeinnstillinger:</h4>";
+			$output .= "<h3>Gruppeinnstillinger:</h3>";
 			
 			if (isset($_SESSION['errors'])){
 			
@@ -4624,7 +4624,7 @@ class memberlist_actions extends memberlist {
 			if ($this->allow_editpeff || $this->allow_editass){
 	
 				$output .= "
-					<h4>Patruljeledelse:</h4>
+					<h3>Patruljeledelse:</h3>
 					<ul class='custom_icons'>
 				";
 				if ($this->allow_editpeff) $output .= "
@@ -4838,7 +4838,7 @@ class memberlist_actions extends memberlist {
 		$m = $this->members[$member];
 		
 		return '
-			<h3>'.$m->fullname.': Medlemskap</h3>
+			<h2>'.$m->fullname.': Medlemskap</h2>
 			<form method="post" action="'.$url_post.'">
 				Er du sikker på at du vil avslutte alle medlemskap for '.$m->fullname.'?<br /><br />
 
@@ -4894,7 +4894,7 @@ class memberlist_actions extends memberlist {
 		}
 
 		return '
-			<h3>'.$this->members[$member]->fullname.': Medlemskap</h3>
+			<h2>'.$this->members[$member]->fullname.': Medlemskap</h2>
 			<form method="post" action="'.$url_post.'">
 				<input type="hidden" name="membership_id" value="'.$id.'" />
 				Er du sikker på at du vil SLETTE medlemskapet i <strong>'.$this->groupCaptionFromMembership($id).'</strong>? 
@@ -4954,7 +4954,7 @@ class memberlist_actions extends memberlist {
 		$url_back = $this->generateURL(array("editmemberships")); 
 
 		return '
-			<h3>'.$this->members[$id]->fullname.': Medlemskap</h3>
+			<h2>'.$this->members[$id]->fullname.': Medlemskap</h2>
 			<form method="post" action="'.$url_post.'">
 				<input type="hidden" name="nygruppe" value="'.$ny_gruppe.'" />
 				Er du sikker på at du vil flytte <strong>'.$this->members[$id]->fullname.'</strong> til 

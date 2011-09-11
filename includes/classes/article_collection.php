@@ -44,8 +44,8 @@ class article_collection extends comments {
 	
 	var $template_leadlistitem = '
 		<div class="%divclass%">
-			<h2 class="date-header">%header%</h2>
-			<h3 class="post-title"><a href="%url_readmore%">%topic%</a></h3>
+			<h1 class="date-header">%header%</h1>
+			<h2 class="post-title"><a href="%url_readmore%">%topic%</a></h2>
 			<div class="post">
 				<p>%lead%</p>
 				<p class="footerLinks">
@@ -58,7 +58,7 @@ class article_collection extends comments {
 	';
 	
 	var $template_addarticleform = '
-		<h3>%addarticle%</h3>
+		<h2>%addarticle%</h2>
 		%errors%
 		<form method="post" action="%posturl%">
 			<table><tr>
@@ -79,7 +79,7 @@ class article_collection extends comments {
 	';
 	
 	var $template_editarticleform = '
-		<h3>%editarticle%</h3>
+		<h2>%editarticle%</h2>
 		<form method="post" action="%posturl%">
 			<input type="hidden" name="article_id" value="%id%" />
 			<p>
@@ -141,8 +141,8 @@ class article_collection extends comments {
 				</div></div>
 				<div style="padding-bottom:5px;">Av %authorname%</div>
 			</div>
-			<div class="hidefromprint"><h2 class="date-header">%header%</h2></div>
-			<h3 class="post-title">%topic%</h3>
+			<div class="hidefromprint"><h1 class="date-header">%header%</h1></div>
+			<h2 class="post-title">%topic%</h2>
 			<div class="post">
 			<div class="post-body">
 				<hr />

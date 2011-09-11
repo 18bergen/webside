@@ -4,7 +4,7 @@ class statistikk {
 
 	function run() {
 		
-		print "<h3>Hva ligger på ".$this->server_name."?</h3>";
+		print "<h2>Hva ligger på ".$this->server_name."?</h2>";
 
 		print "<ul>";
 
@@ -82,7 +82,7 @@ class statistikk {
 		print "</ul>";		
 		
 	
-		print "<h3>Bidragsytere bildearkiv tropp:</h3>";
+		print "<h2>Bidragsytere bildearkiv tropp:</h2>";
 		$res = $this->query(
 			"SELECT 
 				uploadedby as ident,
@@ -108,7 +108,7 @@ class statistikk {
 		
 		
 		
-		print "<h3>Bidragsytere bildearkiv flokk:</h3>";
+		print "<h2>Bidragsytere bildearkiv flokk:</h2>";
 		$res = $this->query(
 			"SELECT 
 				uploadedby as ident,
@@ -134,7 +134,7 @@ class statistikk {
 		
 		
 		
-		print "<h3>Kommentarer bildearkiv tropp:</h3>";
+		print "<h2>Kommentarer bildearkiv tropp:</h2>";
 		$res = $this->query(
 			"SELECT 
 				author as ident,
@@ -159,7 +159,7 @@ class statistikk {
 		print "</ol>";
 		
 		
-		print "<h3>Kommentarer bildearkiv flokk:</h3>";
+		print "<h2>Kommentarer bildearkiv flokk:</h2>";
 		$res = $this->query(
 			"SELECT 
 				author as ident,
@@ -184,7 +184,7 @@ class statistikk {
 		print "</ol>";
 		
 		
-		print "<h3>Nyheter:</h3>";
+		print "<h2>Nyheter:</h2>";
 		$res = $this->query(
 			"SELECT 
 				creator as ident,
@@ -208,7 +208,7 @@ class statistikk {
 		
 		
 		
-		print "<h3>Snikksnakkmeldinger:</h3>";
+		print "<h2>Snikksnakkmeldinger:</h2>";
 		$res = $this->query(
 			"SELECT 
 				author as ident,
@@ -233,7 +233,7 @@ class statistikk {
 		print "</ol>";
 		
 		
-		print "<h3>Forum-meldinger:</h3>";
+		print "<h2>Forum-meldinger:</h2>";
 		$res = $this->query(
 			"SELECT 
 				author as ident,
