@@ -16,7 +16,7 @@ class FeedFetcher {
 		
 			if (isset($_SESSION['rss_'.$stream_id.'_disabled']) && $_SESSION['rss_'.$stream_id.'_disabled'] == true) {
 				$output .= "
-					<h3 class='small'>Nyheter fra ".$stream_data['short_title'].":</h3>
+					<h2 class='small'>Nyheter fra ".$stream_data['short_title'].":</h2>
 					<em style='font-size:10px;'>Får ikke tak i ".$stream_data['short_title']."... :(</em>
 				";			
 			} else {
@@ -29,7 +29,7 @@ class FeedFetcher {
 				$feed->handle_content_type();
 
 				$output .= "
-					<h3 class='small'>Nyheter fra ".$stream_data['short_title'].":</h3>
+					<h2 class='small'>Nyheter fra ".$stream_data['short_title'].":</h2>
 					<div id='".$stream_id."_nyheter_content'>
 						<ul class='snikksnakk'>
 				";

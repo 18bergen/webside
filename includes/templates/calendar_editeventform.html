@@ -1,9 +1,9 @@
-		<h3>%title%</h3>
+		<h2>%title%</h2>
 		<form name="calendarform" id="calendarform" method="post" action="%post_url%" class="calendar_form">
 			<input type="hidden" name="event_id" value="%event_id%" />
 
 				<div class="postbox">
-					<h3 class="handle">Hva, hvor, når?</h3>
+					<h2 class="handle">Hva, hvor, når?</h2>
 					<div class="inside">
 						<table class="dataTable editable">
 							<tr>
@@ -91,7 +91,7 @@
 				</div>
 
 				<div class="postbox closed">
-					<h3 class="handle">Mer info</h3>
+					<h2 class="handle">Mer info</h2>
 					<div class="inside">
 						  
 						  <textarea name="cal_body" id="cal_body" cols="30" rows="10" style="width:490px; height: %bodyeditheight%px;">%body%</textarea>
@@ -99,7 +99,7 @@
 				</div>
 				
 				<div class="postbox closed">
-					<h3 class="handle">Avansert</h3>
+					<h2 class="handle">Avansert</h2>
 					<div class="inside">
 						<table class="dataTable editable">
 							<tr>
@@ -170,7 +170,7 @@
 			// ============================ (2) INIT PANELS ====================================
 			
 			function initTogglers() {
-				var handles = YAHOO.util.Dom.getElementsByClassName('handle','h3','main_col');
+				var handles = YAHOO.util.Dom.getElementsByClassName('handle','h2','main_col');
 				for (i = 0; i < handles.length; i++) {
 					YAHOO.util.Event.addListener(handles[i],'click',clickHandle);
 				}

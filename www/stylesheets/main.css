@@ -88,7 +88,7 @@ p.warning {
   float: right;
 }
 #left_col .inner_col {
- background:#928166; /* more precise: rgb(147,130,99) */
+ background: #928166; /* more precise: rgb(147,130,99) */
  border-left:1px solid #bdb5a6;
  border-right:1px solid #bdb5a6;
 }
@@ -130,7 +130,7 @@ p.warning {
 }
 
 
-#right_col h3 {
+#right_col h2 {
  font-size      : 11px;
  letter-spacing : normal;
  text-align     : center;
@@ -639,21 +639,21 @@ img.ingressbilde {
  -moz-box-shadow: 0px 0px 10px #888;	/* Mozilla */
  -webkit-box-shadow: 0px 0px 10px #888; /* Webkit (Safari, Chrome) */
 }
-h3#respond {
+h2#respond {
  clear:both;
  color:#444;
  border-top:1px solid #ddd;
  margin: 20px 0px 0px 0px;
 }
-h4 {
+h3 {
  color:#444;
 }
 div.news {
 }
-div.news h3 {
+div.news h2 {
  border-bottom: 1px solid #888;
 }
-div.news h3 a:hover {
+div.news h2 a:hover {
  text-decoration:none;
 }
 
@@ -1031,7 +1031,7 @@ div.lastcomments {
 	height: 5px;
 	margin-top:2px;
 }
-.reg_steg h3 {
+.reg_steg h2 {
 	margin: 2px;
 }
 
@@ -1160,7 +1160,7 @@ h2.date-header {
 	margin:0;
 	padding:15px 0px 0px 0px;
 }
-h4.author {
+h3.author {
 	font-weight:normal;
 	text-transform:uppercase;
 	letter-spacing:.1em;
@@ -1174,7 +1174,7 @@ h4.author {
 	margin:8px 0 4px 0;
 	line-height:1.5em;
 }
-h3.post-title {
+h2.post-title {
 	padding:0px;
 }
 .post-body p {
@@ -1209,11 +1209,11 @@ div.first_article {
 div.other_article {
 
 }
-div.first_article h3, div.other_article h3 {
+div.first_article h2, div.other_article h2 {
 	margin: 0px; 
 	padding: 0px;
 }
-div.first_article h3 {
+div.first_article h2 {
 	padding-bottom: 20px;
 }
 .article p.lead {
@@ -1257,7 +1257,7 @@ div.other_log {
 
 }
 
-div.first_log h3, div.log_article h3 {
+div.first_log h2, div.log_article h2 {
 	margin: 0px; 
 	padding: 0px;
 }
@@ -1266,7 +1266,7 @@ div.first_log {
 
 
 }
-div.first_log h3 {
+div.first_log h2 {
 	padding-bottom: 5px;
 }
 ul.simpleAuthorList, .authorlist ul {
@@ -1351,29 +1351,32 @@ ul.simpleAuthorList {
 
 /******* FRONTPAGE *******/
 
-/*
 #aktuelt {
- margin: 5px;
-}
-#aktuelt1, #aktuelt2 {
-	background: #fff;
-	color: #3C0012;
-	width: 240px;
-	font: 12px Arial,sans-serif;
-}
-#aktuelt1sub, #aktuelt2sub {
-	padding: 10px;
-}
-#aktuelt1 {
-	float:right;
-}
-*/
-#aktuelt {
-	background: #fff;
-	color: #3C0012;
+    background: #E6D35E;
 	padding: 6px;
 	margin-bottom:15px;
+	margin-top: -8px;
 	font: 11px sans-serif;
+	 border-radius: 5px; 					/* Opera */
+	 -moz-border-radius: 5px; 				/* Mozilla */
+	 -webkit-border-radius: 5px; 			/* Webkit (Safari, Chrome) */
+
+}
+
+#aktuelt a:link {
+ color: #666;
+ text-decoration: none;
+border-bottom: 1px dotted;
+}
+#aktuelt a:hover {
+ color: #666;
+ text-decoration: none;
+ border-bottom: 1px solid;
+}
+
+#aktuelt table {
+ margin-left: auto;
+ margin-right: auto
 }
 #aktuelt th, #aktuelt td {
     padding: 3px;
@@ -1383,6 +1386,7 @@ ul.simpleAuthorList {
     vertical-align: top;
     font-weight: bold;
     white-space: nowrap; 
+    color: #998D3F;
 }
 #aktuelt ul {
     list-style-type:none;

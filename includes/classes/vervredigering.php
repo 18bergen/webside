@@ -299,7 +299,7 @@ class vervredigering extends base {
 		if ($this->allow_editverv) {
 			$output .= "
 				<form method=\"post\" action=\"".$this->generateUrl(array("noprint=true","vervskifte"))."\">
-					<h3>Gruppeverv:</h3>
+					<h2>Gruppeverv:</h2>
 					<table width='100%'>
 				".$this->printList()."
 					<p>
@@ -341,7 +341,7 @@ class vervredigering extends base {
 		$caption = $row['caption'];
 		if (isset($g)) $caption .= ' i '.$g->caption;
 		$output = "
-			<h3>$caption</h3>
+			<h2>$caption</h2>
 		";
 	
 		$this->fetchHistory($id,$g);
@@ -398,7 +398,7 @@ class vervredigering extends base {
 		if (!$this->allow_editverv) return $this->permissionDenied();
 
 		$output = '
-			<h3>Rediger vervtyper</h3>
+			<h2>Rediger vervtyper</h2>
 			<form name="form1" method="post" action="'.$this->generateURL('noprint=true').'">
 				<input type="hidden" name="whattodo" value="lagreverv" />
 				<input type="hidden" name="vervid" value="NOTSET" />
@@ -516,7 +516,7 @@ class vervredigering extends base {
 					if (!is_array($Row)) $this->fatalError("Vervet eksisterer ikke!"); 
 					print("
 						
-						<h3>Bekreft sletting</h3>
+						<h2>Bekreft sletting</h2>
 						<p>
 							Er du sikkert på at du vil slette vervet \"".stripslashes($Row["caption"])."\"?
 						</p>
@@ -562,7 +562,7 @@ class vervredigering extends base {
 		$row = $res->fetch_assoc();
 
 		$mm = $memberdb->getMemberById($row['person']);
-		// print("<h2>Verv</h2>\n");
+		// print("<h1>Verv</h1>\n");
 
 		$vervCaption = stripslashes($row['caption']);
 
@@ -589,7 +589,7 @@ class vervredigering extends base {
 			</script> Tips: trykk på årstallet for å skrive inn et annet år.';
 			
 			$output .= "
-				<h3>$mm->fullname</h3>
+				<h2>$mm->fullname</h2>
 				<form method='post' name='membershipform' action=\"".$this->generateUrl("noprint=true")."\">
 					<input type=\"hidden\" name=\"vno\" value=\"$vervId\" />
 					<input type=\"hidden\" name=\"lagre\" value=\"innmelding\" />
@@ -625,7 +625,7 @@ class vervredigering extends base {
 			</script> Tips: trykk på årstallet for å skrive inn et annet år.';
 			
 			$output .= "
-				<h3>$mm->fullname</h3>
+				<h2>$mm->fullname</h2>
 				<form method='post' name='membershipform' action=\"".$this->generateUrl("noprint=true")."\">
 					<input type=\"hidden\" name=\"vno\" value=\"$vervId\" />
 					<input type=\"hidden\" name=\"lagre\" value=\"innutmelding\" />

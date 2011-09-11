@@ -470,9 +470,9 @@ class messagecenter extends base {
 
 		$r1a = array(); $r2a = array();
 		if (empty($replyTo)) {
-			$r1a[]  = "%header%";						$r2a[]  = '<h3>'.$this->label_newmessage.'</h3>';
+			$r1a[]  = "%header%";						$r2a[]  = '<h2>'.$this->label_newmessage.'</h2>';
 		} else {
-			$r1a[]  = "%header%";						$r2a[]  = '<h3>'.$this->label_reply.'</h3>';
+			$r1a[]  = "%header%";						$r2a[]  = '<h2>'.$this->label_reply.'</h2>';
 		}
 		
 		if (!empty($attachments)) {
@@ -1212,7 +1212,7 @@ class messagecenter extends base {
 		);
 
 		return '
-			<h3>Mine valg</h3>
+			<h2>Mine valg</h2>
 			<form method="post" action="'.$post_uri.'">
 				<p>
 					<label for="mail_incoming">
@@ -1307,7 +1307,7 @@ class messagecenter extends base {
 				for ($i = 0; $i < count($rcpts); $i++) {
 					$rcpts[$i] = call_user_func($this->make_memberlink, $rcpts[$i]);
 				}
-				$output .= "<h3>Melding sendt</h3>
+				$output .= "<h2>Melding sendt</h2>
 				<p>Meldingen din ble sendt til ".implode(", ",$rcpts).".</p>";
 				unset($_SESSION['message_sent_to']);
 				return $output;
@@ -1359,7 +1359,7 @@ class messagecenter extends base {
 	}
 	
 	function viewInbox() {
-		$output = "<h3>$this->label_inbox</h3>";
+		$output = "<h2>$this->label_inbox</h2>";
 		
 		$id = $this->login_identifier;
 		$img_u = $this->image_dir.$this->image_unread;
@@ -1470,7 +1470,7 @@ class messagecenter extends base {
 	}
 	
 	function viewSent() {
-		$output = "<h3>$this->label_sentmessages</h3>";
+		$output = "<h2>$this->label_sentmessages</h2>";
 		
 		$id = $this->login_identifier;
 		$img_u = $this->image_dir.$this->image_unread;
@@ -1583,7 +1583,7 @@ class messagecenter extends base {
 	
 	function viewTrash() {
 		$img_info = $this->image_dir."info.png";
-		$output = '<h3>'.$this->label_trash.'</h3>
+		$output = '<h2>'.$this->label_trash.'</h2>
 		<div style="border: 1px solid #ddd; background:white;padding:4px; margin-top:10px;margin-bottom:10px;">
 			<img src="'.$img_info.'" alt="info" style="float:left; padding:3px; padding-bottom:5px;" />
 			Meldinger slettes automatisk når de har ligget i søppelkurven i en uke. Du kan ikke tømme søppelkurven manuelt.
@@ -1673,7 +1673,7 @@ class messagecenter extends base {
 	}
 	
 	function viewConversations() {
-		$output = "<h3>".$this->label_conversations."</h3>";
+		$output = "<h2>".$this->label_conversations."</h2>";
 		
 		$id = $this->login_identifier;
 		$img_u = $this->image_dir.$this->image_unread;
@@ -1908,7 +1908,7 @@ class messagecenter extends base {
 		';
 		
 		if (!isset($_GET['noprint'])) {
-			$output .= "<h3>$subject</h3>";
+			$output .= "<h2>$subject</h2>";
 		}
 		list($message_id,$tmp) = $this->printMessage($message_id,true);
 		$output .= $tmp;
@@ -1994,7 +1994,7 @@ class messagecenter extends base {
 		
 		if (!$printThread) {
 			if (!isset($_GET['noprint'])) {
-				$output .= "<h3>$subject</h3>";
+				$output .= "<h2>$subject</h2>";
 			}
 		}
 		
@@ -2338,7 +2338,7 @@ class messagecenter extends base {
 			$submit_url = $this->generateURL(array("confirm_delete"));
 			$cancel_url = $this->generateCoolUrl("/readmessage/$id/");
 			$output = '
-				<h3>Bekreft sletting</h3>
+				<h2>Bekreft sletting</h2>
 				<p>Er du sikker på at du vil slette meldingen?</p>
 				<form method="post" action="'.$submit_url.'">
 					<input type="button" value="Avbryt" onclick=\'location="'.$cancel_url.'"\' />

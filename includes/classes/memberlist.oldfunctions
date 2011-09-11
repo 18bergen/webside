@@ -13,7 +13,7 @@ function stopMembershipForm($member,$id){
 			return $this->notSoFatalError("Medlemskapet eksisterer ikke, eller det tilhører en annen bruker enn gitt."); 
 		}
 		return '
-			<h3>'.$m->fullname.': Medlemskap</h3>
+			<h2>'.$m->fullname.': Medlemskap</h2>
 			<form method="post" action="'.$url_post.'">
 				<input type="hidden" name="membership_id" value="'.$id.'" />
 				Er du sikker på at du vil avslutte medlemskapet i <strong>'.$this->groupCaptionFromMembership($id).'</strong>?<br /><br />
@@ -60,7 +60,7 @@ function stopMembershipForm($member,$id){
 		$details = $this->fetchMembershipDetails($id);
 		$current = date("Y",time());
 		return '
-			<h3>'.$this->members[$member]->fullname.': Medlemskap</h3>
+			<h2>'.$this->members[$member]->fullname.': Medlemskap</h2>
 			<form name="membershipform" id="membershipform" method="post" action="'.$url_post.'">
 				<input type="hidden" name="membership_id" value="'.$id.'" />
 				Medlem av '.$details["groupcaption"].'
@@ -118,7 +118,7 @@ function stopMembershipForm($member,$id){
 		$details = $this->fetchMembershipDetails($id);
 		$current = date("Y",time());
 		return '
-			<h3>'.$this->members[$member]->fullname.': Medlemskap</h3>
+			<h2>'.$this->members[$member]->fullname.': Medlemskap</h2>
 			<form name="membershipform" id="membershipform" method="post" action="'.$url_post.'">
 				<input type="hidden" name="membership_id" value="'.$id.'" />
 				<table>
@@ -176,9 +176,9 @@ function stopMembershipForm($member,$id){
 		}
 		
 		return '
-			<h3>'.$this->members[$id]->fullname.': Medlemskap</h3>
+			<h2>'.$this->members[$id]->fullname.': Medlemskap</h2>
 			<form method="post" action="'.$url_post.'">
-				<h4>Legg til '.(($action == "nyttidl") ? "tidligere" : "nytt").' medlemskap i:</h4>
+				<h3>Legg til '.(($action == "nyttidl") ? "tidligere" : "nytt").' medlemskap i:</h3>
 				'.$grpList.'
 				<br />
 				<input type="button" value="Avbryt" onclick="window.location=\''.$url_back.'\'" /> 

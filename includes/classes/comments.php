@@ -257,7 +257,7 @@ class Comments extends base {
 		$page_id = intval($page_id);
 		$numComments = intval($numComments);
 		
-		$output = "<h3>$this->label_lastcomments</h3>
+		$output = "<h2>$this->label_lastcomments</h2>
 			<div class='lastcomments'>";
 			
 		$tc = $this->table_comments;
@@ -337,7 +337,7 @@ class Comments extends base {
             }
         }
 
-		$output .= "<h3 id='respond' name='respond'>$this->label_comments</h3>";
+		$output .= "<h2 id='respond' name='respond'>$this->label_comments</h2>";
         $output .= "<div class='footerLinks' style='margin-bottom:12px;'>$subscribecode</div>";		
 
 		$res = $this->query("SELECT id,parent_id,author_id,author_name,author_email,timestamp,body
@@ -446,7 +446,7 @@ class Comments extends base {
 			if (!$this->allow_addcomment) return $this->permissionDenied();
 			if (!is_numeric($post_id)){ $this->fatalError("incorrect input!"); }
 			$post_id = intval($post_id);
- 			$output .= "<h4>$this->label_newcomment</h4>"; // "<h3>Skriv ny kommentar:</h3>";
+ 			$output .= "<h3>$this->label_newcomment</h3>"; // "<h2>Skriv ny kommentar:</h2>";
  		} else {
  			if ($comment_id <= 0){ $this->fatalError("incorrect input!"); }
  			$res = $this->query("SELECT parent_id,author_id,author_name,author_email,body
@@ -462,8 +462,8 @@ class Comments extends base {
 			$default_body = stripslashes($row["body"]);
 			$default_body = str_replace("<br />\r\n","\r\n",$default_body);
 			$default_body = str_replace("<br />\n","\n",$default_body);
-			$output .= "<h3 id='respond' name='respond'>$this->label_comments</h3>";
-			$output .= "<h4>$this->label_editcomment:</h4>"; // "<h3>Endre kommentar:</h3>";
+			$output .= "<h2 id='respond' name='respond'>$this->label_comments</h2>";
+			$output .= "<h3>$this->label_editcomment:</h3>"; // "<h2>Endre kommentar:</h2>";
  		}
  	
  		$errstr = '';
@@ -702,7 +702,7 @@ class Comments extends base {
 		if ($res->num_rows != 1) $this->fatalError($this->label_commentdoesntexist);
 		$row = $res->fetch_assoc();
 		if (($this->allow_deleteotherscomments) || (($this->allow_deleteowncomments) && ($row['author_id'] == $this->login_identifier))){ 
-			$output = "<h3 id='respond' name='respond'>$this->label_comments</h3>";
+			$output = "<h2 id='respond' name='respond'>$this->label_comments</h2>";
 			$r1a[0] = "%id%";			$r2a[0] = $id;
 			$r1a[1] = "%comment%";		$r2a[1] = $this->outputComment($row,false);
 			$r1a[3] = "%referer%";		$r2a[3] = $_SERVER['HTTP_REFERER'];
@@ -821,7 +821,7 @@ class Comments extends base {
 		$tc = $this->table_comments;
 		$td = $this->table_dirs;
 		$tf = $this->table_files;
-		$output = "<h3>$this->label_lastcomments</h3>
+		$output = "<h2>$this->label_lastcomments</h2>
 			<div class='lastcomments'>";
 		$res = $this->query(
 			"SELECT 

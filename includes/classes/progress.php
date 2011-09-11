@@ -127,7 +127,7 @@ class progress extends base {
 			//]]>			
 			</script>
 			
-			<h3>Sponsorer så langt:</h3>
+			<h2>Sponsorer så langt:</h2>
 		";
 		
 		$output .= '<a href="'.$this->generateCoolUrl("/newcontrib").'">Registrér nytt bidrag</a>';

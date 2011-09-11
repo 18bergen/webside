@@ -132,20 +132,9 @@ class frontpage extends base {
 		}
 
         $output .= '</table>';
-        $output = '<div id="aktuelt">'.$output.'</div>';
-		$output .= '
-			</table>
-			
-			<script type="text/javascript">
-			//<![CDATA[
-				YAHOO.util.Event.onDOMReady(function() {
-					Nifty("div#aktuelt");
-				});
-			//]]>
-			</script>
-
-			<div style="height:1px; clear:both;"><!-- --></div>
-		';
+        $output = '<div id="aktuelt">'.$output.'</div>
+        <h1>Nyheter</h1>
+        ';
 
 		$this->noteboard_instance = new noteboard(); 
 		call_user_func($this->prepare_classinstance, $this->noteboard_instance, $this->noteboard);

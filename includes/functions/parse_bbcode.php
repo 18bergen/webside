@@ -208,7 +208,7 @@ function parse_bbcode($str,$bildegruppe = "general", $patrulje = ""){
 		"/is";						
 		// i:letters in the pattern match both upper and lower case letters. 
 		// s: a dot metacharacter in the pattern matches all characters, including newlines. Without it, newlines are excluded.
-	$replacement = "<h3>\\3</h3>";
+	$replacement = "<h2>\\3</h2>";
 	$str = preg_replace($pattern,$replacement,$str);
 
 	// Code

@@ -514,7 +514,7 @@ class competition extends base {
 		return '
 			<form method="post" action="'.$this->generateCoolUrl('/savepage','noprint=true').'">
 
-				<h3>Beskrivelse</h3>				
+				<h2>Beskrivelse</h2>				
 				<p>
 					<textarea id="editor_body" name="editor_body" style="width:'.$this->FCKeditorWidth.'px; height:400px;">'.$desc.'</textarea>
 				</p>
@@ -576,7 +576,7 @@ class competition extends base {
 		$res = $this->query("SELECT id,caption,description FROM $this->table_groups WHERE page=".$this->page_id);
 		$output = '
 			  <a href="'.$this->generateCoolUrl('/').'" class="icn" style="background-image:url(/images/icns/arrow_left.png);">Tilbake</a>
-			<h3>Rediger deltakere</h3>
+			<h2>Rediger deltakere</h2>
 			<div id="divErrorMsg" style="display:none;border:2px solid red;background:white;padding:5px;"></div>
 			<p>
 			  <a id="btnAddPart" href="#" class="icn" style="background-image:url(/images/icns/add.png);">Legg til deltaker</a>

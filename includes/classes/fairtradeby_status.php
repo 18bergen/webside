@@ -28,7 +28,7 @@ class fairtradeby_status extends base {
 	);
 	var $schema_template = "
 		
-		<h3>Legg til ny avtale</h3>
+		<h2>Legg til ny avtale</h2>
 		<script type=\"text/javascript\">
 		//<![CDATA[
 		
@@ -516,7 +516,7 @@ class fairtradeby_status extends base {
 				$contact_person = "<tr><td><strong>Kontaktperson: </strong></td><td>$contact_person (<em>Logg inn for å vise kontakt-info</em>)</td></tr>\n";
 		}		
 		print "
-			<h3>$unique_name</h3>
+			<h2>$unique_name</h2>
 		";
 		print "<p>";
 		if ($this->allow_addentry) {
@@ -783,7 +783,7 @@ class fairtradeby_status extends base {
 		$res = $this->query("SELECT id, cat_name FROM $this->table_cats");
 		$url_add = $this->generateCoolUrl("/add-cat/");
 		print "
-			<h3>Rediger kategorier</h3>
+			<h2>Rediger kategorier</h2>
 			<p>
 				<a href='$url_add'>Legg til ny kategori</a>
 			</p>
@@ -821,7 +821,7 @@ class fairtradeby_status extends base {
 		$cat_name_plural = stripslashes($row['cat_name_plural']);
 		$url_save = $this->generateCoolUrl("/update-cat/","noprint=true");
 		print "
-			<h3>Rediger kategori</h3>
+			<h2>Rediger kategori</h2>
 			<form method='post' action='$url_save'>
 				<input type='hidden' name='cat_id' value='$cat_id' />
 				Navn på kategori (entall): <input type='text' name='cat_name' value=\"$cat_name\" /><br />
@@ -867,7 +867,7 @@ class fairtradeby_status extends base {
 		$url_del = $this->generateCoolUrl("/delete-cat-do/","noprint=true");
 		$url_cancel = "window.location=\"".$_SERVER['HTTP_REFERER']."\";";
 		print "
-			<h3>Slett kategori</h3>
+			<h2>Slett kategori</h2>
 			<form method='post' action='$url_del'>
 				<input type='hidden' name='cat_id' value='$cat_id' />
 				Er du sikker på at du vil slette kategorien \"$cat_name\"?<br /><br />
@@ -893,7 +893,7 @@ class fairtradeby_status extends base {
 		if (!$this->allow_editcats){ $this->permissionDenied(); return; }			
 		$url_save = $this->generateCoolUrl("/save-cat/","noprint=true");
 		print "
-			<h3>Legg til ny kategori</h3>
+			<h2>Legg til ny kategori</h2>
 			<form method='post' action='$url_save'>
 				Navn på kategori: <input type='text' name='cat_name' /><br /><br />
 				<input type='submit' value='Lagre' />
@@ -919,7 +919,7 @@ class fairtradeby_status extends base {
 		$res = $this->query("SELECT id, chain_name FROM $this->table_chains");
 		$url_add = $this->generateCoolUrl("/add-chain/");
 		print "
-			<h3>Rediger kjeder</h3>
+			<h2>Rediger kjeder</h2>
 			<p>
 				<a href='$url_add'>Legg til ny kjede</a>
 			</p>
@@ -955,7 +955,7 @@ class fairtradeby_status extends base {
 		$chain_name = stripslashes($row['chain_name']);
 		$url_save = $this->generateCoolUrl("/update-chain/","noprint=true");
 		print "
-			<h3>Rediger kjede</h3>
+			<h2>Rediger kjede</h2>
 			<form method='post' action='$url_save'>
 				<input type='hidden' name='chain_id' value='$chain_id' />
 				Navn på kjede: <input type='text' name='chain_name' value=\"$chain_name\" /><br /><br />
@@ -993,7 +993,7 @@ class fairtradeby_status extends base {
 		$url_del = $this->generateCoolUrl("/delete-chain-do/","noprint=true");
 		$url_cancel = "window.location=\"".$_SERVER['HTTP_REFERER']."\";";
 		print "
-			<h3>Slett kjede</h3>
+			<h2>Slett kjede</h2>
 			<form method='post' action='$url_del'>
 				<input type='hidden' name='chain_id' value='$chain_id' />
 				Er du sikker på at du vil slette kjeden \"$chain_name\"?<br /><br />
@@ -1019,7 +1019,7 @@ class fairtradeby_status extends base {
 		if (!$this->allow_editchains){ $this->permissionDenied(); return; }			
 		$url_save = $this->generateCoolUrl("/save-chain/","noprint=true");
 		print "
-			<h3>Legg til ny kjede</h3>
+			<h2>Legg til ny kjede</h2>
 			<form method='post' action='$url_save'>
 				Navn på kjede: <input type='text' name='chain_name' /><br /><br />
 				<input type='submit' value='Lagre' />
@@ -1047,7 +1047,7 @@ class fairtradeby_status extends base {
 		$res = $this->query("SELECT $ti.id, $ti.item_name, $tb.brand_name FROM $ti,$tb WHERE $ti.brand=$tb.id");
 		$url_add = $this->generateCoolUrl("/add-item/");
 		print "
-			<h3>Rediger varer</h3>
+			<h2>Rediger varer</h2>
 			<p>
 				<a href='$url_add'>Legg til ny vare</a>
 			</p>
@@ -1103,7 +1103,7 @@ class fairtradeby_status extends base {
 		$cat_name = stripslashes($row['cat_name']);
 		$url_save = $this->generateCoolUrl("/update-item/","noprint=true");
 		print "
-			<h3>Rediger vare</h3>
+			<h2>Rediger vare</h2>
 			<form method='post' action='$url_save'>
 				<input type='hidden' name='item_id' value='$item_id' />
 				Varekategori: <input type='text' name='cat_name' id='cat_name' value=\"$cat_name\" /><br /><br />
@@ -1174,7 +1174,7 @@ class fairtradeby_status extends base {
 		$url_del = $this->generateCoolUrl("/delete-item-do/","noprint=true");
 		$url_cancel = "window.location=\"".$_SERVER['HTTP_REFERER']."\";";
 		print "
-			<h3>Slett vare</h3>
+			<h2>Slett vare</h2>
 			<form method='post' action='$url_del'>
 				<input type='hidden' name='item_id' value='$item_id' />
 				Er du sikker på at du vil slette varen \"$item_name\"?<br /><br />
@@ -1213,7 +1213,7 @@ class fairtradeby_status extends base {
 		}
 		
 		print "
-			<h3>Legg til ny vare</h3>
+			<h2>Legg til ny vare</h2>
 			<form method='post' action='$url_save'>
 				Varekategori: <input type='text' name='cat_name' id='cat_name' value=\"\" /><br /><br />
 				Merke: <input type='text' name='brand_name' id='brand_name' value=\"\" /><br /><br />
@@ -1271,7 +1271,7 @@ class fairtradeby_status extends base {
 		$res = $this->query("SELECT id, cat_name FROM $this->table_itemcats");
 		$url_add = $this->generateCoolUrl("/add-itemcat/");
 		print "
-			<h3>Rediger varekategorier</h3>
+			<h2>Rediger varekategorier</h2>
 			<p>
 				<a href='$url_add'>Legg til ny varekategori</a>
 			</p>
@@ -1307,7 +1307,7 @@ class fairtradeby_status extends base {
 		$item_name = stripslashes($row['cat_name']);
 		$url_save = $this->generateCoolUrl("/update-itemcat/","noprint=true");
 		print "
-			<h3>Rediger varekategori</h3>
+			<h2>Rediger varekategori</h2>
 			<form method='post' action='$url_save'>
 				<input type='hidden' name='item_id' value='$item_id' />
 				Navn: <input type='text' name='item_name' value=\"$item_name\" /><br /><br />
@@ -1345,7 +1345,7 @@ class fairtradeby_status extends base {
 		$url_del = $this->generateCoolUrl("/delete-itemcat-do/","noprint=true");
 		$url_cancel = "window.location=\"".$_SERVER['HTTP_REFERER']."\";";
 		print "
-			<h3>Slett varekategori</h3>
+			<h2>Slett varekategori</h2>
 			<form method='post' action='$url_del'>
 				<input type='hidden' name='item_id' value='$item_id' />
 				Er du sikker på at du vil slette varekategorien \"$item_name\"?<br /><br />
@@ -1371,7 +1371,7 @@ class fairtradeby_status extends base {
 		if (!$this->allow_edititems){ $this->permissionDenied(); return; }			
 		$url_save = $this->generateCoolUrl("/save-itemcat/","noprint=true");
 		print "
-			<h3>Legg til ny varekategori</h3>
+			<h2>Legg til ny varekategori</h2>
 			<form method='post' action='$url_save'>
 				Navn på varekategori: <input type='text' name='item_name' /><br /><br />
 				<input type='submit' value='Lagre' />
@@ -1397,7 +1397,7 @@ class fairtradeby_status extends base {
 		$res = $this->query("SELECT id, brand_name FROM $this->table_brands");
 		$url_add = $this->generateCoolUrl("/add-brand/");
 		print "
-			<h3>Rediger varemerker</h3>
+			<h2>Rediger varemerker</h2>
 			<p>
 				<a href='$url_add'>Legg til nytt varemerke</a>
 			</p>
@@ -1433,7 +1433,7 @@ class fairtradeby_status extends base {
 		$item_name = stripslashes($row['brand_name']);
 		$url_save = $this->generateCoolUrl("/update-brand/","noprint=true");
 		print "
-			<h3>Rediger varemerke</h3>
+			<h2>Rediger varemerke</h2>
 			<form method='post' action='$url_save'>
 				<input type='hidden' name='item_id' value='$item_id' />
 				Navn: <input type='text' name='item_name' value=\"$item_name\" /><br /><br />
@@ -1471,7 +1471,7 @@ class fairtradeby_status extends base {
 		$url_del = $this->generateCoolUrl("/delete-brand-do/","noprint=true");
 		$url_cancel = "window.location=\"".$_SERVER['HTTP_REFERER']."\";";
 		print "
-			<h3>Slett varemerke</h3>
+			<h2>Slett varemerke</h2>
 			<form method='post' action='$url_del'>
 				<input type='hidden' name='item_id' value='$item_id' />
 				Er du sikker på at du vil slette varemerket \"$item_name\"?<br /><br />
@@ -1497,7 +1497,7 @@ class fairtradeby_status extends base {
 		if (!$this->allow_edititems){ $this->permissionDenied(); return; }			
 		$url_save = $this->generateCoolUrl("/save-brand/","noprint=true");
 		print "
-			<h3>Legg til nytt varemerke</h3>
+			<h2>Legg til nytt varemerke</h2>
 			<form method='post' action='$url_save'>
 				Navn på varemerke: <input type='text' name='item_name' /><br /><br />
 				<input type='submit' value='Lagre' />

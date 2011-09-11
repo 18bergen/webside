@@ -37,7 +37,7 @@ class sitesettings extends base {
 			return;
 		}
 		
-		print "<h2>Sideinnstillinger</h2>
+		print "<h1>Sideinnstillinger</h1>
 			<form method='post' action='".$this->generateURL(array("noprint=true","savesettings"))."'>
 		";
 

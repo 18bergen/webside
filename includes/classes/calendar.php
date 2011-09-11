@@ -53,7 +53,7 @@ class calendar extends calendar_basic {
 		';
 		
 	var $subscribeinfo_template = '
-			<h3>Abonnér på / last ned terminliste</h3>
+			<h2>Abonnér på / last ned terminliste</h2>
 			<p>
 				Enkelte programmer støtter abonnering på en kalender, mens andre kun støtter engangsimportering. Atter andre har problemer
 				med å importere kalendere i det hele tatt. Abonnering er klart å foretrekke fremfor importering, da endringer blir reflektert
@@ -76,19 +76,19 @@ class calendar extends calendar_basic {
 				<a href="%downloadlink%">Last ned terminliste</a>
 			</p>
 			
-			<h3>Instruksjoner:</h3>
-			<h4>Apple iCal</h4>
+			<h2>Instruksjoner:</h2>
+			<h3>Apple iCal</h3>
 			<ol>
 				<li>Trykk her: <a href="%abblink%" class="icn" alt="iCal" style="background-image:url(/images/ical16.png);">Abbonèr på terminliste</a></li>
 			</ol>
-			<h4>Mozilla Sunbird</h4>
+			<h3>Mozilla Sunbird</h3>
 			<ol>
 				<li>Velg File->Subscribe to Remote Calendar... </li>
 				<li>Velg "Remote". Trykk "Continue". </li>
 				<li>Velg "WebDAV". I "Location" fyller du inn "%downloadlink%". Trykk "Continue".</li>
 				<li>Skriv inn et valgfritt navn og trykk "Continue"</li>
 			</ol>
-			<h4>Google Calendar</h4>
+			<h3>Google Calendar</h3>
 			<ol>
 				<li>Trykk på "Manage calendars"</li>
 				<li>Trykk "Add calendar" under "Other calendars".</li>
@@ -96,7 +96,7 @@ class calendar extends calendar_basic {
 				<li>Fyll inn "%downloadlink%" og trykk "Add"</li>
 			</ol>
 			
-			<h4>iWebCal</h4>
+			<h3>iWebCal</h3>
 			<ol>
 				<li>Trykk her: <a href="http://iwebcal.com/iwebcal.php?file=%abblink%" target="_blank">Vis i iWebCal</a></li>
 			</ol>
@@ -119,7 +119,7 @@ class calendar extends calendar_basic {
 			%settings%
 			%subscribe%
 		</p>
-		<h3>%header%</h3>
+		<h2>%header%</h2>
 		<table class="hidefromprint" width="100%"><tr><td>
 			%view_options%
 		</td><td align="right">
@@ -129,7 +129,7 @@ class calendar extends calendar_basic {
 			%cal_list%
 		</p>
 		%noentries%	%entries%
-		<h3>Symbolforklaringer</h3>
+		<h2>Symbolforklaringer</h2>
 		<table>
 			<tr><td><img src="/images/task2.gif"></td><td>Arrangementet har påmelding</td></tr>
 			<tr><td><img src="/images/camera.gif"></td><td>Bildearkivet vårt inneholder bilder fra arrangementet</td></tr>
@@ -1096,7 +1096,7 @@ class calendar extends calendar_basic {
 			<a name="fb_share" type="button_count" href="http://www.facebook.com/sharer.php" style="float:right;margin-top:20px;">Del</a>
 			<script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" type="text/javascript"></script>
 			
-			<h3>%title%</h3>
+			<h2>%title%</h2>
 			<p class="hidefromprint">
 				%editlink%
 				%cancellink%
@@ -1200,7 +1200,7 @@ class calendar extends calendar_basic {
 		if ($id <= 0) $this->fatalError("Event not found");
 
 		$output = "
-			<h3>$this->deleteentry_caption</h3>
+			<h2>$this->deleteentry_caption</h2>
 		";
 		
 		$res = $this->query(
@@ -1246,8 +1246,8 @@ class calendar extends calendar_basic {
 		$avlyst = ($row['cancelled'] == true);
 
 
-		if ($avlyst) $output = "<h3>$this->dropcancelentry_caption</h3>";
-		else $output = "<h3>$this->cancelentry_caption</h3>";
+		if ($avlyst) $output = "<h2>$this->dropcancelentry_caption</h2>";
+		else $output = "<h2>$this->cancelentry_caption</h2>";
 		
 		$allow_delete = (($this->allow_deleteownentries && $row['creator'] == $this->login_identifier) || $this->allow_deleteothersentries);
 		if ($allow_delete){
@@ -1364,7 +1364,7 @@ class calendar extends calendar_basic {
 		
 		
 		return '
-			<h3>Innstillinger</h3>
+			<h2>Innstillinger</h2>
 			<ul id="maintab" class="shadetabs">
 				<li class="selected"><a href="#" rel="tcontent1">Kalendere</a></li>
 				<li><a href="#" rel="tcontent2">Steder</a></li>

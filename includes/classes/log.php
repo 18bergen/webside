@@ -66,8 +66,8 @@ class log extends comments {
 	
 	var $template_leadlistitem = '
 		<div class="%divclass%">
-			<h3 class="post-title"><a href="%url%">%topic% %header%</a></h3>
-			<h4 class="author">Loggført av %authors%</h4>%notpublishedyet%
+			<h2 class="post-title"><a href="%url%">%topic% %header%</a></h2>
+			<h3 class="author">Loggført av %authors%</h3>%notpublishedyet%
 			<div style="float:right;">%image%</div>
 			<p>%lead%</p>%options%
 			<div style="clear:both; height: 1px;"><!-- --></div>
@@ -75,7 +75,7 @@ class log extends comments {
 	';
 	
 	var $template_addlogform = '
-		<h3>%addarticle%</h3>
+		<h2>%addarticle%</h2>
 		<form method="post" action="%posturl%">
 			<p>
 				Hva vil du skrive logg fra?
@@ -97,8 +97,8 @@ class log extends comments {
 		<div class="article">
 			%authors%
 			
-			<h2 class="date-header">%header%</h2>
-			<h3 class="post-title">%topic%</h3>
+			<h1 class="date-header">%header%</h1>
+			<h2 class="post-title">%topic%</h2>
 			<div style="font-size:10px;" class="hidefromprint">%calendar_link%</div>
 			<div class="post">
 			<div class="post-body">
@@ -118,8 +118,8 @@ class log extends comments {
 		<div class="article">
 			%authors%
 			
-			<h2 class="date-header">%header%</h2>
-			<h3 class="post-title">%topic%</h3>
+			<h1 class="date-header">%header%</h1>
+			<h2 class="post-title">%topic%</h2>
 			<div style="font-size:10px;" class="hidefromprint">%calendar_link%</div>
 			<div class="post">
 			<div class="post-body">
@@ -1001,7 +1001,7 @@ class log extends comments {
 			$topic = $calEvent['caption'];
 
 			return '
-				<h3>Bekreft sletting</h3>
+				<h2>Bekreft sletting</h2>
 				<p>Er du sikker på at du ønsker å slette loggen fra '.$topic.'?</p>
 				<form method="post" action="'.$this->generateURL('action=deleteLogDo').'">
 					<input type="submit" value="     Ja      " /> 

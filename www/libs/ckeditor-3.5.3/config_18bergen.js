@@ -21,7 +21,7 @@ CKEDITOR.editorConfig = function( config )
 	config.emailProtection = 'encode' ;
 	config.contentsCss = '/stylesheets/basic.css' ;
 	
-	config.format_tags = 'p;h3' ;
+	config.format_tags = 'p;h2;h3' ;
 
 	config.smiley_path   = '/images/ckeditor_smileys/' ;
 	config.smiley_images = ['regular_smile.gif','sad_smile.gif','wink_smile.gif','teeth_smile.gif','confused_smile.gif','tounge_smile.gif','embaressed_smile.gif','omg_smile.gif','whatchutalkingabout_smile.gif','angry_smile.gif','angel_smile.gif','shades_smile.gif','devil_smile.gif','cry_smile.gif','lightbulb.gif','thumbs_down.gif','thumbs_up.gif','heart.gif','broken_heart.gif','kiss.gif','envelope.gif','ver_overskyet.gif','ver_regn.gif','ver_sol.gif','ver_tordenver.gif','ver_vekslende_opphold.gif','ver_vekslende_regnbyger.gif','date.gif','camera3.gif','goldstar1.gif','silverstar.gif','scoutlogo2.gif','telt.gif','notice.gif','check-2.gif'] ;
