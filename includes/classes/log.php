@@ -97,7 +97,7 @@ class log extends comments {
 		<div class="article">
 			%authors%
 			
-			<h1 class="date-header">%header%</h1>
+			<h2 class="date-header">%header%</h2>
 			<h2 class="post-title">%topic%</h2>
 			<div style="font-size:10px;" class="hidefromprint">%calendar_link%</div>
 			<div class="post">
@@ -118,7 +118,7 @@ class log extends comments {
 		<div class="article">
 			%authors%
 			
-			<h1 class="date-header">%header%</h1>
+			<h2 class="date-header">%header%</h2>
 			<h2 class="post-title">%topic%</h2>
 			<div style="font-size:10px;" class="hidefromprint">%calendar_link%</div>
 			<div class="post">
