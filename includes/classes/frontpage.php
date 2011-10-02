@@ -133,7 +133,6 @@ class frontpage extends base {
 
         $output .= '</table>';
         $output = '<div id="aktuelt">'.$output.'</div>
-        <h1>Nyheter</h1>
         ';
 
 		$this->noteboard_instance = new noteboard(); 
