@@ -225,6 +225,12 @@ class base {
 		return $calObj;
 	}
 	
+	public function initialize_mailer() {
+		$instance = new mailer();
+		call_user_func($this->prepare_classinstance,$instance);
+		return $instance;
+	}
+	
 	function preparePageInstance($page_id) {
 		global $dp0;
 		$page_id = intval($page_id);
