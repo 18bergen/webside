@@ -1134,7 +1134,11 @@ class messagecenter extends base {
 		}
 		
 		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-		$mail->send(array($recipient->email),$type = 'smtp');
+        if (!$mail->send(array($recipient->email),$type = 'smtp')) {
+            print_r($mail->errors);
+            exit();
+        }
+        //print "$this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass";
 		//$this->addToActivityLog("Sendt mail til ".implode(", ",$recipients));
 	}
 	
