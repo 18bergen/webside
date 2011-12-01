@@ -52,7 +52,7 @@ function CheckAuthentication()
 // LicenseKey : Paste your license key here. If left blank, CKFinder will be
 // fully functional, in demo mode.
 $config['LicenseName'] = 'www.18bergen.org';
-$config['LicenseKey'] = '1SAJ-TB5X-FXVB-1TM7-X1FD-V2ZE-75XT';
+$config['LicenseKey'] = 'NJ3A-BQA1-C111-E4NX-R9NN-EYHT-DDUH';
 
 /*
  Uncomment lines below to enable PHP error reporting and displaying PHP errors.
