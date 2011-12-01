@@ -40,7 +40,7 @@ class mailer extends base {
 		if (isset($data['html_body'])) $html_body = $data['html_body'];
 		if (empty($plain_body) && empty($html_body)) $errors[] = 'empty_body';
 
-		$attachments = array();
+		$attachments = "";
 		if (isset($data['attachments'])) $attachments = implode("|", $data['attachments']);
 		
 		$mailqueue_id = -1;
@@ -79,6 +79,7 @@ class mailer extends base {
             $message->setSubject($subject);
             $message->setFrom(array($sender_email => $sender_name));
             $message->setTo(array($rcpt_email => $rcpt_name));
+            $message->setReplyTo(array($sender_email => $sender_name));
             $message->setBody($plain_body);
     
             //And optionally an alternative body
@@ -87,8 +88,9 @@ class mailer extends base {
             //Optionally add any attachments
             if (!empty($attachments)) {
                 foreach ($attachments as $f) {
-                    #$mail->addAttachment(new fileAttachment($this->attachment_dir."/".$f['file']));
-                    $message->attach(Swift_Attachment::fromPath($attachment_dir.$f));
+                    if (!empty($f)) {
+                        $message->attach(Swift_Attachment::fromPath($attachment_dir.$f));
+                    }
                 }
             }
             
