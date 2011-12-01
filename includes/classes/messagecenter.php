@@ -1080,16 +1080,20 @@ class messagecenter extends base {
 	function sendMail($recipient,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments) {
 		global $memberdb;
 		$recipient = call_user_func($this->lookup_member, $recipient);
+        $rcpt_name = $recipient->fullname;
+        $rcpt_email = $recipient->email;
 		
 		$bodyHtml = nl2br($body);
 		$bodyHtml = $this->makeHtmlUrls($bodyHtml,60,"...");
 
 		$url_root = "http://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
 		$url_reply = "http://".$_SERVER['SERVER_NAME'].$this->generateCoolUrl("/reply/$message_id");
-
+        
 		$r1a = array(); $r2a = array();
 		$r1a[] = '%sender_name%';		$r2a[] = $sender_name;
 		$r1a[] = '%sender_email%';		$r2a[] = $sender_email;
+		$r1a[] = '%rcpt_name%';		    $r2a[] = $rcpt_name;
+		$r1a[] = '%rcpt_email%';		$r2a[] = $rcpt_email;
 		$r1a[] = '%message_plain%';		$r2a[] = $body;
 		$r1a[] = '%message_html%';		$r2a[] = $bodyHtml;
 		$r1a[] = '%site_name%';			$r2a[] = $this->site_name;
@@ -1116,30 +1120,34 @@ class messagecenter extends base {
 			style="background:url(http://www.18bergen.org/images/reply3.gif) left no-repeat;padding-left:18px;
 		*/
 				
-		// Send mail	
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-		$mail = new htmlMimeMail5();
-		$mail->setFrom("$sender_name <$sender_email>");
-		$mail->setReturnPath($sender_email);
-		$mail->setSubject($subject);
-		$mail->setText($plainBody);
-		$mail->setHTML($htmlBody);
-		//$mail->addEmbeddedImage(new fileEmbeddedImage('images/reply3.gif'));
-		//$mail->addEmbeddedImage(new fileEmbeddedImage('images/info.png'));
-		
+		// Send mail
+		$mail = array(
+		    'sender_name' => $sender_name,
+		    'sender_email' => $sender_email,
+		    'rcpt_name' => $rcpt_name,
+		    'rcpt_email' => $rcpt_email,
+		    'rcpt_name' => $rcpt_name,
+		    'rcpt_email' => $rcpt_email,
+		    'subject' => $subject,
+		    'plain_body' => $plainBody,
+		    'html_body' => $htmlBody,
+		    'attachments' => array()
+		);
 		if (!empty($attachments)) {
 			foreach ($attachments as $f) {
-			    $mail->addAttachment(new fileAttachment($this->attachment_dir."/".$f['file']));
+			    $mail['attachments'][] = $f['file'];
 			}
 		}
 		
-		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-        if (!$mail->send(array($recipient->email),$type = 'smtp')) {
-            print_r($mail->errors);
-            exit();
-        }
-        //print "$this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass";
-		//$this->addToActivityLog("Sendt mail til ".implode(", ",$recipients));
+		$mailer = $this->initialize_mailer();
+		$res = $mailer->add_to_queue($mail);
+		if (!empty($res['errors'])) {
+		    print_r($res['errors']);
+		    exit();
+		} else {
+			$this->query("UPDATE $this->table_messages SET mailqueue_id=".$res['id']." WHERE id=$message_id");						
+		    $mailer->send_from_queue($this->attachment_dir.'/');		
+		}
 	}
 	
 	function saveNewsletter($recipients, $subject, $body) {
