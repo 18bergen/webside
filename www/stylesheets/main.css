@@ -42,6 +42,24 @@ p.warning {
 	background: url('../images/icns/error.png') 10px 8px no-repeat #ffffff;
 	border: 1px solid #ee8888;
 }
+img.round-corners {
+ border: 1px solid #666;
+ border-radius: 10px; 					/* Opera */
+ -moz-border-radius: 10px; 				/* Mozilla */
+ -webkit-border-radius: 10px; 			/* Webkit (Safari, Chrome) */
+ box-shadow: 0px 0px 3px #888;			/* Opera */
+ -moz-box-shadow: 0px 0px 3px #888;	/* Mozilla */
+ -webkit-box-shadow: 0px 0px 3px #888; /* Webkit (Safari, Chrome) */
+}
+img.round-corners-small {
+ border: 1px solid #666;
+ border-radius: 5px; 					/* Opera */
+ -moz-border-radius: 5px; 				/* Mozilla */
+ -webkit-border-radius: 5px; 			/* Webkit (Safari, Chrome) */
+ box-shadow: 0px 0px 3px #888;			/* Opera */
+ -moz-box-shadow: 0px 0px 3px #666;	/* Mozilla */
+ -webkit-box-shadow: 0px 0px 3px #666; /* Webkit (Safari, Chrome) */
+}
 
 
 /* _____________________________________ PAGE LAYOUT DIV'S _____________________________________ */
