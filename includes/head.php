@@ -134,6 +134,7 @@ $login->setDbLink($db);
 $login->setMemberDb($memberdb);
 $login->image_dir = ROOT_DIR.'/images/'; 	 // base
 $login->eventlog_function = "addToEventLog"; // base
+$login->prepare_classinstance = "prepareClassInstance"; //base
 $login->useCoolUrls = true;					 // base
 $login->coolUrlPrefix = "";					 // base
 $login->run();

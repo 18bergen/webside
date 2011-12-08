@@ -591,18 +591,23 @@ class innlogging extends base {
 			"\r\n\r\n".
 			"-- \r\nDette er en auto-generert utsendelse.\r\n$url_root";
 		
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-		$mail = new htmlMimeMail5();
-		$mail->setFrom("$from_name <$from_addr>");
-		$mail->setReturnPath($from_addr);
-		$mail->setSubject($subject);
-		$mail->setText($plainBody);
-		//$mail->setHTML($htmlBody);
-		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-		$mail->send(array("$rcptname <$rcptmail>"),$type = 'smtp');		
 
-		unset($mail);
-
+        // Send mail
+		$mail = array(
+		    'sender_name' => $from_name,
+		    'sender_email' => $from_addr,
+		    'rcpt_name' => $rcptname,
+		    'rcpt_email' => $rcptmail,
+		    'subject' => $subject,
+		    'plain_body' => $plainBody
+		);
+		
+		$mailer = $this->initialize_mailer();
+		$res = $mailer->add_to_queue($mail);
+		if (empty($res['errors'])) {
+		    $mailer->send_from_queue();
+		}		
+		
 		$this->redirect($this->generateURL("passwordsent=$rcptmail"));
 	}
 

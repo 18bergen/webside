@@ -226,6 +226,8 @@ class base {
 	}
 	
 	public function initialize_mailer() {
+	    require_once(BG_CLASS_PATH.'mailer.php');
+	    
 		$instance = new mailer();
 		call_user_func($this->prepare_classinstance,$instance);
 		return $instance;

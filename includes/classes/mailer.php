@@ -58,7 +58,7 @@ class mailer extends base {
 		);
 	}
 	
-	function send_from_queue($attachment_dir) {
+	function send_from_queue($attachment_dir = '') {
 	    global $bergen18globalconfig;
 
         require_once '../www/libs/swift-latest/lib/swift_required.php';        
@@ -83,14 +83,18 @@ class mailer extends base {
             $message->setBody($plain_body);
     
             //And optionally an alternative body
-            $message->addPart($html_body, 'text/html');
+            if (!empty($html_body)) {
+                $message->addPart($html_body, 'text/html');
+            }
     
             //Optionally add any attachments
-            if (!empty($attachments)) {
-                foreach ($attachments as $f) {
-                    if (!empty($f)) {
-                        $message->attach(Swift_Attachment::fromPath($attachment_dir.$f));
-                    }
+            foreach ($attachments as $f) {
+                if (!empty($f)) {
+                    if (empty($attachment_dir)) {
+                        print "attachment dir not specified";
+                        exit();
+                    } 
+                    $message->attach(Swift_Attachment::fromPath($attachment_dir.$f));
                 }
             }
             
@@ -117,7 +121,7 @@ class mailer extends base {
             $swiftmailer = Swift_Mailer::newInstance($transport);
             $numSent = $swiftmailer->send($message);
             if ($numSent) {
-		        $this->query("UPDATE $this->tablename SET time_sent=NOW() WHERE id=$id");
+		        $this->query("UPDATE $this->tablename SET time_sent=NOW(), plain_body='HIDDEN', html_body='HIDDEN' WHERE id=$id");
             }
         }
 	}

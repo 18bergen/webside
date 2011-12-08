@@ -1144,8 +1144,6 @@ class messagecenter extends base {
 		    'sender_email' => $sender_email,
 		    'rcpt_name' => $rcpt_name,
 		    'rcpt_email' => $rcpt_email,
-		    'rcpt_name' => $rcpt_name,
-		    'rcpt_email' => $rcpt_email,
 		    'subject' => $subject,
 		    'plain_body' => $plainBody,
 		    'html_body' => $htmlBody,
