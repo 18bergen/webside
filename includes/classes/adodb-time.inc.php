@@ -405,7 +405,7 @@ function adodb_date_test()
 {
 	
 	error_reporting(E_ALL);
-	print "<h4>Testing adodb_date and adodb_mktime. version=".ADODB_DATE_VERSION.' PHP='.PHP_VERSION."</h4>";
+	print "<h3>Testing adodb_date and adodb_mktime. version=".ADODB_DATE_VERSION.' PHP='.PHP_VERSION."</h3>";
 	@set_time_limit(0);
 	$fail = false;
 	

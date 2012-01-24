@@ -47,7 +47,7 @@ class ForumNotifications extends base {
 					$str2 = "";
 				}
 				
-				print("  <h3 class='small'>Forumet</h3>
+				print("  <h2 class='small'>Forumet</h2>
 					<div class='calendarItem1Mini'>
 						".
 						(empty($str1) ? "" : "

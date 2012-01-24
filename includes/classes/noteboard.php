@@ -76,8 +76,8 @@ class noteboard extends comments {
 	var $newsListingString = "
 
 		<div class='news'>
-			<h3 class='post-title'><a href=\"%url%\">%subject%</a></h3>
-			<h4 class='author'>%writtenby%</h4>
+			<h2 class='post-title'><a href=\"%url%\">%subject%</a></h2>
+			<h3 class='author'>%writtenby%</h3>
 			<div style='float:right; padding-top:5px;padding-bottom:10px;'>
 				%image%
 			</div>
@@ -102,11 +102,11 @@ class noteboard extends comments {
 			<dc:creator>%author%</dc:creator>
 		</item>";
 	
-	var $codesnip_header 				= ""; // "<h2>Nyheter</h2>";
-	var $codesnip_newheader 			= "<h3>Legg til nyhet</h3>";
-	var $codesnip_editheader 			= "<h3>Rediger nyhet</h3>";
-	var $codesnip_uploadimgheader  		= "<h3>Last opp nytt bilde</h3>";
-	var $codesnip_confirmdeleteheader	= "<h3>Bekreft sletting</h3>";
+	var $codesnip_header 				= ""; // "<h1>Nyheter</h1>";
+	var $codesnip_newheader 			= "<h2>Legg til nyhet</h2>";
+	var $codesnip_editheader 			= "<h2>Rediger nyhet</h2>";
+	var $codesnip_uploadimgheader  		= "<h2>Last opp nytt bilde</h2>";
+	var $codesnip_confirmdeleteheader	= "<h2>Bekreft sletting</h2>";
 	
 	var $str_image 				= "Bilde";
 	var $str_noimage			= "Intet bilde";
@@ -458,7 +458,7 @@ class noteboard extends comments {
 		if (empty($forced_image_ratio)) $forced_image_ratio = false;
 		
 		$output .= "
-			<h3>Beskjær bilde</h3>
+			<h2>Beskjær bilde</h2>
 			<form method='post' action='".$this->generateURL(array("noprint=true","docropimage"))."'>
 		";
 		$this->initializeImagesInstance();

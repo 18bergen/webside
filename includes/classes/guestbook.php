@@ -216,7 +216,7 @@ class guestbook extends base {
 			$this->redirect($this->generateURL(""),$this->label_entrydeleted);
 		} else {
 			return '
-				<h3>'.$this->label_confirmdelete_header.'</h3>
+				<h2>'.$this->label_confirmdelete_header.'</h2>
 				<p>
 					'.str_replace("%author%",$author,$this->label_confirmdelete_paragraph).'
 				</p>
@@ -235,7 +235,7 @@ class guestbook extends base {
 		if (isset($_GET['g'])){ $grpstr = "&amp;g=".$_GET['g']; } else { $grpstr = ""; }
 		
 		$output = "";
-		//print "<h2>$this->page_header</h2>";
+		//print "<h1>$this->page_header</h1>";
 
 		$today = date('myd',time());
 		$fieldnames = array(
@@ -248,7 +248,7 @@ class guestbook extends base {
 		);
 		
 		if (isset($_GET['gb_saved'])){
-			$output .= "<h3>$this->label_thankyou_header</h3>
+			$output .= "<h2>$this->label_thankyou_header</h2>
 				$this->label_thankyou_paragraph";
 		} else if ($this->allow_addentry) {
 			$_SESSION['gb_expiration'] = rand()."-".time();
@@ -286,7 +286,7 @@ class guestbook extends base {
 			}
 			
 			$output .= "
-			<h3>$this->label_signourguestbook</h3>
+			<h2>$this->label_signourguestbook</h2>
 			<form method=\"post\" action=\"".$this->generateURL(array("noprint=true","gb_save"))."\"> 
 				<table>
 					<tr>
@@ -340,7 +340,7 @@ class guestbook extends base {
 			";
 			
 		}
-		$output .= "<h3>$this->label_readourguestbook</h3>";
+		$output .= "<h2>$this->label_readourguestbook</h2>";
 		$Result = $this->query("SELECT COUNT(*) FROM $this->tablename WHERE page=".$this->page_id);
 		$Row = $Result->fetch_array();
 		$gbCount = $Row[0];

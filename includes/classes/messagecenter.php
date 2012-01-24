@@ -79,7 +79,10 @@ class messagecenter extends base {
 		'html_name' => "Navnet ditt inneholder HTML-kode",
 		'html_email' => "Epostadressen din inneholder HTML-kode",
 		'html_subject' => "Emnet inneholder HTML-kode",
-		'html_body' => "Meldingen din inneholder HTML-kode"
+		'html_body' => "Meldingen din inneholder HTML-kode",
+
+		'empty_rcpt_name' => "Mangler navn",
+		'empty_rcpt_email' => "Mangler epostadresse"
 	);
 
 	var $schema_template = '
@@ -127,8 +130,9 @@ class messagecenter extends base {
 				</tr>
 				<tr>
 					<td></td>
-					<td><input type="submit" id="nsubtn" value="%label_sendmail%" class="button" /> 
-					%cancelbtn%
+					<td>
+					 <input type="submit" id="nsubtn" value="%label_sendmail%" class="button" /> 
+					 %cancelbtn%
 					</td>
 				</tr>
 			</table>
@@ -470,9 +474,9 @@ class messagecenter extends base {
 
 		$r1a = array(); $r2a = array();
 		if (empty($replyTo)) {
-			$r1a[]  = "%header%";						$r2a[]  = '<h3>'.$this->label_newmessage.'</h3>';
+			$r1a[]  = "%header%";						$r2a[]  = '<h2>'.$this->label_newmessage.'</h2>';
 		} else {
-			$r1a[]  = "%header%";						$r2a[]  = '<h3>'.$this->label_reply.'</h3>';
+			$r1a[]  = "%header%";						$r2a[]  = '<h2>'.$this->label_reply.'</h2>';
 		}
 		
 		if (!empty($attachments)) {
@@ -1050,13 +1054,27 @@ class messagecenter extends base {
 		
 		$user_mail_settings = call_user_func($this->get_useroptions,$this, 'mail_incoming', $recipients);
 		
+		$allerrors = array();
+		$numsent = 0;
 		foreach ($recipients as $r) {
 			if ($user_mail_settings[$r] == '1') {
-				$this->sendMail($r,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments);
+				$errors = $this->sendMail($r,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments);
+				if (count($errors)>0) {
+				    $allerrors[] = array(
+				        'rcpt' => $r,
+				        'errors' => $errors
+				    );
+				} else {
+				    $numsent++;
+				}
 			}
 		}
 		
 		$_SESSION['message_sent_to'] = $recipients;
+		$_SESSION['message_status'] = array(
+		    'numsent' => $numsent,
+		    'allerrors' => $allerrors
+		);
 		
 		if (count($recipients) == 1)
 			$this->addToActivityLog("sendte en melding til ".call_user_func($this->make_memberlink,$recipients[0]));
@@ -1080,16 +1098,20 @@ class messagecenter extends base {
 	function sendMail($recipient,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments) {
 		global $memberdb;
 		$recipient = call_user_func($this->lookup_member, $recipient);
+        $rcpt_name = $recipient->fullname;
+        $rcpt_email = $recipient->email;
 		
 		$bodyHtml = nl2br($body);
 		$bodyHtml = $this->makeHtmlUrls($bodyHtml,60,"...");
 
 		$url_root = "http://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
 		$url_reply = "http://".$_SERVER['SERVER_NAME'].$this->generateCoolUrl("/reply/$message_id");
-
+        
 		$r1a = array(); $r2a = array();
 		$r1a[] = '%sender_name%';		$r2a[] = $sender_name;
 		$r1a[] = '%sender_email%';		$r2a[] = $sender_email;
+		$r1a[] = '%rcpt_name%';		    $r2a[] = $rcpt_name;
+		$r1a[] = '%rcpt_email%';		$r2a[] = $rcpt_email;
 		$r1a[] = '%message_plain%';		$r2a[] = $body;
 		$r1a[] = '%message_html%';		$r2a[] = $bodyHtml;
 		$r1a[] = '%site_name%';			$r2a[] = $this->site_name;
@@ -1115,27 +1137,32 @@ class messagecenter extends base {
 			<img src="http://www.18bergen.org/images/info.png" alt="Info" border="0" style="float:left; padding:3px; padding-bottom: 30px;" />
 			style="background:url(http://www.18bergen.org/images/reply3.gif) left no-repeat;padding-left:18px;
 		*/
-				
-		// Send mail	
-		require_once("../www/libs/Rmail/Rmail.php");
-		$mail = new Rmail();
-		$mail->setFrom("$sender_name <$sender_email>");
-		$mail->setReturnPath($sender_email);
-		$mail->setSubject($subject);
-		$mail->setText($plainBody);
-		$mail->setHTML($htmlBody);
-		//$mail->addEmbeddedImage(new fileEmbeddedImage('images/reply3.gif'));
-		//$mail->addEmbeddedImage(new fileEmbeddedImage('images/info.png'));
+		
+		// Send mail
+		$mail = array(
+		    'sender_name' => $sender_name,
+		    'sender_email' => $sender_email,
+		    'rcpt_name' => $rcpt_name,
+		    'rcpt_email' => $rcpt_email,
+		    'subject' => $subject,
+		    'plain_body' => $plainBody,
+		    'html_body' => $htmlBody,
+		    'attachments' => array()
+		);
 		
 		if (!empty($attachments)) {
 			foreach ($attachments as $f) {
-			    $mail->addAttachment(new fileAttachment($this->attachment_dir."/".$f['file']));
+			    $mail['attachments'][] = $f['file'];
 			}
 		}
 		
-		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-		$mail->send(array($recipient->email),$type = 'smtp');
-		//$this->addToActivityLog("Sendt mail til ".implode(", ",$recipients));
+		$mailer = $this->initialize_mailer();
+		$res = $mailer->add_to_queue($mail);
+		if (empty($res['errors'])) {
+			$this->query("UPDATE $this->table_messages SET mailqueue_id=".$res['id']." WHERE id=$message_id");						
+		    $mailer->send_from_queue($this->attachment_dir.'/');
+		}
+		return $res['errors'];
 	}
 	
 	function saveNewsletter($recipients, $subject, $body) {
@@ -1212,7 +1239,7 @@ class messagecenter extends base {
 		);
 
 		return '
-			<h3>Mine valg</h3>
+			<h2>Mine valg</h2>
 			<form method="post" action="'.$post_uri.'">
 				<p>
 					<label for="mail_incoming">
@@ -1299,25 +1326,52 @@ class messagecenter extends base {
 	}
 	
 	function viewMessageCenter() {
-	
+	    
 		$output = "";
-		if (empty($this->login_identifier)){ 
-			if (isset($_SESSION['message_sent_to'])) {
-				$rcpts = $_SESSION['message_sent_to'];
-				for ($i = 0; $i < count($rcpts); $i++) {
-					$rcpts[$i] = call_user_func($this->make_memberlink, $rcpts[$i]);
-				}
-				$output .= "<h3>Melding sendt</h3>
-				<p>Meldingen din ble sendt til ".implode(", ",$rcpts).".</p>";
-				unset($_SESSION['message_sent_to']);
-				return $output;
-			} else {
-				if (isset($_SESSION['message_sent_to'])) unset($_SESSION['message_sent_to']);
-				$output .= $this->permissionDenied(); 
-				return $output; 
-			}
-		}
+        if (isset($_SESSION['message_sent_to'])) {
+            $rcpts = $_SESSION['message_sent_to'];
+            for ($i = 0; $i < count($rcpts); $i++) {
+                $rcpts[$i] = call_user_func($this->make_memberlink, $rcpts[$i]);
+            }
+            $output .= "
+            <div style='border:3px solid #880;padding:20px 20px 20px 140px;margin:5px; background:url(/images/mailsent.png) no-repeat top left #ffffcc;'>
+            <strong>Melding sendt</strong>
+            <p>
+              Meldingen har blitt levert til ".count($rcpts)." personer i 18. Bergens meldingssystem.
+            </p>
+            <p>
+              Meldingen har blitt sendt som epost til ".$_SESSION['message_status']['numsent']." personer.
+            ";
+            $notsent = count($_SESSION['message_status']['allerrors']);
+            if ($notsent > 0) {
+                $output .= "Kunne ikke sende epost til følgende personer:<ul>";
+                foreach ($_SESSION['message_status']['allerrors'] as $e) {
+                    $recipient = call_user_func($this->make_memberlink, $e['rcpt']);
+                    $errs = array();
+                    foreach ($e['errors'] as $err) {
+                        $errs[] = $this->errorMessages[$err];
+                    }
+                    $output .= '<li>'.$recipient.' ('.implode(', ',$errs).')</li>';
+                }
+                $output .= "</ul>";
+            }
+            $output .= "</p>";
+            $output .= "</div>";
+            unset($_SESSION['message_sent_to']);
+            unset($_SESSION['message_status']);
+            if (empty($this->login_identifier)){ 
+                return $output;
+            }
+        } else {
+            if (empty($this->login_identifier)){
+                if (isset($_SESSION['message_sent_to'])) unset($_SESSION['message_sent_to']);
+                $output .= $this->permissionDenied(); 
+                return $output; 
+            }
+        }
+		
 		if (isset($_SESSION['message_sent_to'])) unset($_SESSION['message_sent_to']);
+		if (isset($_SESSION['message_status'])) unset($_SESSION['message_status']);
 	
 		$output .= '
 			<p>
@@ -1359,7 +1413,7 @@ class messagecenter extends base {
 	}
 	
 	function viewInbox() {
-		$output = "<h3>$this->label_inbox</h3>";
+		$output = "<h2>$this->label_inbox</h2>";
 		
 		$id = $this->login_identifier;
 		$img_u = $this->image_dir.$this->image_unread;
@@ -1470,7 +1524,7 @@ class messagecenter extends base {
 	}
 	
 	function viewSent() {
-		$output = "<h3>$this->label_sentmessages</h3>";
+		$output = "<h2>$this->label_sentmessages</h2>";
 		
 		$id = $this->login_identifier;
 		$img_u = $this->image_dir.$this->image_unread;
@@ -1583,7 +1637,7 @@ class messagecenter extends base {
 	
 	function viewTrash() {
 		$img_info = $this->image_dir."info.png";
-		$output = '<h3>'.$this->label_trash.'</h3>
+		$output = '<h2>'.$this->label_trash.'</h2>
 		<div style="border: 1px solid #ddd; background:white;padding:4px; margin-top:10px;margin-bottom:10px;">
 			<img src="'.$img_info.'" alt="info" style="float:left; padding:3px; padding-bottom:5px;" />
 			Meldinger slettes automatisk når de har ligget i søppelkurven i en uke. Du kan ikke tømme søppelkurven manuelt.
@@ -1673,7 +1727,7 @@ class messagecenter extends base {
 	}
 	
 	function viewConversations() {
-		$output = "<h3>".$this->label_conversations."</h3>";
+		$output = "<h2>".$this->label_conversations."</h2>";
 		
 		$id = $this->login_identifier;
 		$img_u = $this->image_dir.$this->image_unread;
@@ -1908,7 +1962,7 @@ class messagecenter extends base {
 		';
 		
 		if (!isset($_GET['noprint'])) {
-			$output .= "<h3>$subject</h3>";
+			$output .= "<h2>$subject</h2>";
 		}
 		list($message_id,$tmp) = $this->printMessage($message_id,true);
 		$output .= $tmp;
@@ -1994,7 +2048,7 @@ class messagecenter extends base {
 		
 		if (!$printThread) {
 			if (!isset($_GET['noprint'])) {
-				$output .= "<h3>$subject</h3>";
+				$output .= "<h2>$subject</h2>";
 			}
 		}
 		
@@ -2338,7 +2392,7 @@ class messagecenter extends base {
 			$submit_url = $this->generateURL(array("confirm_delete"));
 			$cancel_url = $this->generateCoolUrl("/readmessage/$id/");
 			$output = '
-				<h3>Bekreft sletting</h3>
+				<h2>Bekreft sletting</h2>
 				<p>Er du sikker på at du vil slette meldingen?</p>
 				<form method="post" action="'.$submit_url.'">
 					<input type="button" value="Avbryt" onclick=\'location="'.$cancel_url.'"\' />

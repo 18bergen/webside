@@ -620,14 +620,14 @@ class images extends base {
 		$caption = stripslashes($row["caption"]);
 		
 		list($width100, $height100, $type, $attr) = getimagesize($full_src100);
-		list($width490, $height490, $type, $attr) = getimagesize($full_src490);
+		list($width390, $height490, $type, $attr) = getimagesize($full_src490);
 		
 		$width = $row['width'];
 		$height = $row['height'];
 		
 		if (!file_exists($full_src490)) {
 			$src = $this->image_dir."notfound100.jpg";
-			$width490 = 100;
+			$width390 = 100;
 			$height490 = 100;
 		}
 		
@@ -638,7 +638,7 @@ class images extends base {
 		$forhold = (round($width/$height*100)/100)." (bredde/høyde)";
 		
 		return '
-			<h3>Bilde: '.$caption.'</h3>
+			<h2>Bilde: '.$caption.'</h2>
 			<div class="epEditHolder">
 				<table width="100%"><tr><td valign="top" width="55%">
 					BB-kode: [image='.$id.']<br />
@@ -648,12 +648,12 @@ class images extends base {
 				</td><td valign="top" width="50%">
 					Format: '.$row["extension"].'<br />
 					Original: '.$width.'x'.$height.' px ('.$filesize_org.' kB)<br />
-					Tilpasset: '.$width490.'x'.$height490.' px ('.$filesize_490.' kB)<br />
+					Tilpasset: '.$width390.'x'.$height490.' px ('.$filesize_490.' kB)<br />
 					Thumbnail: '.$width100.'x'.$height100.' px ('.$filesize_100.' kB)<br />
 					Forhold: '.$forhold.'
 				 </td></tr></table>
 				 <p align="center">
-					<a href="'.$src.'"><img src="'.$src490.'" width="'.$width490.'" height="'.$height490.'" alt="'.$caption.'" style="border: none;" /></a>
+					<a href="'.$src.'"><img src="'.$src490.'" width="'.$width390.'" height="'.$height490.'" alt="'.$caption.'" style="border: none;" /></a>
 				</p>
 				<p>
 					'.($allowedit ? '<a href="'.$this->generateURL(array('current_image='.$row['id'],'cms_editimagetitle')).'" class="icn" style="background-image:url(/images/icns/textfield.png);">Endre tittel</a>
@@ -682,7 +682,7 @@ class images extends base {
 				: 
 				(($this->userfilter != "*") ? "<a href='".$this->generateURL("filterbyuser=$this->userfilter")."'>Vis som bilder</a>" : "<a href='".$this->generateURL("")."'>Vis som bilder</a>")
 		);
-		print "<h2>Opplastede bilder</h2>
+		print "<h1>Opplastede bilder</h1>
 		<p>".(($this->userfilter != "*") ? "Viser bare bilder lastet opp av ".$ml($this->userfilter) : "")."</p>
 			<p>
 				$vishva |
@@ -691,7 +691,7 @@ class images extends base {
 			</p>";
 		if ($this->showThumbs){
 				
-			print("<h3>Nyhetsbilder</h3>\n");
+			print("<h2>Nyhetsbilder</h2>\n");
 			$rs = $this->query(
 				"SELECT id,filename,caption,size,timestamp,width,height FROM $this->table_images WHERE category='news'".
 				(($this->userfilter != "*") ? " AND uploader='$this->userfilter'" : "")
@@ -703,7 +703,7 @@ class images extends base {
 					print "<a href='".$this->generateURL("showimagedetails=".$row['id'])."'><img src=\"fetchnewsimage.php?filename=".$row["filename"]."\" alt=\"".stripslashes($row["caption"])."\" title=\"".stripslashes($row["caption"])."\" style=\"width: 100px; height: 80px; border: 1px solid #000000; margin: 3px; padding: 0px;\" /></a>";
 				}
 			}
-			print("<h3>Andre bilder</h3>\n");
+			print("<h2>Andre bilder</h2>\n");
 			$rs = $this->query(
 				"SELECT id,filename,caption,size,timestamp,width,height FROM $this->table_images WHERE category='other'".
 				(($this->userfilter != "*") ? " AND uploader='$this->userfilter'" : "")
@@ -718,7 +718,7 @@ class images extends base {
 
 		} else {
 			
-			print("<h3>Nyhetsbilder</h3>\n");
+			print("<h2>Nyhetsbilder</h2>\n");
 			$rs = $this->query(
 				"SELECT id,filename,caption,size,timestamp,width,height FROM $this->table_images WHERE category='news'".
 				(($this->userfilter != "*") ? " AND uploader='$this->userfilter'" : "")
@@ -732,7 +732,7 @@ class images extends base {
 				}
 				print("</ul>\n");
 			}
-			print("<h3>Andre bilder</h3>\n");
+			print("<h2>Andre bilder</h2>\n");
 			$rs = $this->query(
 				"SELECT id,filename,caption,size,timestamp,width,height FROM $this->table_images WHERE category='other'".
 				(($this->userfilter != "*") ? " AND uploader='$this->userfilter'" : "")
@@ -754,7 +754,7 @@ class images extends base {
 		**************************************************************************************************/
 
 	function printImageTitleForm($id){
-		$output = "<h3>Endre bildetittel</h3>";
+		$output = "<h2>Endre bildetittel</h2>";
 		$rs = $this->query("SELECT id,parent,filename,extension,caption,size,timestamp,width,height,uploader FROM $this->table_images WHERE id='$id'");
 		$row = $rs->fetch_assoc();
 		$allowedit = (($this->allow_editownimages && ($row['uploader'] == $this->login_identifier)) || $this->allow_editothersimages);
@@ -768,7 +768,7 @@ class images extends base {
 		$url_back = $this->generateURL("current_image=$id");
 		$url_post = $this->generateURL(array("current_image=$id","cms_saveimagetitle","noprint=true"));
 		$output .= '
-			<h4>'.$caption.'</h4>
+			<h3>'.$caption.'</h3>
 			<p align="center">
 				<img src="'.$paths['thumb140']['virtual'].'" width="'.$width.'" height="'.$height.'" alt="'.$caption.'" />
 			</p>
@@ -818,8 +818,8 @@ class images extends base {
 		$url_back = $this->generateURL("current_image=$id");
 		$url_post = $this->generateURL(array("noprint=true","current_image=$id","cms_doreplaceimage"));
 		return '
-			<h3>Erstatt bilde</h3>
-			<h4>'.$caption.'</h4>
+			<h2>Erstatt bilde</h2>
+			<h3>'.$caption.'</h3>
 			<p align="center">
 				<img src="'.$src100.'" width="'.$width.'" height="'.$height.'" alt="'.$caption.'" />
 			</p>
@@ -863,7 +863,7 @@ class images extends base {
 		$url_back = $this->generateURL("current_image=$id");
 		$url_post = $this->generateURL(array("current_image=$id","noprint=true","cms_dodeleteimage"));
 		
-		return '<h3>Slette bilde?</h3>
+		return '<h2>Slette bilde?</h2>
 			<p>
 				Er du sikkert på at du vil slette bildet "'.$caption.'"? Du bør ikke slette bilder om det 
 				eksisterer referanser til det (f.eks. hvis du har brukt det på nyhetssiden)!
@@ -1431,7 +1431,7 @@ class images extends base {
 		}		
 
 		return '
-			<h3>Last opp bilde</h3>
+			<h2>Last opp bilde</h2>
 
 			'.$progressDiv.'
 

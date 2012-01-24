@@ -21,7 +21,9 @@ class log extends comments {
 	public $table_log_field_eventid = "event_id";
 	
 	var $table_imagedirs = "cms_pages";
-
+	
+	var $table_calendars = "cal_calendars";
+	
 	var $table_images = "images";
 	var $table_images_field_id = "id";
 	var $table_images_field_extension = "extension";
@@ -64,8 +66,8 @@ class log extends comments {
 	
 	var $template_leadlistitem = '
 		<div class="%divclass%">
-			<h3 class="post-title"><a href="%url%">%topic% %header%</a></h3>
-			<h4 class="author">Loggført av %authors%</h4>%notpublishedyet%
+			<h2 class="post-title"><a href="%url%">%topic% %header%</a></h2>
+			<h3 class="author">Loggført av %authors%</h3>%notpublishedyet%
 			<div style="float:right;">%image%</div>
 			<p>%lead%</p>%options%
 			<div style="clear:both; height: 1px;"><!-- --></div>
@@ -73,7 +75,7 @@ class log extends comments {
 	';
 	
 	var $template_addlogform = '
-		<h3>%addarticle%</h3>
+		<h2>%addarticle%</h2>
 		<form method="post" action="%posturl%">
 			<p>
 				Hva vil du skrive logg fra?
@@ -96,7 +98,7 @@ class log extends comments {
 			%authors%
 			
 			<h2 class="date-header">%header%</h2>
-			<h3 class="post-title">%topic%</h3>
+			<h2 class="post-title">%topic%</h2>
 			<div style="font-size:10px;" class="hidefromprint">%calendar_link%</div>
 			<div class="post">
 			<div class="post-body">
@@ -117,7 +119,7 @@ class log extends comments {
 			%authors%
 			
 			<h2 class="date-header">%header%</h2>
-			<h3 class="post-title">%topic%</h3>
+			<h2 class="post-title">%topic%</h2>
 			<div style="font-size:10px;" class="hidefromprint">%calendar_link%</div>
 			<div class="post">
 			<div class="post-body">
@@ -141,6 +143,7 @@ class log extends comments {
 		$this->table_images = DBPREFIX.$this->table_images;
 		$this->table_imagedirs = DBPREFIX.$this->table_imagedirs;
 		$this->table_comments = DBPREFIX.'comments';
+		$this->table_calendars = DBPREFIX.$this->table_calendars;
 	}
 	
 	function initialize() {
@@ -998,7 +1001,7 @@ class log extends comments {
 			$topic = $calEvent['caption'];
 
 			return '
-				<h3>Bekreft sletting</h3>
+				<h2>Bekreft sletting</h2>
 				<p>Er du sikker på at du ønsker å slette loggen fra '.$topic.'?</p>
 				<form method="post" action="'.$this->generateURL('action=deleteLogDo').'">
 					<input type="submit" value="     Ja      " /> 
@@ -1093,11 +1096,14 @@ class log extends comments {
 	
 	public function getLastLogsGlobal($count) {
 		$cal = $this->calendar_instance->def_calendar;
-        $res = $this->query("SELECT id,authors,lead,lead_img,
-                calendar_id,event_id, log_page
-			FROM $this->table_log
-			WHERE published='1'
-			ORDER BY created DESC LIMIT $count
+	    $tl = $this->table_log;
+	    $tc = $this->table_calendars;
+        $res = $this->query("SELECT $tl.id, $tl.authors, $tl.lead, $tl.lead_img,
+                $tl.lastmodified, $tl.calendar_id, $tl.event_id,
+                $tl.log_page, $tc.caption, $tc.flag
+			FROM $tl,$tc
+			WHERE $tl.published='1' AND $tl.calendar_id = $tc.id
+			ORDER BY $tl.created DESC LIMIT $count
 			"
 		);
 		$logs = array();

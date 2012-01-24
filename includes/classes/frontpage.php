@@ -24,144 +24,116 @@ class frontpage extends base {
 	var $show_upcomingflokk = false;
 	var $show_upcomingtropp = false;
 	
+	var $upcoming_events_days = 14;
+	
+	function get_newest_logs() {
+			
+        $logs = new log(); 
+        call_user_func($this->prepare_classinstance, $logs, $this->tropp_logg);
+        $logs->initializeCalendar();
+        $last_logs = $logs->getLastLogsGlobal(4);
+
+        $output = '';
+        foreach ($last_logs as $log) {
+            
+            $dsa = getdate($log['cal_event']['startdate']);
+            $dea = getdate($log['cal_event']['enddate']);
+            if ($dsa['mday'].".".$dsa['mon'].".".$dsa['year'] == $dea['mday'].".".$dea['mon'].".".$dea['year']){
+                // Dagshendelse
+                $dss = strftime("%e. %B",$log['cal_event']['startdate']);
+            } else if ($dsa['mon'].".".$dsa['year'] == $dea['mon'].".".$dea['year']){
+                // Flerdagshendelse, samme måned
+                $dss = strftime("%e.–",$log['cal_event']['startdate']).strftime("%e. %B",$log['cal_event']['enddate']);
+            } else {
+                $dss = strftime("%e. %B – ",$log['cal_event']['startdate']).strftime("%e. %B",$log['cal_event']['enddate']);
+            }
+            $output .= "<li class='".$log['flag']."'>".
+                $log['caption'].': '.
+                '<a href="'.$log['uri'].'">'.$log['cal_event']['caption'].' '.$dss.'</a>'.
+                ' <small>(skrevet '.strftime("%e. %B",$log['lastmodified']).')</small>'.
+                '</li>';
+        }
+        if (empty($logs)) {
+            $output = '<li><em>Ingen logger er publisert enda</em></li>';
+        }
+        return $output;
+	}
+	
+	function get_upcoming_events() {
+		$cal = $this->initializeCalendarInstance();
+		$events = $cal->getCalendarEvents(0, array( 'onlyFutureEvents' => true, 'maxFutureDays' => $this->upcoming_events_days ));
+		if (count($events) == 0) return '<li><em>Det store intet</em></li>';
+		$output = '';
+		foreach ($events as $event) {
+		    $dsa = getdate($event['startdate']);
+            $dea = getdate($event['enddate']);
+            if ($dsa['mday'].".".$dsa['mon'].".".$dsa['year'] == $dea['mday'].".".$dea['mon'].".".$dea['year']){
+                // Dagshendelse
+                $dss = strftime("%e. %B",$event['startdate']);
+            } else if ($dsa['mon'].".".$dsa['year'] == $dea['mon'].".".$dea['year']){
+                // Flerdagshendelse, samme måned
+                $dss = strftime("%e.–",$event['startdate']).strftime("%e. %B",$event['enddate']);
+            } else {
+                $dss = strftime("%e. %B – ",$event['startdate']).strftime("%e. %B",$event['enddate']);
+            }
+		    $output .= "<li class='".$event['flag']."'>".
+		        $event['cal_name_short'].': '.
+		        '<a href="'.$event['uri'].'">'.$event['caption'].' '.$dss.'</a>'.
+		        '</li>';
+		}
+		return $output;
+	}
+	
 	function run() {
 
 		$this->setRssUrl("/nyheter/rss");
 
 		$output = "
-			<div id='aktuelt'>
-			<div id='aktuelt1'><div id='aktuelt1sub'>
+			<table>
 		";
-		
-		
-		if ($this->show_weeklyarticle) {
+        		
+		if ($this->show_upcomingtropp) {
+	        $output .= '
+                <tr><th>Nærmer seg:</th><td>
+                    <ul>
+                        '.$this->get_upcoming_events().'
+                    </ul>
+                </td></tr>
+            ';
+        }
+        
+        if ($this->show_troppslogger) {
+	        $output .= '
+                <tr><th>Nyeste logger:</th><td>
+                    <ul>
+                        '.$this->get_newest_logs().'
+                    </ul>
+                </td></tr>
+            ';
+        }
+        
+        if ($this->show_weeklyarticle) {
 			
 			$this->articles_instance = new article_collection(); 
 			call_user_func($this->prepare_classinstance, $this->articles_instance, $this->article_collection);
 			$ukens_tips = $this->articles_instance->getLastArticle();
 			
-			$output .= '<div style="padding:2px;font-weight:bold">Ukens speidertips</div>';
+			$output .= '<tr><th>Siste speidertips:</th><td><ul>';
 			if ($ukens_tips === false) {
 				$output .= '
-					<div style="text-align:left">
-						<em>Ingen speidertips publisert enda</em>
-					</div>
+					<li><em>Ingen speidertips publisert enda</em></li>
 				';
 			} else {
 				$output .= '
-					<div style="text-align:left">
-						<a href="'.$ukens_tips['uri'].'" class="icn" style="background-image:url(/images/lightbulb.gif);">'.$ukens_tips['topic'].'</a>
-					</div>
+					<li class="idea"><a href="'.$ukens_tips['uri'].'">'.$ukens_tips['topic'].'</a></li>
 				';
 			}
+			$output .= '</ul></td></tr>';
 		}
-		
-		if ($this->show_troppslogger) {
-		
-			$this->tropp_logg_instance = new log(); 
-			call_user_func($this->prepare_classinstance, $this->tropp_logg_instance, $this->tropp_logg);
-			$this->tropp_logg_instance->initializeCalendar();
-			$siste_logger = $this->tropp_logg_instance->getLastLogsGlobal(4);
 
-			$logs = "";
-			foreach ($siste_logger as $log) {
-				
-				$dsa = getdate($log['cal_event']['startdate']);
-				$dea = getdate($log['cal_event']['enddate']);
-				if ($dsa['mday'].".".$dsa['mon'].".".$dsa['year'] == $dea['mday'].".".$dea['mon'].".".$dea['year']){
-					$dss = $dsa['mday'].".".$dsa['mon'];
-				} else if ($dsa['mon'].".".$dsa['year'] == $dea['mon'].".".$dea['year']){
-					$dss = $dsa['mday'].".".$dsa['mon']." - ".$dea['mday'].".".$dea['mon'];
-				} else {
-					$dss = $dsa['mday'].".".$dsa['mon']." - ".$dea['mday'].".".$dea['mon'];
-				}
-				
-				$logs .= '<a href="'.$log['uri'].'" class="icn smallicn" style="background-image:url(/images/document10_12.gif);">'.$log['cal_event']['caption'].' '.$dss.'</a>';
-			}
-			if (empty($logs)) {
-				$logs = '<em>Ingen logger er publisert enda</em>';
-			}
-			$output .= '
-				<div style="padding:2px;font-weight:bold">Siste logger:</div>
-				<div style="text-align:left">
-					'.$logs.'
-				</div>
-			';
-		}
-		
-		
-		$output .= '
-			</div></div>
-			
-			
-
-			
-			<div id="aktuelt2"><div id="aktuelt2sub">
-		';
-		if ($this->show_upcomingtropp) {
-			
-			$this->tropp_kal_instance = new calendar_basic(); 
-			call_user_func($this->prepare_classinstance, $this->tropp_kal_instance, $this->tropp_kal);
-			$this->tropp_kal_instance->use_log = false;
-			$this->tropp_kal_instance->use_iarchive = false;
-			$this->tropp_kal_instance->initialize();		
-			$this->tropp_kal_instance->entries_per_page = 3;
-			$this->tropp_kal_instance->noentries_future_template = '<i>Ingen hendelser</i>';
-			$this->tropp_kal_instance->calview_template = '
-				%noentries% %entries%
-			';
-			$this->tropp_kal_instance->calview_entry_template = '
-					<div>
-						<a href="%detailsurl%" class="icn smallicn" style="background-image:url(/images/calendar_red.gif);">%subject% (%shortdate%)</a>
-					</div>
-			';
-			
-			$output .= '
-				<div style="padding:2px;font-weight:bold">Nærmer seg (tropp):</div>
-				<div style="text-align:left">
-					'.$this->tropp_kal_instance->viewCalendar().'
-				</div>
-			';
-		}
-		if ($this->show_upcomingflokk) {
-
-				$this->flokk_kal_instance = new calendar_basic(); 
-				call_user_func($this->prepare_classinstance, $this->flokk_kal_instance, $this->flokk_kal);
-				$this->flokk_kal_instance->use_log = false;
-				$this->flokk_kal_instance->use_iarchive = false;
-				$this->flokk_kal_instance->initialize();		
-				$this->flokk_kal_instance->entries_per_page = 3;
-				$this->flokk_kal_instance->noentries_future_template = '<i>Ingen hendelser</i>';
-				$this->flokk_kal_instance->calview_template = '
-					%noentries% %entries%
-				';
-				$this->flokk_kal_instance->calview_entry_template = '
-						<div>
-							<a href="%detailsurl%" class="icn smallicn" style="background-image:url(/images/calendar_red.gif);">%subject% (%shortdate%)</a>
-						</div>
-				';
-
-				$output .= '
-					<div style="padding:2px;font-weight:bold">Nærmer seg (flokk):</div>
-					<div style="text-align:left">
-						'.$this->flokk_kal_instance->viewCalendar().'
-					</div>
-				';
-		}
-		$output .= '
-			</div></div></div>
-			
-			<script type="text/javascript">
-			//<![CDATA[
-				YAHOO.util.Event.onDOMReady(function() {
-					Nifty("div#aktuelt1");
-					Nifty("div#aktuelt2");
-				});
-			//]]>
-			</script>
-
-			<div style="height:1px; clear:both;"><!-- --></div>
-		';	
+        $output .= '</table>';
+        $output = '<div id="aktuelt">'.$output.'</div>
+        ';
 
 		$this->noteboard_instance = new noteboard(); 
 		call_user_func($this->prepare_classinstance, $this->noteboard_instance, $this->noteboard);

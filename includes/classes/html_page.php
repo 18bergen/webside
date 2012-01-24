@@ -113,7 +113,7 @@ class html_page extends base {
 		
 		$res = $this->query("SELECT lastmodified,updatedby,content FROM $this->table_html WHERE id='$this->page_id' AND lang='$this->preferred_lang'");
 		if ($res->num_rows < 1){ 
-			$output .= "<h2>Siden finnes ikke</h2>";
+			$output .= "<h1>Siden finnes ikke</h1>";
 			return $output; 
 		}
 		$row = $res->fetch_assoc(); 

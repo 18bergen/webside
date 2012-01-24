@@ -113,7 +113,7 @@ class forum extends base {
 	var $deletelink_allowed_template = '<a href="%deletelink%">[Slett]</a>';
 
 	var $replyform_template = '
-		<h3><a name="respond">Svar på denne tråden</a></h3>
+		<h2><a name="respond">Svar på denne tråden</a></h2>
 		%errors%
 		<div class="whiteInfoBox">
 			<form method="post" action="%posturl%" id="forum_reply_form">
@@ -162,7 +162,7 @@ class forum extends base {
 	';
 
 	var $newthreadform_template = '
-		<h3>Start ny diskusjon</h3>
+		<h2>Start ny diskusjon</h2>
 		%errors%
 		<div class="whiteInfoBox">
 			<form method="post" action="%posturl%" id="forum_reply_form">
@@ -226,7 +226,7 @@ class forum extends base {
 	';
 
 	var $deletepostform_template = '
-		<h3>Bekreft</h3>
+		<h2>Bekreft</h2>
 		<p>
 			Er du sikkert på at du vil slette innlegget "%subject%"?
 		</p>
@@ -312,7 +312,7 @@ class forum extends base {
 			return;
 		}
 
-		//print "<h3>$this->page_header</h3>";
+		//print "<h2>$this->page_header</h2>";
 
 		if (isset($_GET['forum_edit'])){
 			return $this->editPostForm($_GET['forum_edit']);
@@ -425,7 +425,7 @@ class forum extends base {
 		$m = $this->getUserData($user_id, array('ProfilePicture'));
 
 		$output .= '
-			<h3>Mine innstillinger</h3>
+			<h2>Mine innstillinger</h2>
 			<form method="post" action="'.$post_uri.'">
 				<p>
 					Mitt forumbilde:<br />
@@ -871,7 +871,7 @@ class forum extends base {
 			$sticky = stripslashes($row['sticky']);
 			$output .= '
 				<div>&nbsp;</div>
-				<h3>Trådvalg</h3>
+				<h2>Trådvalg</h2>
 				<div class="whiteInfoBox">
 				<form method="post" action="'.$this->generateURL(array("noprint=true","savethreadsettings=$thread_no","forum_page=$this->page_no")).'" id="forum_sticky_form" style="padding:15px;">
 					<input type="checkbox" name="sticky" id="sticky" '.($sticky ? 'checked="checked"' : '').' /><label for="sticky">Tråden er sticky</label>

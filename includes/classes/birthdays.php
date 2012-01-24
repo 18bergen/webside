@@ -4,7 +4,7 @@ class birthdays extends base {
 
 	function ouputNextBirthdays($count = 5){
 		$bursdagsbarn = $this->getActiveMembersList(array('SortBy' => 'Birthday', 'Limit' => $count));
-		$output = "<h3 class=\"small\">Bursdager</h3>\n";						
+		$output = "<h2 class=\"small\">Bursdager</h2>\n";						
 		$today = strftime("%e. %B",time());
 		foreach ($bursdagsbarn as $user_id => $u) {
 			$daystring = strftime("%e. %B",strtotime($u['Birthday']));

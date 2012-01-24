@@ -62,7 +62,7 @@ class enrolments extends base {
 		'closingdate_afterstart'	=> 'Påmeldingsfristen er etter arrangementet har startet!'
 	);
 	private $template_newPaamelding = '
-			<h3>Opprett ny påmelding</h3>
+			<h2>Opprett ny påmelding</h2>
 			<p>
 				Velg først en kalender (terminliste), deretter et arrangement i den valgte 
 				kalenderen. Dersom du ikke finner arrangementet i listen, må du først opprette
@@ -128,7 +128,7 @@ class enrolments extends base {
 			</script>
 		';
 	private $template_editPaamelding = '
-			<h3>%title%</h3>
+			<h2>%title%</h2>
 			<p>
 				%errors%
 			</p>
@@ -172,7 +172,7 @@ class enrolments extends base {
 			</script>
 		';
 	private $template_deletePaamelding = '
-			<h3>Slette påmelding og alle påmeldte?</h3>
+			<h2>Slette påmelding og alle påmeldte?</h2>
 			
 			<form method="post" name="calendarform" id="calendarform" action="%post_uri%">
 				<p class="warning">
@@ -185,7 +185,7 @@ class enrolments extends base {
 			</form>
 		';
 	private $template_cancelEnrolment = '
-		<h3>Avmelding</h3>
+		<h2>Avmelding</h2>
 			<form method="post" action="%post_uri%">
 				<p>
 					Ønsker du virkelig å kansellere påmeldingen av <strong>%fullname%</strong> til <strong>%eventname%</strong>?
@@ -341,7 +341,7 @@ class enrolments extends base {
 		$tc_end = $this->cal_instance->table_calendar_field_enddate;
 		$tc_cap = $this->cal_instance->table_calendar_field_caption;
 		
-		$output .= "<h3>Aktive påmeldinger</h3><ul style='margin:0px;padding:5px;'>";
+		$output .= "<h2>Aktive påmeldinger</h2><ul style='margin:0px;padding:5px;'>";
 		$res = $this->query("SELECT 
 			$te.id, $te.calendar_id, $te.event_id, $te.closing_date,
 			$tc.$tc_start as dt_start, $tc.$tc_end as dt_end, $tc.$tc_cap as caption,
@@ -369,7 +369,7 @@ class enrolments extends base {
 		$output .= "</ul>";
 		
 
-		$output .= "<h3>Siste stengte påmeldinger</h3><ul style='margin:0px;padding:5px;'>";
+		$output .= "<h2>Siste stengte påmeldinger</h2><ul style='margin:0px;padding:5px;'>";
 		$res = $this->query("SELECT 
 			$te.id, $te.calendar_id, $te.event_id, $te.closing_date,
 			$tc.$tc_start as dt_start, $tc.$tc_end as dt_end, $tc.$tc_cap as caption,
@@ -443,7 +443,7 @@ class enrolments extends base {
 		$cal_id = intval($_POST['cal_id']);
 		$default_event_id = intval($_POST['event_id']);
 		$this->cal_instance = $this->initializeCalendarInstance();
-		$dropdown = $this->cal_instance->getCalendarEvents($cal_id, array(
+		$dropdown = $this->cal_instance->getCalendarEventsAsOptionList($cal_id, array(
 			'onlyFutureEvents' => true,
 			'selected' => $default_event_id,
 			'addSelectedIfNotFound' => false
@@ -788,7 +788,7 @@ class enrolments extends base {
 		$dt_start = strftime('%A %e. %B %Y',$this->event_obj['startdate']);
 		$dt_end = strftime('%A %e. %B %Y',$this->event_obj['enddate']);
 		$dt = ($dt_start == $dt_end) ? $dt_start : "$dt_start - $dt_end";
-		$output = '<h3>Påmeldingsside for '.$this->event_obj['caption'].'</h3>
+		$output = '<h2>Påmeldingsside for '.$this->event_obj['caption'].'</h2>
 		 '.ucfirst($dt).'. <span class="hidefromprint">Mer info finner du i <a href="'.$calLink.'" class="icn" style="background-image:url(/images/icns/calendar.png);">terminlisten</a>.</span>
 		';
 		
@@ -993,7 +993,7 @@ class enrolments extends base {
 			if ($paameldte == 0 && $avmeldte == 0) {
 				$output .= "<p><i>Ingen påmeldte enda</i></p>";
 			} else {
-				$output .= "<h4>Totalt $paameldte påmeldte og $avmeldte avmeldte:</h4>\n";
+				$output .= "<h3>Totalt $paameldte påmeldte og $avmeldte avmeldte:</h3>\n";
 				$output .= $this->outputEnrolled($ppl_list);
 			}
 		
@@ -1052,7 +1052,7 @@ class enrolments extends base {
 		$rLink = call_user_func($this->make_memberlink,$row['enrolledby']);
 		if (!empty($row['cancelledby'])) $cLink = call_user_func($this->make_memberlink,$row['cancelledby']);
 		if ($row['cancelledby'] != 0) $c = call_user_func($this->lookup_member,$row['cancelledby']);
-		$output .="<h3>".$this->event_obj['caption'].": ".$m->fullname."</h3>";
+		$output .="<h2>".$this->event_obj['caption'].": ".$m->fullname."</h2>";
 		if ($row['person'] == $row['enrolledby']) 
 			$output .="<p>$mLink meldte seg på den ".date("d M Y",$row['enrolldate'])."</p>";
 		else
@@ -1112,7 +1112,7 @@ class enrolments extends base {
 		$cal_id = $row['calendar_id'];
 		$event_id = $row['event_id'];
 		
-		$output = "<h3>".$this->event_obj['caption']."</h3>";
+		$output = "<h2>".$this->event_obj['caption']."</h2>";
 		
 		$urlPost = $this->generateUrl('action=registerDo');
 		
@@ -1527,17 +1527,6 @@ class enrolments extends base {
 		return $calendars;
 		
 	}
-	
-	private function initializeCalendarInstance($cal_page = 0) {
-		$calObj = new calendar_basic();
-		if ($cal_page == 0) {
-			call_user_func($this->prepare_classinstance,$calObj);
-		} else {
-			call_user_func($this->prepare_classinstance,$calObj,$cal_page);
-			$calObj->initialize_base();
-		}
-		return $calObj;
-	}	
 	
 	private function outputEnrolled($l) {
 		global $memberdb;

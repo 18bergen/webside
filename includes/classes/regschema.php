@@ -1382,10 +1382,10 @@ http://".$_SERVER['SERVER_NAME']."$url
 	function listRegistrations() {
 		if (!$this->allow_listregistrations) return $this->permissionDenied(); 
 		
-		// print "<h2>Registreringer</h2>";
+		// print "<h1>Registreringer</h1>";
 
 		$output = "
-			<h3>Venter på behandling:</h3>
+			<h2>Venter på behandling:</h2>
 			<table width='100%' class='forum' cellpadding='1' cellspacing='0'>
 			<tr><th>ID:</th><th>Dato:</th><th>Navn:</th><th>Handlinger:</th></tr>
 		";
@@ -1403,7 +1403,7 @@ http://".$_SERVER['SERVER_NAME']."$url
 		$output .= "</table>";
 		
 		$output .= "
-			<h3>Behandlet (Siste 50):</h3>
+			<h2>Behandlet (Siste 50):</h2>
 			<table width='100%' class='forum' cellpadding='1' cellspacing='0'>
 			<tr><th>ID:</th><th>Dato:</th><th>Navn:</th><th>Handlinger:</th></tr>
 		";
@@ -1420,7 +1420,7 @@ http://".$_SERVER['SERVER_NAME']."$url
 		$output .= "</table>";
 		
 		$output .= "
-			<h3>Uferdige søknader:</h3>
+			<h2>Uferdige søknader:</h2>
 			<table width='100%' class='forum' cellpadding='1' cellspacing='0'>
 			<tr><th>ID:</th><th>Dato:</th><th>Navn:</th><th>Handlinger:</th></tr>
 		";

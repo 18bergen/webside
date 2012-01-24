@@ -29,6 +29,10 @@ class TemplateService extends base {
 			'krins' => array(
 				'url' => 'http://www.hordalandsspeiderne.no/news/rss',
 				'short_title' => 'krinsen'
+			),
+			'speiderbasen' => array( 
+			    'url' => 'http://www.speiderbasen.no/rss/?ord=',
+			    'short_title' => 'speiderbasen'
 			)
 		);
 	
@@ -284,7 +288,7 @@ class TemplateService extends base {
 		$yr_xmldisplay = &new YRDisplay();
 
 		//Gjenomfør oppdraget basta bom.
-		$landsleirSpesial = '<h3>Landsleir Utopia 09</h3>
+		$landsleirSpesial = '<h2>Landsleir Utopia 09</h2>
 		<p align="center">
 		<a href="http://www.landsleir.no/kamera/">Webkamera fra landsleiren.</a>
 		</p>

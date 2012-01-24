@@ -3,7 +3,7 @@
  font			: 12px Verdana,tahoma,arial,sans-serif;
  color			: #222;
 }
-h2 {
+h1 {
 /* font			: lighter 230%/0.95 "Trebuchet MS",arial,sans-serif;*/
  font-family: Sylfaen, Georgia, 'Times New Roman', Times, serif;
  font-weight:lighter;
@@ -25,7 +25,7 @@ h3 {
  padding		: 10px 0px 5px 0px;
 }
 */
-h3 {
+h2 {
  font-family: Sylfaen, Georgia, 'Times New Roman', Times, serif;
  font-weight:lighter;
  font-size:1.8em;

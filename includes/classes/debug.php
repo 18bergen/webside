@@ -56,13 +56,13 @@ class debug extends base {
 		<div>
 		
 
-		<h3>Server</h3>
+		<h2>Server</h2>
 		<p>
 		".sprintf("<pre>Server software: %s\nPHP version: %s\nMySQL version: %s\nPath: %s\n</pre>",
 			$_SERVER['SERVER_SOFTWARE'],phpversion(),$db->server_info,realpath("../"))."
 		</p>
 
-		<h3>MySQL</h3>
+		<h2>MySQL</h2>
 		<p>
 		".sprintf("<pre>Connected to %s\nClient library version: %s\nProtocol version: %s\nCharacter set is %s\n</pre>",
 			$db->host_info,$db->get_client_info(),$db->protocol_version,$db->character_set_name())."
@@ -81,7 +81,7 @@ class debug extends base {
 		$q2 .= " GROUP BY msg ORDER BY id DESC LIMIT 50";
 		
 			
-		$output .= "<h3>Siste 50 fra errorlog (bruker)</h3>";
+		$output .= "<h2>Siste 50 fra errorlog (bruker)</h2>";
 		$res = $this->query($q1);
 		while ($Row = $res->fetch_assoc()){
 			$output .= "<p style='background:white;font-size:10px;margin-top:5px;padding:3px;'>".$Row["timestamp"]." (gjentatt ".$Row["count(id)"]." ganger) av ".(!empty($Row["user"]) ? call_user_func($this->make_memberlink,$Row['user']) : "gjest")."<br />\n".
@@ -93,7 +93,7 @@ class debug extends base {
 		$res->close();
 		
 		
-		$output .= "<h3>Siste 50 fra errorlog (bots)</h3>";
+		$output .= "<h2>Siste 50 fra errorlog (bots)</h2>";
 		$res = $this->query($q2);
 		while ($Row = $res->fetch_assoc()){
 			$output .= "<p style='background:white;font-size:10px;margin-top:5px;padding:3px;'>".$Row["timestamp"]." (gjentatt ".$Row["count(id)"]." ganger) av ".(!empty($Row["user"]) ? call_user_func($this->make_memberlink,$Row['user']) : "gjest")."<br />\n".
@@ -112,7 +112,7 @@ class debug extends base {
 							array("Server", $_SERVER)
 							);
 		for ($i = 0; $i < count($debugitems); $i++){
-			$output .= "<h3>".$debugitems[$i][0]."</h3>\n";
+			$output .= "<h2>".$debugitems[$i][0]."</h2>\n";
 			$output .= "<p class='smallcode'>\n";
 			foreach ($debugitems[$i][1] as $tname => $tvalue){
 				if (is_string($tvalue)) $tvalue = strip_tags($tvalue);

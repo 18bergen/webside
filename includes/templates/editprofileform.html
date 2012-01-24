@@ -1,4 +1,4 @@
-	<h3>Brukerprofil for %fullname%</h3>
+	<h2>Brukerprofil for %fullname%</h2>
 	
 	<form name="profileform" id="profileform" enctype="multipart/form-data" method="post" action="%postUrl%" style="margin-top:20px;">
 		
@@ -6,7 +6,7 @@
 		<!-- ############################### BEGIN TAB 1 ############################### -->
 
 		<div class="postbox">
-			<h3 class="handle">Opplysninger til medlemsregisteret</h3>
+			<h2 class="handle">Opplysninger til medlemsregisteret</h2>
 			<div class="inside">
 
 				<p>
@@ -103,7 +103,7 @@
 		<!-- ################################ END TAB 1 ################################ -->
 		
 		<div class="postbox closed">
-			<h3 class="handle">Bilder</h3>
+			<h2 class="handle">Bilder</h2>
 			<div class="inside">
 
 				<table cellpadding="2" cellspacing="0" width="100%">
@@ -132,7 +132,7 @@
 		
 		
 		<div class="postbox closed">
-			<h3 class="handle">Mer info til nettsiden</h3>
+			<h2 class="handle">Mer info til nettsiden</h2>
 			<div class="inside">
 
 				<p>
@@ -171,7 +171,7 @@
 		<!-- ############################### BEGIN TAB 3 ############################### -->
 
 		<div class="postbox closed">
-			<h3 class="handle">Medlemsskap</h3>
+			<h2 class="handle">Medlemsskap</h2>
 			<div class="inside">
 				%memberships%
 			</div>
@@ -180,7 +180,7 @@
 		<!-- ############################### BEGIN TAB 4 ############################### -->
 
 		<div class="postbox closed">
-			<h3 class="handle">Endre passord</h3>
+			<h2 class="handle">Endre passord</h2>
 			<div class="inside">
 				%editpassword%			
 			</div>
@@ -220,7 +220,7 @@
 			
 			initCKeditor();
 			
-			var handles = YAHOO.util.Dom.getElementsByClassName('handle','h3','main_col');
+			var handles = YAHOO.util.Dom.getElementsByClassName('handle','h2','main_col');
 			for (i = 0; i < handles.length; i++) {
 				YAHOO.util.Event.addListener(handles[i],'click',clickHandle);
 			}
@@ -266,7 +266,7 @@
 			var pathToThumbs = "%smallThumbsDir%";
 			var f = pathToThumbs + fileUrl.substr(pathToUserFiles.length);
 			$("profile_image").value = fileUrl;
-			$("profilbildespan").innerHTML = "<img src=\'" + f + "\' alt=\'Velg bilde\' border=\'0\' style=\'margin:5px;\' />"
+			$("profilbildespan").innerHTML = "<img src=\"" + f + "\" alt=\"Velg bilde\" border=\"0\" style=\"margin:5px;\" />"
 		}
 		
 		// Render CKFinder in a popup page:
@@ -286,7 +286,7 @@
 			var pathToThumbs = "%smallThumbsDir%";
 			var f = pathToThumbs + fileUrl.substr(pathToUserFiles.length);
 			$("forum_image").value = fileUrl;
-			$("forumbildespan").innerHTML = "<img src=\'" + f + "\' alt=\'Velg bilde\' border=\'0\' style=\'margin:5px;\' />"
+			$("forumbildespan").innerHTML = "<img src=\"" + f + "\" alt=\"Velg bilde\" border=\"0\" style=\"margin:5px;\" />"
 		}
 
 

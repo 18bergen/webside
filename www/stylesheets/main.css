@@ -42,6 +42,24 @@ p.warning {
 	background: url('../images/icns/error.png') 10px 8px no-repeat #ffffff;
 	border: 1px solid #ee8888;
 }
+img.round-corners {
+ border: 1px solid #666;
+ border-radius: 10px; 					/* Opera */
+ -moz-border-radius: 10px; 				/* Mozilla */
+ -webkit-border-radius: 10px; 			/* Webkit (Safari, Chrome) */
+ box-shadow: 0px 0px 3px #888;			/* Opera */
+ -moz-box-shadow: 0px 0px 3px #888;	/* Mozilla */
+ -webkit-box-shadow: 0px 0px 3px #888; /* Webkit (Safari, Chrome) */
+}
+img.round-corners-small {
+ border: 1px solid #666;
+ border-radius: 5px; 					/* Opera */
+ -moz-border-radius: 5px; 				/* Mozilla */
+ -webkit-border-radius: 5px; 			/* Webkit (Safari, Chrome) */
+ box-shadow: 0px 0px 3px #888;			/* Opera */
+ -moz-box-shadow: 0px 0px 3px #666;	/* Mozilla */
+ -webkit-box-shadow: 0px 0px 3px #666; /* Webkit (Safari, Chrome) */
+}
 
 
 /* _____________________________________ PAGE LAYOUT DIV'S _____________________________________ */
@@ -88,7 +106,7 @@ p.warning {
   float: right;
 }
 #left_col .inner_col {
- background:#928166; /* more precise: rgb(147,130,99) */
+ background: #928166; /* more precise: rgb(147,130,99) */
  border-left:1px solid #bdb5a6;
  border-right:1px solid #bdb5a6;
 }
@@ -130,7 +148,7 @@ p.warning {
 }
 
 
-#right_col h3 {
+#right_col h2 {
  font-size      : 11px;
  letter-spacing : normal;
  text-align     : center;
@@ -639,21 +657,21 @@ img.ingressbilde {
  -moz-box-shadow: 0px 0px 10px #888;	/* Mozilla */
  -webkit-box-shadow: 0px 0px 10px #888; /* Webkit (Safari, Chrome) */
 }
-h3#respond {
+h2#respond {
  clear:both;
  color:#444;
  border-top:1px solid #ddd;
  margin: 20px 0px 0px 0px;
 }
-h4 {
+h3 {
  color:#444;
 }
 div.news {
 }
-div.news h3 {
+div.news h2 {
  border-bottom: 1px solid #888;
 }
-div.news h3 a:hover {
+div.news h2 a:hover {
  text-decoration:none;
 }
 
@@ -1031,7 +1049,7 @@ div.lastcomments {
 	height: 5px;
 	margin-top:2px;
 }
-.reg_steg h3 {
+.reg_steg h2 {
 	margin: 2px;
 }
 
@@ -1160,7 +1178,7 @@ h2.date-header {
 	margin:0;
 	padding:15px 0px 0px 0px;
 }
-h4.author {
+h3.author {
 	font-weight:normal;
 	text-transform:uppercase;
 	letter-spacing:.1em;
@@ -1174,7 +1192,7 @@ h4.author {
 	margin:8px 0 4px 0;
 	line-height:1.5em;
 }
-h3.post-title {
+h2.post-title {
 	padding:0px;
 }
 .post-body p {
@@ -1209,11 +1227,11 @@ div.first_article {
 div.other_article {
 
 }
-div.first_article h3, div.other_article h3 {
+div.first_article h2, div.other_article h2 {
 	margin: 0px; 
 	padding: 0px;
 }
-div.first_article h3 {
+div.first_article h2 {
 	padding-bottom: 20px;
 }
 .article p.lead {
@@ -1257,7 +1275,7 @@ div.other_log {
 
 }
 
-div.first_log h3, div.log_article h3 {
+div.first_log h2, div.log_article h2 {
 	margin: 0px; 
 	padding: 0px;
 }
@@ -1266,7 +1284,7 @@ div.first_log {
 
 
 }
-div.first_log h3 {
+div.first_log h2 {
 	padding-bottom: 5px;
 }
 ul.simpleAuthorList, .authorlist ul {
@@ -1352,20 +1370,69 @@ ul.simpleAuthorList {
 /******* FRONTPAGE *******/
 
 #aktuelt {
- margin: 5px;
+    background: #fff;
+	padding: 6px;
+	margin-bottom:15px;
+	margin-top: -8px;
+	font: 11px sans-serif;
+	 border-radius: 5px; 					/* Opera */
+	 -moz-border-radius: 5px; 				/* Mozilla */
+	 -webkit-border-radius: 5px; 			/* Webkit (Safari, Chrome) */
+
 }
-#aktuelt1, #aktuelt2 {
-	background: #fff;
-	color: #3C0012;
-	text-align: center;
-	width: 240px;
-	font: 11px Arial,sans-serif;
+
+#aktuelt a:link {
+ text-decoration: none;
+ border-bottom: 1px dotted;
 }
-#aktuelt1sub, #aktuelt2sub {
-	padding: 10px;
+#aktuelt a:hover {
+ text-decoration: none;
+ border-bottom: 1px solid;
 }
-#aktuelt1 {
-	float:right;
+
+#aktuelt table {
+ margin-left: auto;
+ margin-right: auto
+}
+#aktuelt th, #aktuelt td {
+    padding: 3px;
+}
+#aktuelt th {
+    text-align: right;
+    vertical-align: top;
+    font-weight: bold;
+    white-space: nowrap; 
+    color: #998D3F;
+}
+#aktuelt ul {
+    list-style-type:none;
+      margin:0px;
+      padding:0px;
+      background:none;
+}
+#aktuelt li {
+      list-style-type:none;
+      display:block;
+      margin:0;
+      padding: 3px 2px 3px 20px;
+}
+#aktuelt li.green {
+      background: url(/images/icns/flag_green.png) left center no-repeat;
+}
+#aktuelt li.purple {
+      background: url(/images/icns/flag_purple.png) left center no-repeat;
+}
+#aktuelt li.yellow {
+      background: url(/images/icns/flag_yellow.png) left center no-repeat;
+}
+#aktuelt li.blue {
+      background: url(/images/icns/flag_blue.png) left center no-repeat;
+}
+#aktuelt li.orange {
+      background: url(/images/icns/flag_orange.png) left center no-repeat;
+}
+#aktuelt li.idea {
+      background: url(/images/icns/lightbulb.png) left center no-repeat;
 }
 
 /***** MEMBERLIST ******/
@@ -1624,8 +1691,6 @@ div.auto_complete {
  padding-left: 5px;
  font-size:10px;
 }
-#aktuelt a { display:block; }
-#aktuelt a:hover { text-decoration:none; }
 
 /************* MESSAGECENTER / MELDINGSSENTER **********/
 

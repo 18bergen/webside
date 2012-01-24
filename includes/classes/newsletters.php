@@ -109,7 +109,7 @@ class newsletters extends base {
 		}
 		
 		$output = "
-			<h3>Skriv nytt nyhetsbrev</h3>
+			<h2>Skriv nytt nyhetsbrev</h2>
 		";
 		
 		if (!$this->isLoggedIn()) {
@@ -361,7 +361,7 @@ class newsletters extends base {
 		$newsletter['plain_body'] = $tmp[0];
 		$newsletter['html_body'] = $tmp[1];
 		
-		$output = '<h3>Forhåndsvisning</h3>'.
+		$output = '<h2>Forhåndsvisning</h2>'.
 			'<p><strong>Dette er en forhåndsvisning! Nyhetsbrevet er ikke sendt enda.</strong></p> 
 			<form method="post" action="'.$this->generateUrl('sendletter').'" style="padding:20px;">
 				<table class="skjema"><tr><td>
@@ -422,23 +422,29 @@ class newsletters extends base {
 		$receive_html = call_user_func($this->get_useroptions, $this, 'newsletter_as_html', $newsletter['recipients']);
 		
 		// Send nyhetsbrev
+
+		$mailer = $this->initialize_mailer();
 		foreach ($newsletter['to_list'] as $ident => $udata){
-			$mail = new Rmail();
-			$mail->setFrom("$from_name <$from_addr>");
-			$mail->setReturnPath($from_addr);
-			$mail->setSubject($this->subject_prefix.' '.$newsletter['subject']);
-			$mail->setText($newsletter['plain_body']);
-			if ($receive_html[$ident]) {
-				$mail->setHTML($newsletter['html_body']);
+
+            // Send mail
+            $mail = array(
+                'sender_name' => $from_name,
+                'sender_email' => $from_addr,
+                'rcpt_name' => $udata['name'],
+                'rcpt_email' => $udata['email'],
+                'subject' => $this->subject_prefix.' '.$newsletter['subject'],
+                'plain_body' => $newsletter['plain_body'],
+                'attachments' => array()
+            );
+            if ($receive_html[$ident]) {
+				$mail['html_body'] = $newsletter['html_body'];
 			}
-			$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-			//$mail->addEmbeddedImage(new fileEmbeddedImage($email_header, 'image/jpeg', new Base64Encoding()));
-			//$mail->addAttachment(new fileAttachment('example.zip', 'application/zip', new Base64Encoding()));
-			if (!$mail->send(array($udata['name']." <".$udata['email'].">"),$type = 'smtp')) {
-				$this->addToErrorLog("Et nyhetsbrev kunne ikke sendes til ".$udata['name']." (".$udata['email']."). Feil: ".var_export($mail->errors,true));
-			}
-			unset($mail);
+            $res = $mailer->add_to_queue($mail);
+            if (empty($res['errors'])) {
+				$this->addToErrorLog("Et nyhetsbrev kunne ikke sendes til ".$udata['name']." (".$udata['email']."). Feil: ".var_export($res['errors'],true));
+            }
 		}
+        $mailer->send_from_queue($this->attachment_dir.'/');
 		$this->query("INSERT INTO $this->tablename 
 				(page,sender,recipients,subject,timestamp,body,version) 
 				VALUES ('".$this->page_id."',
@@ -541,7 +547,7 @@ class newsletters extends base {
 			</p>
 		";
 		
-		$output .= "<h3>Meldingsarkiv:</h3>";
+		$output .= "<h2>Meldingsarkiv:</h2>";
 		if ( $this->newslettercount > 0) {
 			$output .= "
 				<table class='forum' width='100%'>
@@ -633,7 +639,7 @@ class newsletters extends base {
 		);
 
 		return '
-			<h3>Mine innstillinger</h3>
+			<h2>Mine innstillinger</h2>
 			<form method="post" action="'.$post_uri.'">
 				<p>
 					<label for="receive_newsletter">

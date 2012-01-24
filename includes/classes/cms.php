@@ -113,7 +113,7 @@ class cms extends base {
 
 			//--></script>
 			
-			<h3>Opprett ny side</h3>
+			<h2>Opprett ny side</h2>
 			%errormessages%
 			<form method="post" action="%posturl%">
 				<table>
@@ -131,7 +131,7 @@ class cms extends base {
 				<br />
 				<input type="button" value="Avbryt" onclick=\"window.location="%backurl%"\" /> <input type="submit" value="Lagre" />
 			</form>
-			<h3>Tips og hjelp</h3>
+			<h2>Tips og hjelp</h2>
 			<ul>
 				<li>I feltet <i>adresse</i> fyller du inn sidens unike navn, slik den vil bli representert i adresselinjen i nettleseren.
 				Fyller du f.eks. inn \"min-egen-side\", blir sidens adresse \"http://%%/min-egen-side\". Kun tegnene a-z (små bokstaver), 0-9, bindestrek (-) og nedestrek (_) tillates. Knappen \"Lag fra tittel\" vil i mange tilfeller gi et bra, men ikke alltid (f.eks. om tittelen inneholder mange spesialtegn)<br />&nbsp;</li>
@@ -140,7 +140,7 @@ class cms extends base {
 		';
 		
 	var $template_deletepage_form = '
-			<h3>%page_header%</h3>
+			<h2>%page_header%</h2>
 			<form action="%posturl%" method="post">
 				<p>
 					%paragraph%
@@ -922,7 +922,7 @@ class cms extends base {
 
 			//--></script>
 		
-			<h3>Opprett ny mappe</h3>'.
+			<h2>Opprett ny mappe</h2>'.
 			(isset($errorS) ? $this->notSoFatalError($errorS) : '').
 			'
 			<form method="post" action="'.$url_post.'">
@@ -939,7 +939,7 @@ class cms extends base {
 				<input type="button" value="Avbryt" onclick=\'window.location="'.$url_back.'"\' /> 
 				<input type="submit" value="Lagre" />
 			</form>
-			<h3>Tips og hjelp</h3>
+			<h2>Tips og hjelp</h2>
 			<ul>
 				<li>I feltet <i>adresse</i> fyller du inn sidens unike navn, slik den vil bli 
 				representert i adresselinjen i nettleseren. Fyller du f.eks. inn "min-egen-mappe", 
@@ -993,16 +993,6 @@ class cms extends base {
 			),true));
 		}
 		/* Validate Input END */
-
-
-		$f = explode("/",$_SERVER['SCRIPT_FILENAME']);
-		array_pop($f);
-		$image_dir = rtrim(implode("/",$f),"/").$this->pathToImages;
-		$image_dir .= implode("/",$this->coolUrlSplitted);
-		if (count($this->coolUrlSplitted) > 0) $image_dir .= "/";
-		$image_dir .= $slug;
-		
-		mkdir($image_dir);		
 		
 		$res = $this->query(
 			"SELECT owner,ownergroup FROM $this->table_pages WHERE id='$page'"
@@ -1215,7 +1205,7 @@ class cms extends base {
 		}
 		
 		$output = '<form method="post" action="'.$posturl.'">
-			<h3>Gi ny tittel:</h3>';
+			<h2>Gi ny tittel:</h2>';
 			if (isset($_SESSION["review_form"])) $output .= $this->notSoFatalError($errorS);
 			$output .= '
 			<table>
@@ -1487,7 +1477,7 @@ class cms extends base {
 		";
 
 		$output = '<form action="'.$posturl.'" method="post">
-			<h3>Flytt side</h3>
+			<h2>Flytt side</h2>
 			';
 			if (isset($_GET['errors'])) $output .= $this->notSoFatalError($errorS);
 			$output .= '
@@ -1635,7 +1625,7 @@ class cms extends base {
 
 			<form method="post" action="'.$posturl.'">	
 			
-			<h3>Eierskap</h3>
+			<h2>Eierskap</h2>
 			<p class="smalltext">
 				<table>
 					<tr><td>Eier: </td><td>'.$memberSelectBox.' *</td></tr>
@@ -1644,7 +1634,7 @@ class cms extends base {
 				* = Eier har alltid full tilgang til siden.
 			</p>	
 			
-			<h3>Tilgang</h3>
+			<h2>Tilgang</h2>
 			
 		';
 		
@@ -1852,35 +1842,36 @@ class cms extends base {
 
 		if (!$this->is_allowed("w",$page)) return $this->permissionDenied();
 
+        $tc = $this->table_classoptions;
 		$res = $this->query(
 			"SELECT 
-				$this->table_classoptions.id as class_id,
-				$this->table_classoptions.name,
-				$this->table_classoptions.section,
-				$this->table_classoptions.datatype,
-				$this->table_classoptions.defaultvalue,
-				$this->table_classoptions.prefix,
-				$this->table_classoptions.required,
-				$this->table_classoptions.multiline,
-				$this->table_classoptions.description,
-				$this->table_classoptions.extras,
+				$tc.id as class_id,
+				$tc.name,
+				$tc.section,
+				$tc.datatype,
+				$tc.defaultvalue,
+				$tc.prefix,
+				$tc.required,
+				$tc.multiline,
+				$tc.description,
+				$tc.extras,
 				$this->table_pageoptions.id as id, 
 				$this->table_pageoptions.value
 			FROM 
 				($this->table_pages,
-				$this->table_classoptions)
+				$tc)
 			LEFT JOIN 
 				$this->table_pageoptions
 			ON
 				$this->table_pageoptions.page=$this->table_pages.id
 					AND
-				$this->table_pageoptions.name=$this->table_classoptions.name
+				$this->table_pageoptions.name=$tc.name
 			WHERE 
 				$this->table_pages.id='$page'
 					AND
-				$this->table_classoptions.class=$this->table_pages.class
+				($tc.class=$this->table_pages.class OR $tc.class=0)
 			ORDER BY
-				$this->table_classoptions.section
+				$tc.section
 			"
 		);
 
@@ -1889,7 +1880,7 @@ class cms extends base {
 		$output .= '
 			
 			<form action="'.$posturl.'" method="post" name="settingsform">
-			<h3>Sideinnstillinger</h3>
+			<h2>Sideinnstillinger</h2>
 		';			
 			
 		if (isset($_GET['errors'])) $this->notSoFatalError($errorS);
@@ -2535,7 +2526,7 @@ class cms extends base {
 		
 		 // (Forklaring: 100/80 = 1.25)
 		 return '
-			<h3>Beskjær bilde</h3>
+			<h2>Beskjær bilde</h2>
 			<form method="post" action="'.$this->generateURL(array("noprint=true","current_image=$this->current_image","docropimage")).'">
 			'.$this->imginstance->outputCropForm($this->current_image, $forced_image_ratio).'
 			</form>
@@ -2565,7 +2556,7 @@ class cms extends base {
 		if (!$this->is_allowed("w", $this->current_dir)) return $this->permissionDenied();
 			
 		return '
-			<h3>Lag thumbs</h3>
+			<h2>Lag thumbs</h2>
 			<p>
 				Dersom miniatyrbildene er skadet eller slettet kan du opprette de på nytt her.
 				Du trenger bare gjøre det dersom noe er galt! Merk at dette kan være en tidkrevende prosess!

@@ -210,7 +210,7 @@ class imagearchive extends comments {
 		Dette albumet er tomt.';
 
 	var $dirthumbs_header =  '
-		<h3>%path%</h3>
+		<h2>%path%</h2>
 		%description%
 		%actions%
 	';
@@ -335,8 +335,8 @@ class imagearchive extends comments {
 
 */
 	var $imagethumbs_header =  '
-		<!--<h2>%caption%</h2>-->
-		<h3>%path%</h3>
+		<!--<h1>%caption%</h1>-->
+		<h2>%path%</h2>
 		%description%
 		<p>%num_images% %image_location%</p>
 		<div style="margin:3px;padding:1px;border:1px solid #ddd;">
@@ -354,16 +354,16 @@ class imagearchive extends comments {
 		<script type="text/javascript">
 		//<![CDATA[
 			YAHOO.util.Event.onDOMReady(function() {
-				Nifty("h4.whiteInfoBox");
+				Nifty("h3.whiteInfoBox");
 			});
 		//]]>
 		</script>
 	';
 	var $imagesfrom_template =  '
-		<!--<h2>%caption%</h2>-->
-		<h3>
+		<!--<h1>%caption%</h1>-->
+		<h2>
 			%path%
-		</h3>
+		</h2>
 	';
 	
 	var $str_before_imagethumbs = '<div class="photoFrame">';
@@ -491,11 +491,11 @@ class imagearchive extends comments {
 		//]]>
 		</script>
 	
-		<h3>Operasjoner for «%path%»</h3>
+		<h2>Operasjoner for «%path%»</h2>
 				%movearchive%
 				%deletearchive%
 				%makethumbs%		
-		<h3>Innstillinger for «%path%»</h3>
+		<h2>Innstillinger for «%path%»</h2>
 		<form method="post" action="%post_uri%">
 			<table>
 				<tr>
@@ -922,7 +922,7 @@ class imagearchive extends comments {
 		</li>';
 
 
-		$output = "<h3>Endre albumrekkefølge</h3><p class='help'>Dra og slipp albumene for å endre rekkefølgen. 
+		$output = "<h2>Endre albumrekkefølge</h2><p class='help'>Dra og slipp albumene for å endre rekkefølgen. 
 			Trykk deretter på «Lagre ny rekkefølge» for å lagre den nye rekkefølgen.</p>
 		
 		<form id='reorderForm' method='post' action=\"".$this->generateURL('action=reorderAlbumsDo')."\">
@@ -1230,7 +1230,7 @@ class imagearchive extends comments {
 
 		// If we are at the imagearchive root, we will display a slightly different toolset and a welcome message
 		if ($albumId == 1){
-			$output .= "<!--<h2>".$cd['caption']."</h2>-->";
+			$output .= "<!--<h1>".$cd['caption']."</h1>-->";
 
 			$res = $this->query("SELECT photo_count FROM $this->table_counts WHERE id=1");
 			$row = $res->fetch_array();			
@@ -1483,7 +1483,7 @@ class imagearchive extends comments {
 			$unixTimestamp = strtotime($row['datetime_original']);
 			$wday = strftime('%A %e. %B',$unixTimestamp);
 			if ($showWeekDays && $wday != $oldwday) {
-				$output .="<div style='clear:both;'><!-- --></div><h4 style='margin:10px 0px;padding:0px;' class='whiteInfoBox'><span style='padding:3px 10px 3px 10px; display:block;'>".ucfirst($wday).":</span></h4>";
+				$output .="<div style='clear:both;'><!-- --></div><h3 style='margin:10px 0px;padding:0px;' class='whiteInfoBox'><span style='padding:3px 10px 3px 10px; display:block;'>".ucfirst($wday).":</span></h3>";
 				$oldwday = $wday;
 				$i = 0;
 			}
@@ -2445,13 +2445,13 @@ class imagearchive extends comments {
 
 		$path = $this->generatePath($this->current_directory);
 		return '
-			<h3>Opplasting av nye bilder</h3>
+			<h2>Opplasting av nye bilder</h2>
 			<p>
 				Er dette første gangen du laster opp bilder?<br />
 				Da bør du lese <a href="/hjelp/laste-opp-bilder-til-bildearkivet/">guide til 
 				bildeopplasting</a> først.
 			</p>
-			<h3>Retningslinjer</h3>
+			<h2>Retningslinjer</h2>
 			<p>
 				Det finnes ikke noe godkjenningssystem. Du kan derfor laste opp hva som helst hvor 
 				som helst. Bruk derfor sunn fornuft og tenk på følgende:
@@ -2463,7 +2463,7 @@ class imagearchive extends comments {
 				<li>Er bildene på «høykant»? Rett de opp før du laster de opp, så slipper vi vridd 
 					nakke :)</li>
 			</ul>
-			<h3>Kan du laste opp bilder?</h3>
+			<h2>Kan du laste opp bilder?</h2>
 			<p>
 				For å laste opp bilder må du ha Java installert på din datamaskin. Noen nettlesere 
 				vil gi deg automatisk melding om dette. I andre tilfeller må du selv velge å laste
@@ -2479,7 +2479,7 @@ class imagearchive extends comments {
 				</script>
 			</p>
 		
-			<h3>Lest alt sammen?</h3>
+			<h2>Lest alt sammen?</h2>
 			<p>
 				<a href="'.$this->generateURL('action=uploadImages').'" class="icn" style="background-image:url(/images/icns/arrow_right.png);">Fortsett til opplastingssiden</a>
 			</p>
@@ -2503,7 +2503,7 @@ class imagearchive extends comments {
 			$output = "";
 			
 			$path = $this->generatePath($albumId);
-			$output .= "<h3>Laste opp bilder til «".$path[1]."»</h3>\n";
+			$output .= "<h2>Laste opp bilder til «".$path[1]."»</h2>\n";
 			
 			$jup = new javaupload();
 			$jup->jupload_dir = ROOT_DIR.$this->java_path_to_jupload;
@@ -2513,7 +2513,7 @@ class imagearchive extends comments {
 			$output .= $jup->printUploadForm();
 			
 			$output .= "
-				<h3>Hjelp</h3>
+				<h2>Hjelp</h2>
 				<ul>
 					<li style='margin-bottom: 8px;'>
 						<b>Det er ingenting ovenfor!</b><br />
@@ -2534,7 +2534,7 @@ class imagearchive extends comments {
 						Dette skjer av og til og vil som regel ordne seg hvis du oppdaterer siden (trykk F5 eller Ctrl-R) og prøver på nytt.
 					</li>
 				</ul>
-				<h3>Tips</h3>
+				<h2>Tips</h2>
 				<ul>
 					<li style='margin-bottom: 8px;'>
 						Du velger flere filer ved å trykke på en fil og holde inne shift mens du trykker på en annen.
@@ -2724,7 +2724,7 @@ class imagearchive extends comments {
 		}
 		if (count($imglist) == 0) {
 			$output .= "
-				<h3>Ingen behandling nødvendig</h3>
+				<h2>Ingen behandling nødvendig</h2>
 				<p>
 					<a href=\"".$this->generateUrl("")."\">Vis bilder</a>
 				</p>			
@@ -2738,7 +2738,7 @@ class imagearchive extends comments {
 		}
 		
 		$output .= '
-			<h3><span id="processtitle">Velg kilde</span></h3>
+			<h2><span id="processtitle">Velg kilde</span></h2>
 			<div style="margin-left: 0px; text-align: center;">
 			<p>
 			    <span id="statustext" style="font-weight:bold;">
@@ -3123,7 +3123,7 @@ class imagearchive extends comments {
 			
 		//]]>
 		</script>
-		<h3>Organisere bilder i albumet «'.$path[1].'»</h3>
+		<h2>Organisere bilder i albumet «'.$path[1].'»</h2>
 		<p class="info">Bildene er sortert etter '.$orderBy.'.</p>';
 		if (!$this->allow_deleteothersimages) {
 			$output .= '<p class="warning">Merk: Du har kun tilgang til å slette bilder du selv har lastet opp, men du kan redigere titler og justere tidsstempel for alle bilder.</p>';
@@ -3254,7 +3254,7 @@ class imagearchive extends comments {
 		$path = $this->generatePath($this->current_directory);
 
 		return '
-			<h3>Slette bilder</h3>
+			<h2>Slette bilder</h2>
 			<form method="post" action="'.$this->generateURL('action=organizeImages').'">
 				Er du sikker på at du ønsker å slette disse bildene?
 				<br /><br />
@@ -3404,7 +3404,7 @@ class imagearchive extends comments {
 	 		
 		//]]>
 		</script>			
-			<h3>Justere dato og tid</h3>
+			<h2>Justere dato og tid</h2>
 			<form id="timestampForm" method="post" action="'.$this->generateURL('action=organizeImages').'">
 				
 				<input type="hidden" name="action" value="adjustTimestampsDo" />
@@ -3524,7 +3524,7 @@ class imagearchive extends comments {
 
 		$output = '
 			
-			<h3>Endre bildetitler</h3>
+			<h2>Endre bildetitler</h2>
 			<form method="post" action="'.$this->generateURL('action=organizeImages').'">
 				
 				<input type="hidden" name="action" value="editTitlesDo" />
@@ -4190,7 +4190,7 @@ class imagearchive extends comments {
 		if ($albumId <= 0) return "Invalid album";
 		
 		$path = $this->generatePath($albumId);
-		$output = "<h3>Flytt albumet «".$path[1]."»</h3>";
+		$output = "<h2>Flytt albumet «".$path[1]."»</h2>";
 		$tf = $this->table_files; $td = $this->table_dirs;
 		$res = $this->query(
 			"SELECT count($tf.id) as image_count, $td.caption, $td.directory
@@ -4382,7 +4382,7 @@ class imagearchive extends comments {
 		if ($albumId <= 0) return "Invalid album";
 
 		$path = $this->generatePath($albumId);
-		$output = "<h3>Slett albumet «".$path[1]."»</h3>";
+		$output = "<h2>Slett albumet «".$path[1]."»</h2>";
 		
 		$tf = $this->table_files;
 		$td = $this->table_dirs;
@@ -4651,7 +4651,7 @@ class imagearchive extends comments {
 		if ($photoId <= 0) return "Invalid photo";
 
 		$path = $this->generatePath($this->current_directory); // Needed for breadcrumb
-		$output = "<h3>Flytt enkelt-bilde</h3>";
+		$output = "<h2>Flytt enkelt-bilde</h2>";
 		$tf = $this->table_files; $td = $this->table_dirs;
 		$res = $this->query(
 			"SELECT $tf.uploadedby,$tf.filename,$td.directory
@@ -4752,7 +4752,7 @@ class imagearchive extends comments {
 		$photoId = intval($this->current_image);
 		if ($photoId <= 0) return "Invalid photo";
 
-		$output = "<h3>Bekreft sletting</h3>";
+		$output = "<h2>Bekreft sletting</h2>";
 		$res = $this->query(
 			"SELECT 
 				$this->table_files.$this->table_files_field_uploader as uploader,
@@ -4910,7 +4910,7 @@ class imagearchive extends comments {
 			
 			//]]>
 			</script>
-			<h3>Opprett nytt album</h3>
+			<h2>Opprett nytt album</h2>
 			<form method="post" action="'.$this->generateURL('action=addAlbumDo').'">
 				<table>
 					<tr>

@@ -34,7 +34,7 @@ class changelog extends base {
 		$output .= $this->printActivity();
 		
 		/*
-		print "<h3>Utviklingslogg:</h3>";
+		print "<h2>Utviklingslogg:</h2>";
 		if ($this->allow_modify) {
 			$this->printForm();
 		}
@@ -66,7 +66,7 @@ class changelog extends base {
 						$printDate = "I går (".strftime("%A", strtotime($row["timestamp"])).")";
 					else 
 						$printDate = $curDate;
-					$output .= "<h4 style='border-bottom:1px solid #ccc; color: #777; margin:5px; 0px 5px 0px;'>$printDate</h4>";
+					$output .= "<h3 style='border-bottom:1px solid #ccc; color: #777; margin:5px; 0px 5px 0px;'>$printDate</h3>";
 					$oldDate = $curDate;
 				}
 			}
