@@ -110,7 +110,7 @@
 	<img src="/_design/header/header8_02.png" width="292" height="54" border="0" alt="" style="float:left;" usemap="#map2" />
 
 	<div style="position:absolute;left:590px;top:118px;z-index:1;">
-	  <a href="/tropp/konkurranser/patruljekonkurranse-2011"><img src="/_design/banners/patruljekonk2011.png" alt="Patruljekonk!" style="border:none;" /></a>
+	  <a href="/tropp/konkurranser/patruljekonkurranse-2012"><img src="/_design/banners/patruljekonk2012.png" alt="Patruljekonk!" style="border:none;" /></a>
 	</div>
 	<div style="position:absolute;left:780px;top:85px;z-index:2;">
       <a href="http://www.speiding.no/nyheter/?liste=arkiv;dato=200400;id=2233"><img src="/_design/banners/jubileumsmerket_2011.png" alt="" style="border:none;" /></a>
