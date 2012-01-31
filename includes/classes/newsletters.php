@@ -43,7 +43,6 @@ class newsletters extends base {
 	}
 	
 	function initialize(){
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
 		$this->initialize_base();
 	}
 
