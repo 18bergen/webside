@@ -79,16 +79,20 @@ class enrolments extends base {
 					if (cal_id == "-") {
 						setText("span_event", "");					
 					} else {
-						var url = "%events_uri%";
 						var pars = new Array();
 						pars.push("cal_id="+cal_id);
 						pars.push("event_id=%events_id%");
 						pars = pars.join("&");
-						var success = function(t){ 
-							setText("span_event",t.responseText);
-						}
 						setText("span_event", "Vent litt...");
-						var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});
+						jQuery.ajax({
+                            url: "%events_uri%",
+                            type: "POST",
+                            data: pars, 
+                            dataType: "html",
+                            success: function(responseText){ 
+                                setText("span_event",responseText);
+                            }
+                        });
 					}
 				}
 			

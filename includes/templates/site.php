@@ -32,9 +32,13 @@
   <script type="text/javascript" src="/jscript/firebug/firebug.js"></script>
   <script type="text/javascript" src="/libs/NiftyCube/niftycube.js"></script>
 
+  <script type="text/javascript" src="/libs/jquery/jquery-1.7.1.min.js"></script>
+  <script> jQuery.noConflict(); </script>
+
+  <!--
   <script type="text/javascript" src="/jscript/scriptaculous-js-1.8.2/lib/prototype.js"></script>
   <script type="text/javascript" src="/jscript/scriptaculous-js-1.8.2/src/scriptaculous.js?load=effects,dragdrop,controls"></script>  
-  
+  -->
   <!-- /yui/   or   /yui/  -->  
   <!-- 
   	Unfortunately, using YUILoader 2.8 for loading everything does not work very well.
@@ -43,7 +47,10 @@
   <script type="text/javascript" src="%yui_uri%build/yuiloader-dom-event/yuiloader-dom-event.js"></script>
   <script type="text/javascript" src="%yui_uri%build/container/container-min.js"></script>
   <link rel="stylesheet" type="text/css" href="%yui_uri%build/container/assets/skins/sam/container.css" />
-  
+  <script>
+   // Temporary solution while migrating to jQuery. The old dollar syntax of prototype is not the same as jQuery's!
+   $ = YAHOO.util.Dom.get
+  </script>
   <!--
   <script type="text/javascript" src="/yui/build/animation/animation-min.js"></script>
   <script type="text/javascript" src="/yui/build/connection/connection-min.js"></script>

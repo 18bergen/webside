@@ -1020,7 +1020,7 @@ class images extends base {
 		return $theList;
 		
 	}
-	
+	/* DEPRECATED
 	function makeAjaxImageListing($dir, $default = -1, $identifier = 'selected_image', $imagesPerPage = 12) {
 		
 		$res = $this->query(
@@ -1056,46 +1056,50 @@ class images extends base {
 				var image_count = '.$imageCount.';
 				
 				//selectImage(default_image);
-				/*
-				function moreImages() {
-					//alert("more images BEGIN");
-					first_image += '.$imagesPerPage.';
-					if (first_image >= image_count) first_image = 0;
-					var url = "'.$this->generateURL(array("noprint=true","list_images"),true).'";				
-					var pars = new Array();
-					pars.push("first_image="+first_image);
-					pars.push("default_image="+default_image);
-					pars = pars.join("&");
-					var success = function(t){ 
-						setText("ajaximagelist",t.responseText);
-						selectImage(default_image);
-					}
-					setText("imagelistmoreimages", "<img src=\"'.$this->image_dir.'progressbar1.gif\" style=\"width:100px; height:9px\" />");
-					var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});
-					//alert("more images END");
-				}
+				// 
+// 				function moreImages() {
+// 					//alert("more images BEGIN");
+// 					first_image += '.$imagesPerPage.';
+// 					if (first_image >= image_count) first_image = 0;
+// 					var pars = new Array();
+// 					pars.push("first_image="+first_image);
+// 					pars.push("default_image="+default_image);
+// 					pars = pars.join("&");
+// 					setText("imagelistmoreimages", "<img src=\"'.$this->image_dir.'progressbar1.gif\" style=\"width:100px; height:9px\" />");
+// 					jQuery.ajax({
+//                         url: "'.$this->generateURL(array("noprint=true","list_images"),true).'",
+//                         type: "POST",
+//                         data: pars, 
+//                         dataType: "html",
+//                         success: function(responseText){ 
+//                             setText("ajaximagelist",responseText);
+//                             selectImage(default_image);
+//                         }
+//                     });
+// 					//alert("more images END");
+// 				}
+// 
+// 				function selectImage(id) {
+// 					//alert("select image: "+id+" BEGIN");
+// 					$("selected_image").value = id;
+// 					default_image = id;
+// 					var listedImages = jQuery("#current_images").val().split(",");
+// 					
+// 					var foundInArray = false;
+// 					for (var i = 0; i < listedImages.length; i++)
+// 						if (listedImages[i] == id) foundInArray = true;
+// 					if (!foundInArray)
+// 						return;
+// 						
+// 					for (var i = 0; i < listedImages.length; i++) {
+// 						var s = getStyleObject("listedimage"+listedImages[i]);
+// 						s.border = "2px solid #EDF0ED";
+// 					}
+// 					var s = getStyleObject("listedimage"+id);
+// 					s.border = "2px solid red";					
+// 					//alert("select image: "+id+" END");
+// 				}
 
-				function selectImage(id) {
-					//alert("select image: "+id+" BEGIN");
-					$("selected_image").value = id;
-					default_image = id;
-					var listedImages = $F("current_images").split(",");
-					
-					var foundInArray = false;
-					for (var i = 0; i < listedImages.length; i++)
-						if (listedImages[i] == id) foundInArray = true;
-					if (!foundInArray)
-						return;
-						
-					for (var i = 0; i < listedImages.length; i++) {
-						var s = getStyleObject("listedimage"+listedImages[i]);
-						s.border = "2px solid #EDF0ED";
-					}
-					var s = getStyleObject("listedimage"+id);
-					s.border = "2px solid red";					
-					//alert("select image: "+id+" END");
-				}
-*/
     		//]]>
 			</script>
 			
@@ -1103,11 +1107,6 @@ class images extends base {
 			
 		';
 	}
-	
-	
-	
-	
-	
 	
 	function ajaxImageAction($dir, $images_per_page, $identifier = 'selected_image') {
 		switch ($_GET['ajax_image_action']) {
@@ -1275,7 +1274,6 @@ class images extends base {
 				var image_count = '.$imageCount.';
 				
 				function uploadNewForm() {
-					var url = "'.$this->generateURL(array("noprint=true","ajax_image_action=upload_image_form"),true).'";				
 					var pars = new Array();
 					pars.push("first_image="+first_image);
 					pars.push("default_image="+default_image);
@@ -1287,7 +1285,17 @@ class images extends base {
 						//selectImage(default_image);
 					}
 					setText("imagelistmoreimages", "<img src=\"'.$this->image_dir.'progressbar1.gif\" style=\"width:100px; height:9px\" />");
-					var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});
+					jQuery.ajax({
+                        url: "'.$this->generateURL(array("noprint=true","ajax_image_action=upload_image_form"),true).'",
+                        type: "POST",
+                        data: pars, 
+                        dataType: "html",
+                        success: function(responseText){ 
+						setText("ajaximagelist",responseText);
+    						//console.info("Upload form loaded");
+	    					//selectImage(default_image);
+		    			}
+                    });
 				}
 				
 				function showImageList() {
@@ -1344,7 +1352,7 @@ class images extends base {
 					//console.group("Select image "+id);
 					selected_image = id;
 					
-					var listedImages = $F("current_images").split(",");
+					var listedImages = jQuery("#current_images").val().split(",");
 					
 					var foundInArray = false;
 					for (var i = 0; i < listedImages.length; i++)
@@ -1408,6 +1416,7 @@ class images extends base {
 			</a>
 		');
 	}
+	*/
 	
 	/****************************************************************************************************
 		UPLOAD NEW IMAGE
@@ -1422,7 +1431,7 @@ class images extends base {
 		if ($useIFrame) {
 			$url_post = ROOT_DIR.$url_post;
 			$target = 'target="upload_frame"';
-			$iframeAdd = 'Effect.Appear(\'imguploadprogress\');';
+			$iframeAdd = 'jQuery(\'#imguploadprogress\').fadeIn();';
 			$progressDiv = '<p id="imguploadprogress" style="display:none; background:#eee; border: 1px solid #ddd; padding: 10px; margin:10px;">
 				<strong>Vennligst vent mens bildet lastes opp...</strong> <br /><br />
 				Merk at dette kan ta ganske lang tid hvis bildet er stort!<br /><br />

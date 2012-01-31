@@ -562,57 +562,73 @@ class sms extends base {
 			<script type="text/javascript">
 					
 				function addRecipient(){
-					var url = "'.$this->generateURL(array("noprint=true","sms_action=add_recipient"),true).'";				
 					var pars = new Array();
 					pars.push("current_row='.$this->current_row.'");
-					pars.push("recipients="+escape($F("recipients")));
+					pars.push("recipients="+escape(jQuery("#recipients").val()));
 					pars = pars.join("&");
-					var success = function(t){ 
-						setText("memberlist_s",t.responseText);
-					}
 					setText("memberlist_s", "Vent litt...");
-					var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});
+					jQuery.ajax({
+					    url: "'.$this->generateURL(array("noprint=true","sms_action=add_recipient"),true).'",
+					    type: "POST",
+					    data: pars, 
+					    dataType: "html",
+					    success: function(responseText){ 
+						    setText("memberlist_s",responseText);
+					    }
+					});
 				}
 				
 				function saveRecipient() {
-					var url = "'.$this->generateURL(array("noprint=true","sms_action=save_recipient"),true).'";
 					var pars = new Array();
 					pars.push("current_row='.$this->current_row.'");
-					pars.push("recipients="+escape($F("recipients")));
-					pars.push("newrecipient="+escape($F("newrecipient")));
+					pars.push("recipients="+escape(jQuery("#recipients").val()));
+					pars.push("newrecipient="+escape(jQuery("#newrecipient").val()));
 					pars = pars.join("&");
-					var success = function(t){ 
-						setText("memberlist_s",t.responseText);
-					}
 					setText("memberlist_s", "Vent litt...");
-					var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});					
+					jQuery.ajax({
+					    url: "'.$this->generateURL(array("noprint=true","sms_action=save_recipient"),true).'",
+					    type: "POST",
+					    data: pars, 
+					    dataType: "html",
+					    success: function(responseText){ 
+						    setText("memberlist_s",responseText);
+					    }
+					});					
 				}
 				
 				function cancelRecipient() {
-					var url = "'.$this->generateURL(array("noprint=true","sms_action=cancel_recipient"),true).'";
 					var pars = new Array();
 					pars.push("current_row='.$this->current_row.'");
-					pars.push("recipients="+escape($F("recipients")));
+					pars.push("recipients="+escape(jQuery("#recipients").val()));
 					pars = pars.join("&");
-					var success = function(t){ 
-						setText("memberlist_s",t.responseText);
-					}
 					setText("memberlist_s", "Vent litt...");
-					var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});					
+					jQuery.ajax({
+					    url: "'.$this->generateURL(array("noprint=true","sms_action=cancel_recipient"),true).'",
+					    type: "POST",
+					    data: pars, 
+					    dataType: "html",
+					    success: function(responseText){ 
+						    setText("memberlist_s",responseText);
+					    }
+					});				
 				}
 				
 				function removeRecipient(id) {
-					var url = "'.$this->generateURL(array("noprint=true","sms_action=remove_recipient"),true).'";
 					var pars = new Array();
 					pars.push("current_row='.$this->current_row.'");
-					pars.push("recipients="+escape($F("recipients")));
+					pars.push("recipients="+escape(jQuery("#recipients").val()));
 					pars.push("removerecipient="+id);
 					pars = pars.join("&");
-					var success = function(t){ 
-						setText("memberlist_s",t.responseText);
-					}
 					setText("memberlist_s", "Vent litt...");
-					var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});	
+					jQuery.ajax({
+					    url: "'.$this->generateURL(array("noprint=true","sms_action=remove_recipient"),true).'",
+					    type: "POST",
+					    data: pars, 
+					    dataType: "html",
+					    success: function(responseText){ 
+						    setText("memberlist_s",responseText);
+					    }
+					});				
 				}
 				
 			</script>

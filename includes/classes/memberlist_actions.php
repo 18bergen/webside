@@ -847,32 +847,36 @@ class memberlist_actions extends memberlist {
 			function expandAll() {
 				for (var n = 0; n < allGroups.length; n++) {
 					var id = allGroups[n];
-					if (Element.getStyle('gruppe'+id,'display') == 'none') {
-						Element.toggle('gruppe'+id);
-						Element.toggle('indicator_c'+id);
-						Element.toggle('indicator_o'+id);
+    			    if (jQuery('#gruppe'+id).is(':hidden')) {
+    			        jQuery('#gruppe'+id).show();
+    					jQuery('#indicator_c'+id).hide();
+						jQuery('#indicator_o'+id).show();
 					}
 				}
 			}
 			function collapseAll() {
 				for (var n = 0; n < allGroups.length; n++) {
 					var id = allGroups[n];
-					if (Element.getStyle('gruppe'+id,'display') != 'none') {
-						Element.toggle('gruppe'+id);
-						Element.toggle('indicator_c'+id);
-						Element.toggle('indicator_o'+id);
+    			    if (jQuery('#gruppe'+id).is(':visible')) {
+    			        jQuery('#gruppe'+id).hide();
+    					jQuery('#indicator_c'+id).show();
+						jQuery('#indicator_o'+id).hide();
 					}
 				}				
 			}
 		
 			function toggleGroup(id) {
-				new Effect.toggle('gruppe'+id, 'slide', {  
-					duration: .4,
-					afterFinish: function(obj){
-						Element.toggle('indicator_c'+id);
-						Element.toggle('indicator_o'+id);
-					}
-				});
+			    if (jQuery('#gruppe'+id).is(':hidden')) {
+			        jQuery('#gruppe'+id).slideDown(300, function(){
+    					jQuery('#indicator_c'+id).hide();
+						jQuery('#indicator_o'+id).show();
+					});
+				} else {
+			        jQuery('#gruppe'+id).slideUp(300, function(){
+					    jQuery('#indicator_o'+id).hide();
+						jQuery('#indicator_c'+id).show();
+					});				
+				}
 			}
 		
 		</script>
@@ -5533,9 +5537,9 @@ class memberlist_actions extends memberlist {
 								
 				function nytt_medlemsskap(current) {
 					if (current) 
-						json_membershiplist_update("m_action=nytt_medlemsskap&"+Form.Element.serialize("ny_gruppe"));
+						json_membershiplist_update("m_action=nytt_medlemsskap&"+jQuery("#ny_gruppe").serialize());
 					else
-						json_membershiplist_update("m_action=nyttgammelt_medlemsskap&"+Form.Element.serialize("ny_gruppe"));
+						json_membershiplist_update("m_action=nyttgammelt_medlemsskap&"+jQuery("#ny_gruppe").serialize());
 				}
 				
 			//]]>

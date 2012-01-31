@@ -389,42 +389,60 @@ class wordbox extends base {
 			<script type="text/javascript">
 		    //<![CDATA[	
 			
-				function snikksnakk_post() {
+				function snikksnakk_post(event) {
+				    event.preventDefault();
 				
 					var pars = new Array();
-					pars.push(Form.Element.serialize("snikksnakkform_text"));
+					pars.push(jQuery("#snikksnakkform_text").serialize());
 					pars.push("show_pagenavigation='.$this->show_pagenavigation.'");
 					pars.push("messages_per_page='.$this->messages_per_page.'");
 					pars.push("javascript_enabled=true");
 					pars.push("snikksnakkform_gid='.time().'");
 					pars = pars.join("&");
-					var success = function(t){ 
-						$("'.$this->identifier.'").innerHTML = t.responseText;
-						$("wb_indicator").style.visibility = "hidden";
-						$("snikksnakkform_text").disabled = "";
-						$("snikksnakkform_text").value = "";
-						$("snikksnakkform_submitbtn").disabled = "";
-					}
-					$("wb_indicator").style.visibility = "visible";
-					$("snikksnakkform_text").disabled = "disabled";
-					$("snikksnakkform_submitbtn").disabled = "disabled";
-					$("snikksnakkform_text").value = "Vent litt...";
-					var target_div = "'.$this->identifier.'";
+
+					jQuery("#wb_indicator").css("visibility","visible");
+					jQuery("#snikksnakkform_text").attr("disabled",true);
+					jQuery("#snikksnakkform_submitbtn").attr("disabled",true);
+					jQuery("#snikksnakkform_text").val("Lagrer...");
 					var form = "form_'.$this->identifier.'";
-					var url = "'.$url_post_js.'";
-					var myAjax = new Ajax.Updater(target_div, url, {asynchronous:true, parameters:pars, onSuccess:success});
-				}
+					jQuery.ajax({
+					    url: "'.$url_post_js.'",
+					    data: pars,
+					    dataType: "html",
+					    type: "POST",
+					    success: function(responseText){  
+                            jQuery("#'.$this->identifier.'").html(responseText);
+					        jQuery("#wb_indicator").css("visibility","hidden");
+                            jQuery("#snikksnakkform_text").attr("disabled",false);
+                            jQuery("#snikksnakkform_submitbtn").attr("disabled",false);
+        					jQuery("#snikksnakkform_text").val("");
+                        },
+                        error: function() {
+                            alert("Det oppsto en feil under lagring :(")
+					        jQuery("#wb_indicator").css("visibility","hidden");
+                            jQuery("#snikksnakkform_text").attr("disabled",false);
+                            jQuery("#snikksnakkform_submitbtn").attr("disabled",false);
+        					jQuery("#snikksnakkform_text").val("");                        
+                        }
+                    });
+                    return false;
+                }
+                    
+                jQuery(document).ready(function(){
+                    jQuery("#form_'.$this->identifier.'").submit(snikksnakk_post);
+                });
+                
 			//]]>
 			</script>
 		
 		
 			<div id="wordboxdiv">
-				<form name="wordboxform" id="form_'.$this->identifier.'" action="'.$this->generateURL(array("noprint=true","save_shout")).'" method="post" onsubmit="snikksnakk_post(); return false;">
+				<form name="wordboxform" id="form_'.$this->identifier.'" action="'.$this->generateURL(array("noprint=true","save_shout")).'" method="post">
 					<div style="margin:0px; padding:0px;">
 						<div id="wb_indicator" style="text-align:center;visibility:hidden;"><img src="'.$this->image_dir.'progressbar1.gif" alt="Progressbar" /></div>
 						<input type="text" name="snikksnakkform_gid" id="snikksnakkform_gid" value="nojs" style="display:none;" /> 
 						<input type="text" name="snikksnakkform_text" id="snikksnakkform_text" maxlength="120" /> 
-						<input type="button" value="Snakk" onclick="snikksnakk_post();" name="snikksnakkform_submitbtn" id="snikksnakkform_submitbtn" />
+						<input type="submit" value="Snakk" name="snikksnakkform_submitbtn" id="snikksnakkform_submitbtn" />
 					</div>
 					<p class="smalltext" style="margin:0px; padding:0px;">
 						<a href="/popups/wb_retningslinjer.php" onclick="window.open(\''.ROOT_DIR.'/popups/wb_retningslinjer.php\',\'wordboxhelp\',\'width=400,height=200\'); return false;">Retningslinjer</a> |

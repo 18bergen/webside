@@ -605,10 +605,14 @@ class innlogging extends base {
 		$mailer = $this->initialize_mailer();
 		$res = $mailer->add_to_queue($mail);
 		if (empty($res['errors'])) {
-		    $mailer->send_from_queue();
+		    $res = $mailer->send_from_queue();
+		    if ($res['mail_sent'] == 'true') {
+        		$this->redirect($this->generateURL("passwordsent=$rcptmail"));        
+		    } else {
+		        $this->fatalError("Mailen kunne ikke sendes. Kanskje vi har feil epostadresse på deg. Ta kontakt med webmaster.");
+		    }
 		}		
 		
-		$this->redirect($this->generateURL("passwordsent=$rcptmail"));
 	}
 
 	/* ___________________________ UTILITY FUNCTIONS _____________________________ */

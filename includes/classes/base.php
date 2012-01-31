@@ -479,7 +479,7 @@ class base {
         }
         return '<p class="warning">'.$str.'</p>';
     }
-	
+	/*
 	function badenPowellSays($str) {
 		
 		print "
@@ -508,7 +508,7 @@ class base {
 			--></script>
 		";
 	
-	}
+	}*/
 	
 	function infoMessage($str, $icon = 1) {
 		$leftpadd = 90;

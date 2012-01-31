@@ -61,7 +61,7 @@ class TemplateService extends base {
 				$msg = "
 				<div id='infomessage_container'>
 				<div id='infomessage_container2'>
-					<div id='infomessage' class='updated' onmouseover=\"Element.setStyle('infomessage',{backgroundColor:'#ddffdd'});\" onmouseout=\"Element.setStyle('infomessage',{backgroundColor:'#ffffff'});\" onclick=\"skjulInfoMelding();\">
+					<div id='infomessage' class='updated' onmouseover=\"jQuery('#infomessage').css('backgroundColor','#ddffdd');\" onmouseout=\"jQuery('#infomessage').css('backgroundColor','#ffffff');\" onclick=\"skjulInfoMelding();\">
 						<p>$msg</p>
 					</div>
 				</div>
@@ -71,7 +71,7 @@ class TemplateService extends base {
 				$msg = "
 				<div id='infomessage_container'>
 				<div id='infomessage_container2'>
-					<div id='infomessage' class='warning' onmouseover=\"Element.setStyle('infomessage',{backgroundColor:'#ffffee'});\" onmouseout=\"Element.setStyle('infomessage',{backgroundColor:'#ffffff'});\" onclick=\"skjulInfoMelding();\">
+					<div id='infomessage' class='warning' onmouseover=\"jQuery('#infomessage').css('backgroundColor','#ffffee');\" onmouseout=\"jQuery('#infomessage').css('backgroundColor','#ffffff');\" onclick=\"skjulInfoMelding();\">
 						<p>$msg</p>
 					</div>
 				</div>
@@ -81,7 +81,7 @@ class TemplateService extends base {
 				$msg = "
 				<div id='infomessage_container'>
 				<div id='infomessage_container2'>
-					<div id='infomessage' class='errormessage' onmouseover=\"Element.setStyle('infomessage',{backgroundColor:'#ff7777'});\" onmouseout=\"Element.setStyle('infomessage',{backgroundColor:'#ff5555'});\" onclick=\"skjulInfoMelding();\">
+					<div id='infomessage' class='errormessage' onmouseover=\"jQuery('#infomessage').css('backgroundColor','#ff7777');\" onmouseout=\"jQuery('#infomessage').css('backgroundColor','#ff5555');\" onclick=\"skjulInfoMelding();\">
 						<p>$msg</p>
 					</div>
 				</div>
@@ -91,7 +91,7 @@ class TemplateService extends base {
 				$msg = "
 				<div id='infomessage_container'>
 				<div id='infomessage_container2' style='display:none'>
-					<div id='infomessage' class='updated' onmouseover=\"Element.setStyle('infomessage',{backgroundColor:'#ddffdd'});\" onmouseout=\"Element.setStyle('infomessage',{backgroundColor:'#ffffff'});\" onclick=\"skjulInfoMelding();\">
+					<div id='infomessage' class='updated' onmouseover=\"jQuery('#infomessage').css('backgroundColor','#ddffdd');\" onmouseout=\"jQuery('#infomessage').css('backgroundColor','#ffffff');\" onclick=\"skjulInfoMelding();\">
 						<p>$msg</p>
 					</div>
 				</div>
@@ -102,17 +102,13 @@ class TemplateService extends base {
 			
 			$msg .= "
 				<script type='text/javascript'>
-				
-					function visInfoMelding() {
-						Effect.SlideDown('infomessage_container2', { duration: .5 });
-					}
 			
 					function skjulInfoMelding() {
-						Effect.SlideUp('infomessage_container2', { duration: .1 });
+						jQuery('#infomessage_container2').slideUp(500);
 					}
 					
-					YAHOO.util.Event.onDOMReady(function(e) {
-						visInfoMelding();						
+                    jQuery(document).ready(function(){
+						jQuery('#infomessage_container2').slideDown(500);
 					});
 					
 				</script>

@@ -197,6 +197,15 @@ class messagecenter extends base {
 			case 'sendmessage':
 				return $this->sendMessage();
 				break;
+			
+			case 'sender':
+				if (count($this->coolUrlSplitted) > 1)
+					return $this->printQueue($this->coolUrlSplitted[1]);
+			    break;
+
+			case 'send':
+			    return $this->ajaxSendFromQueue();
+			    break;
 				
 			case 'readmessage':
 				if (count($this->coolUrlSplitted) > 1)
@@ -432,7 +441,7 @@ class messagecenter extends base {
 				$hiddenMembers[] = $this->login_identifier;
 			}
 			$rcptCode = $memberdb->generateMemberSelectBox("recipient1",-1,$hiddenMembers).
-				" <span id='rcpt2'><a href='#' onclick='addRecipient(2); return false;'>Legg til</a></span>";
+				" <span id='rcpt2'><a href='#' id='addRcpt_2'>Legg til</a></span>";
 		}
 		
 		$melding = ""; 
@@ -487,10 +496,10 @@ class messagecenter extends base {
 				$attachment .= '<div id="att'.$i.'" style="border: 1px solid #ddd; padding:4px;"><input type="hidden" name="vedlegg'.$id.'" value="'.$id.'" /><table><tr><td><img src="'.$this->image_dir.'file.png" /></td><td> '.$obj["friendly"].' ('.round($obj["size"]/1024).' kB) &nbsp; &nbsp;</td><td><a href="#" onclick="removeAttachment('.$i.'); return false;"><img src="'.$this->image_dir.'delete.png" border="0" /> Fjern</a></td></tr></table></div>';
 			}
 			$i++;
-			$attachment .= " <a id='add_att_link' href='#' onclick='addAttachment($i); return false;' class='icn' style='background-image:url(/images/icns/attach.png);'>Legg ved fil</a>";		
+			$attachment .= " <a id='addAttLink' href='#' class='icn' style='background-image:url(/images/icns/attach.png);'>Legg ved fil</a>";		
 			$attachment .= "</div>";
 		} else {
-			$attachment = " <div id='att'><a id='add_att_link' href='#' onclick='addAttachment(1); return false;' class='icn' style='background-image:url(/images/icns/attach.png);'>Legg ved fil</a></div>";
+			$attachment = " <div id='att'><a id='addAttLink' href='#' class='icn' style='background-image:url(/images/icns/attach.png);'>Legg ved fil</a></div>";
 		}
 		if (empty($this->login_identifier)) {
 			$attachment = "<em>Logg inn for å sende vedlegg</em>";
@@ -528,71 +537,83 @@ class messagecenter extends base {
 		<script type="text/javascript"> 
 		//<![CDATA[
 		
-		function addRecipient(no){
-			var url = "'.$this->generateCoolURL('/add_recipient/','noprint=true').'";				
+		jQuery(document).ready(function(){
+            jQuery("#addAttLink").click(addAttachment);
+            jQuery("[id^=addRcpt_]").click(addRecipient);
+        });
+
+		function addRecipient(event){
+			event.preventDefault();
+			item = event.delegateTarget.id;
+			var no = item.substr(item.indexOf("_")+1);
+			console.info("Adding rcpt "+no);
+		
 			var pars = new Array();
 			pars.push("no="+no);
 			pars = pars.join("&");
-			var success = function(t){ 
-				setText("rcpt"+no,t.responseText);	
-			}
-			setText("rcpt"+no, "Vent litt...");
-			var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});
+
+			jQuery("#rcpt"+no).html("Vent litt...");
+			jQuery.ajax({
+			    url: "'.$this->generateCoolURL('/add_recipient/','noprint=true').'",
+			    dataType: "html",
+			    data: pars,
+			    type: "POST",
+			    success: function(t){ 
+				    jQuery("#rcpt"+no).html(t);	
+                    jQuery("#rmRcpt_"+no).click(removeRecipient);
+                    jQuery("#addRcpt_"+(no-0+1)).click(addRecipient);
+			    }
+			})
 		}
 
-		function removeRecipient(no){
-			var url = "'.$this->generateCoolURL('/remove_recipient/','noprint=true').'";				
+		function removeRecipient(event){
+			event.preventDefault();
+			item = event.delegateTarget.id;
+			var no = item.substr(item.indexOf("_")+1);
+			console.info("Removing rcpt "+no);
+
 			var pars = new Array();
 			pars.push("no="+no);
 			pars = pars.join("&");
-			var success = function(t){ 
-				setText("rcpt"+no,t.responseText);
-			}
-			setText("rcpt"+no, "Vent litt...");
-			var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});
+
+			jQuery("#rcpt"+no).html("Vent litt...");
+			jQuery.ajax({
+			    url: "'.$this->generateCoolURL('/remove_recipient/','noprint=true').'",
+			    dataType: "html",
+			    data: pars,
+			    type: "POST",
+			    success: function(t){ 
+				    jQuery("#rcpt"+no).html(t);
+                    jQuery("#rmRcpt_"+(no-1)).click(removeRecipient);
+                    jQuery("#addRcpt_"+no).click(addRecipient);
+			    }
+			});
 		}
 		
-		function addAttachment(no) {
-			var nn = no+1;
-			//console.info("Adding a new attachment with id: "+no);
+		attachments = 0;
+		function addAttachment(event) {
+		    event.preventDefault();
+			attachments = attachments + 1;
+			no = attachments
+			console.info("Adding attachment no. "+no);
 			
-			var newDiv = document.createElement("div");
-			newDiv.id = "att"+no;
-			newDiv.style.border = "1px solid #ddd";
-			newDiv.style.padding = "4px";
-			var newInput = document.createElement("input");
-			newInput.setAttribute("type", "file");
-			newInput.setAttribute("name", "vedlegg"+no);
-			newDiv.appendChild(newInput);
-			var imgNode = document.createElement("img");
-			imgNode.setAttribute("src", "'.$this->image_dir.'delete.png");
-			imgNode.setAttribute("border", "0");
-			imgNode.style.paddingLeft = "10px";
-			var txtNode = document.createTextNode(" Fjern"); 
-			var newAnchor = document.createElement("a");
-			newAnchor.setAttribute("href", "#");
-			newAnchor.onclick = function() { removeAttachment(no); return false; }
-			newAnchor.appendChild(imgNode);
-			newAnchor.appendChild(txtNode);
-			newDiv.appendChild(newAnchor);
-			
-			$("att").removeChild($("add_att_link"));
-			$("att").appendChild(newDiv);
-
-			var txtNode = document.createTextNode("Legg ved enda en fil"); 
-			var newAnchor = document.createElement("a");
-			newAnchor.setAttribute("href", "#");
-			newAnchor.id = "add_att_link";
-			newAnchor.onclick = function() { addAttachment(nn); return false; }
-			newAnchor.appendChild(txtNode);
-			$("att").appendChild(newAnchor);
-
-			//Element.update("att"+no,html);
+			var newDiv = "<div id=\"att"+no+"\" style=\"border: 1px solid #ddd; padding: 4px;\"> \
+			  <input type=\"file\" name=\"vedlegg"+no+"\" /> \
+			  <a id=\"removeAttLink_"+no+"\" href=\"#\" class=\"icn\" style=\"background-image:url(/images/delete.png);\">Fjern</a> \
+			  </div><a id=\"addAttLink\" href=\"#\" class=\"icn\" style=\"background-image:url(/images/icns/attach.png);\">Legg ved enda en fil</a>";
+						
+			jQuery("#addAttLink").remove();
+			jQuery("#att").append(newDiv);
+            jQuery("#addAttLink").click(addAttachment);
+			jQuery("#removeAttLink_"+no).click(removeAttachment);
 		}
 
-		function removeAttachment(no){
-			//console.info("Removing attachment with id: "+no);
-			$("att").removeChild($("att"+no));
+		function removeAttachment(event){
+			event.preventDefault();
+			item = event.delegateTarget.id;
+			var no = item.substr(item.indexOf("_")+1);
+			console.info("Removing attachment with id: "+no);
+			jQuery("#att"+no).remove();
 		}
 		
 		//]]>
@@ -691,10 +712,10 @@ class messagecenter extends base {
 				$attachment .= '<div id="att_'.$replyTo.'_'.$i.'" style="border: 1px solid #ddd; padding:4px;"><input type="hidden" name="vedlegg'.$id.'" value="'.$id.'" /><table><tr><td><img src="'.$this->image_dir.'file.png" /></td><td> '.$obj["friendly"].' ('.round($obj["size"]/1024).' kB) &nbsp; &nbsp;</td><td><a href="#" onclick="removeAttachment('.$i.'); return false;"><img src="'.$this->image_dir.'delete.png" border="0" /> Fjern</a></td></tr></table></div>';
 			}
 			$i++;
-			$attachment .= " <a id='add_att_link_".$replyTo."' href='#' onclick='addAttachment($replyTo,$i); return false;' class='icn' style='background-image:url(/images/icns/attach.png);'>Legg ved fil</a>";		
+			$attachment .= " <a id='addAttLink_$replyTo_$i' href='#' class='icn' style='background-image:url(/images/icns/attach.png);'>Legg ved fil</a>";		
 			$attachment .= "</div>";
 		} else {
-			$attachment = " <div id='att_".$replyTo."'><a id='add_att_link_".$replyTo."' href='#' onclick='addAttachment($replyTo,1); return false;' class='icn' style='background-image:url(/images/icns/attach.png);'>Legg ved fil</a></div>";
+			$attachment = " <div id='att_".$replyTo."'><a id='addAttLink_$replyTo' href='#' class='icn' style='background-image:url(/images/icns/attach.png);'>Legg ved fil</a></div>";
 		}
 		if (empty($this->login_identifier)) {
 			$attachment = "<em>Logg inn for å sende vedlegg</em>";
@@ -733,7 +754,7 @@ class messagecenter extends base {
 	function addRecipient() {
 		global $memberdb;
 		if (isset($_POST['no']) && is_numeric($_POST['no'])) 
-			$no = $_POST['no'];
+			$no = intval($_POST['no']);
 		else
 			$no = 1;
 		$nn = $no+1;
@@ -749,20 +770,21 @@ class messagecenter extends base {
 			print "<br /><em>Kun tilgjengelig for innloggede brukere</em>";		
 		} else {
 			print "<br />".$memberdb->generateMemberSelectBox("recipient$no",-1,$hiddenMembers).
-			"<span id='rcpt$nn'><a href='#' onclick='removeRecipient($no); return false;'>Fjern</a> | 
-				<a href='#' onclick='addRecipient($nn); return false;'>Legg til</a></span>";
+			"<span id='rcpt$nn'>
+			    <a href='#' id='rmRcpt_$no'>Fjern</a> | 
+				<a href='#' id='addRcpt_$nn'>Legg til</a></span>";
 		}
 		exit();
 	}
 	
 	function removeRecipient() {
 		global $memberdb;
-		$no = $_POST['no'];
+		$no = intval($_POST['no']);
 		$nn = $no-1;
 		header("Content-Type: text/html; charset=utf-8"); 
 		if ($nn > 1) 
-			print "<a href='#' onclick='removeRecipient($nn); return false;'>Fjern</a> | ";
-		print "<a href='#' onclick='addRecipient($no); return false;'>Legg til</a>";
+			print "<a href='#' id='rmRcpt_$nn'>Fjern</a> | ";
+		print "<a href='#' id='addRcpt_$no'>Legg til</a>";
 		exit();
 	}
 	
@@ -1058,7 +1080,7 @@ class messagecenter extends base {
 		$numsent = 0;
 		foreach ($recipients as $r) {
 			if ($user_mail_settings[$r] == '1') {
-				$errors = $this->sendMail($r,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments);
+				$errors = $this->queueMail($r,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments);
 				if (count($errors)>0) {
 				    $allerrors[] = array(
 				        'rcpt' => $r,
@@ -1070,17 +1092,18 @@ class messagecenter extends base {
 			}
 		}
 		
+		/*
 		$_SESSION['message_sent_to'] = $recipients;
 		$_SESSION['message_status'] = array(
 		    'numsent' => $numsent,
 		    'allerrors' => $allerrors
 		);
-		
+		*/
 		if (count($recipients) == 1)
 			$this->addToActivityLog("sendte en melding til ".call_user_func($this->make_memberlink,$recipients[0]));
 		else
 			$this->addToActivityLog("sendte en melding til ".count($recipients)." mottakere");
-		$this->redirect($this->generateCoolUrl("/"),"Meldingen ble sendt!");
+		$this->redirect($this->generateCoolUrl("/sender/$message_id"),"Meldingen ble lagret!");
 		
 	}
 	/*
@@ -1095,7 +1118,7 @@ class messagecenter extends base {
 	*  0.0 HTML_MESSAGE           BODY: HTML included in message
 	*  2.5 HTML_IMAGE_ONLY_16     BODY: HTML: images with 1200-1600 bytes of words
 	*/
-	function sendMail($recipient,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments) {
+	function queueMail($recipient,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments) {
 		global $memberdb;
 		$recipient = call_user_func($this->lookup_member, $recipient);
         $rcpt_name = $recipient->fullname;
@@ -1159,9 +1182,19 @@ class messagecenter extends base {
 		$res = $mailer->add_to_queue($mail);
 		if (empty($res['errors'])) {
 			$this->query("UPDATE $this->table_messages SET mailqueue_id=".$res['id']." WHERE id=$message_id");						
-		    $mailer->send_from_queue($this->attachment_dir.'/');
 		}
 		return $res['errors'];
+	}
+	
+	function printQueue($message_id) {
+	    $message_id = intval($message_id);
+		$mailer = $this->initialize_mailer();
+		return $mailer->printQueue($this->generateCoolUrl("/send"), $this->generateCoolUrl("/readthread/$message_id"));
+	}
+    
+    function ajaxSendFromQueue() {
+		$mailer = $this->initialize_mailer();
+		$mailer->ajaxSendFromQueue($this->attachment_dir.'/');
 	}
 	
 	function saveNewsletter($recipients, $subject, $body) {
@@ -1461,11 +1494,17 @@ class messagecenter extends base {
 		$output .= '
 		<script type="text/javascript">
 			//<![CDATA[
-			function rollOverRow(id) {
-				Element.setStyle("msg_row"+id, {background:"white"});
+			jQuery(document).ready(function(){
+                 jQuery("[id^=msgrow_]").mouseover(onRowOver);
+                 jQuery("[id^=msgrow_]").mouseout(onRowOut);
+            });
+
+			function onRowOver(event) {
+			    jQuery(event.delegateTarget).css("background","white");
 			}
-			function rollOutRow(id) {
-				Element.setStyle("msg_row"+id, {background:0});
+			
+			function onRowOut(event) {
+			    jQuery(event.delegateTarget).css("background","");
 			}
 			//]]>
 		</script>
@@ -1496,7 +1535,7 @@ class messagecenter extends base {
 			$id = $row['id'];
 			$url_read = $this->generateCoolUrl("/readmessage/$id/");
 			$output .= '
-				<tr class="row1" id="msg_row'.$id.'" onmouseover="rollOverRow('.$id.')" onmouseout="rollOutRow('.$id.')" onclick=\'window.location="'.$url_read.'";\'>
+				<tr class="row1" id="msgrow_'.$id.'" onclick=\'window.location="'.$url_read.'";\'>
 					<td width="20" valign="top"><img src="'.$img.'" /></td>
 					<td width="200" valign="top"><a href="'.$url_read.'" style="display:block;">'.$subject.'</a></td>
 					<td width="170" valign="top">'.$sender.'</td>
@@ -1569,12 +1608,20 @@ class messagecenter extends base {
 		$output .= '
 		<script type="text/javascript">
 			//<![CDATA[
-			function rollOverRow(id) {
-				Element.setStyle("msg_row"+id, {background:"white"});
+			
+			jQuery(document).ready(function(){
+                 jQuery("[id^=msgrow_]").mouseover(onRowOver);
+                 jQuery("[id^=msgrow_]").mouseout(onRowOut);
+            });
+
+			function onRowOver(event) {
+			    jQuery(event.delegateTarget).css("background","white");
 			}
-			function rollOutRow(id) {
-				Element.setStyle("msg_row"+id, {background:0});
+			
+			function onRowOut(event) {
+			    jQuery(event.delegateTarget).css("background","");
 			}
+
 			//]]>
 		</script>
 		';
@@ -1609,7 +1656,7 @@ class messagecenter extends base {
 			}
 			$url_read = $this->generateCoolUrl("/readmessage/$id/");
 			$output .= '
-				<tr class="row1" id="msg_row'.$id.'" onmouseover="rollOverRow('.$id.')" onmouseout="rollOutRow('.$id.')" onclick=\'window.location="'.$url_read.'";\'>
+				<tr class="row1" id="msgrow_'.$id.'" onclick=\'window.location="'.$url_read.'";\'>
 					<td width="20" valign="top"><img src="'.$img.'" /></td>
 					<td width="200" valign="top"><a href="'.$url_read.'" style="display:block;">'.$subject.'</a></td>
 					<td width="170" valign="top">'.$rcpts_str.'</td>
@@ -1672,11 +1719,17 @@ class messagecenter extends base {
 		$output .= '
 		<script type="text/javascript">
 			//<![CDATA[
-			function rollOverRow(id) {
-				Element.setStyle("msg_row"+id, {background:"white"});
+			jQuery(document).ready(function(){
+                 jQuery("[id^=msgrow_]").mouseover(onRowOver);
+                 jQuery("[id^=msgrow_]").mouseout(onRowOut);
+            });
+
+			function onRowOver(event) {
+			    jQuery(event.delegateTarget).css("background","white");
 			}
-			function rollOutRow(id) {
-				Element.setStyle("msg_row"+id, {background:0});
+			
+			function onRowOut(event) {
+			    jQuery(event.delegateTarget).css("background","");
 			}
 			//]]>
 		</script>
@@ -1707,7 +1760,7 @@ class messagecenter extends base {
 			}
 			$url_read = $this->generateCoolUrl("/readmessage/$id/");
 			$output .= '
-				<tr class="row1" id="msg_row'.$id.'" onmouseover="rollOverRow('.$id.')" onmouseout="rollOutRow('.$id.')" onclick=\'window.location="'.$url_read.'";\'>
+				<tr class="row1" id="msgrow_'.$id.'" onclick=\'window.location="'.$url_read.'";\'>
 					<td width="20" valign="top"><img src="'.$img.'" /></td>
 					<td width="200" valign="top"><a href="'.$url_read.'" style="display:block;">'.$subject.'</a></td>
 					<td width="170" valign="top">'.$sender.'</td>
@@ -1773,11 +1826,17 @@ class messagecenter extends base {
 		$output .= '
 		<script type="text/javascript">
 			//<![CDATA[
-			function rollOverRow(id) {
-				Element.setStyle("msg_row"+id, {background:"white"});
+			jQuery(document).ready(function(){
+                 jQuery("[id^=msgrow_]").mouseover(onRowOver);
+                 jQuery("[id^=msgrow_]").mouseout(onRowOut);
+            });
+
+			function onRowOver(event) {
+			    jQuery(event.delegateTarget).css("background","white");
 			}
-			function rollOutRow(id) {
-				Element.setStyle("msg_row"+id, {background:0});
+			
+			function onRowOut(event) {
+			    jQuery(event.delegateTarget).css("background","");
 			}
 			//]]>
 		</script>
@@ -1817,7 +1876,7 @@ class messagecenter extends base {
 			}
 			$url_read = $this->generateCoolUrl("/readthread/$thread/");
 			$output .= '
-				<tr class="row1" id="msg_row'.$message_id.'" onmouseover="rollOverRow('.$message_id.')" onmouseout="rollOutRow('.$message_id.')" onclick=\'window.location="'.$url_read.'";\'>
+				<tr class="row1" id="msgrow_'.$message_id.'" onclick=\'window.location="'.$url_read.'";\'>
 					<td width="20" valign="top"><img src="'.$img.'" /></td>
 					<td width="200" valign="top"><a href="'.$url_read.'" style="display:block;">'.$subject.'</a></td>
 					<td width="170" valign="top">'.$sender.'</td>
@@ -1870,92 +1929,116 @@ class messagecenter extends base {
 		$output .= '
 			<script type="text/javascript">
 			//<![CDATA[
+			
+			jQuery(document).ready(function(){
+                 jQuery("[id^=messageToggler_]").click(toggleMsg);
+                 jQuery("[id^=replylink_]").click(reply);
+                 jQuery("[id^=replylinkAll_]").click(replyAll);
+                 jQuery("[id^=addAttLink_]").click(addAttachment);
+            });
 
-			function toggleMsg(id) {
-				if ($("msgimg"+id)) Element.toggle("msgimg"+id);
-				Element.toggle("msgmain"+id);
-				Element.toggle("expanded"+id);
-				Element.toggle("collapsed"+id);
+			function toggleMsg(event) {
+			    event.preventDefault();
+			    item = event.delegateTarget.id;
+			    var id = item.substr(item.indexOf("_")+1);  // removing "messageToggler"
+			    if (jQuery("#expanded"+id).is(":hidden")) {
+			        jQuery("#expanded"+id).show();
+			        jQuery("#collapsed"+id).hide();			    
+			        jQuery("#msgmain"+id).slideDown();
+			        jQuery("#msgimg"+id).show();
+			    } else {
+			        jQuery("#expanded"+id).hide();
+			        jQuery("#collapsed"+id).show();
+			        jQuery("#msgmain"+id).slideUp();
+			        jQuery("#msgimg"+id).hide();
+			    }
 			}
 			
 			function cancelReply(msgId) {
-				Effect.SlideUp("replyForm_"+msgId, { duration: 0.4 });
+			    jQuery("#replyForm_"+msgId).slideUp()
 			}
 			
-			function reply(msgId) {
-				Effect.SlideDown("replyForm_"+msgId, { duration: 0.4 });
-				checkSenderOnly(msgId);
+			function reply(event) {
+			    event.preventDefault();
+			    item = event.delegateTarget.id;
+			    var id = item.substr(item.indexOf("_")+1);  // removing "messageToggler"
+			    if (jQuery("#replyForm_"+id).is(":hidden")) {
+			        jQuery("#replyForm_"+id).slideDown();
+			    }
+				checkSenderOnly(id);
 			}
 
-			function replyAll(msgId) {
-				Effect.SlideDown("replyForm_"+msgId, { duration: 0.4 });
-				checkAllRcpts(msgId);
+			function replyAll(event) {
+			    event.preventDefault();
+			    item = event.delegateTarget.id;
+			    var id = item.substr(item.indexOf("_")+1);  // removing "messageToggler"
+			    if (jQuery("#replyForm_"+id).is(":hidden")) {
+			        jQuery("#replyForm_"+id).slideDown();
+			    }
+				checkAllRcpts(id);
 			}
 
 			function checkSenderOnly(msgId) {
-				rcpts = $("rcpts_"+msgId).value;
+				rcpts = jQuery("#rcpts_"+msgId).val();
 				rcpts = rcpts.split(",");
 				if (rcpts.length > 1) {
 					for (var i = 0; i < rcpts.length; i++) {
-						if (i==0) $("rcpt"+msgId+"_"+rcpts[i]).checked = true;
-						else $("rcpt"+msgId+"_"+rcpts[i]).checked = false;
+						if (i==0) jQuery("#rcpt"+msgId+"_"+rcpts[i]).attr("checked",true);
+						else jQuery("#rcpt"+msgId+"_"+rcpts[i]).attr("checked",false);
 					}
 				}
 			}
 			
 			function checkAllRcpts(msgId) {
-				rcpts = $("rcpts_"+msgId).value;
+				rcpts = jQuery("#rcpts_"+msgId).val();
 				rcpts = rcpts.split(",");
 				if (rcpts.length > 1) {
 					for (var i = 0; i < rcpts.length; i++) {
-						$("rcpt"+msgId+"_"+rcpts[i]).checked = true;
+						jQuery("#rcpt"+msgId+"_"+rcpts[i]).attr("checked",true);
 					}
 				}
 			}
-			
-			function addAttachment(msgId, no) {
-				var nn = no+1;
-				//console.info("Adding a new attachment with id: "+no);
-				
-				var newDiv = document.createElement("div");
-				newDiv.id = "att_"+msgId+"_"+no;
-				newDiv.style.border = "1px solid #ddd";
-				newDiv.style.padding = "4px";
-				var newInput = document.createElement("input");
-				newInput.setAttribute("type", "file");
-				newInput.setAttribute("name", "vedlegg"+no);
-				newDiv.appendChild(newInput);
-				var imgNode = document.createElement("img");
-				imgNode.setAttribute("src", "'.$this->image_dir.'delete.png");
-				imgNode.setAttribute("border", "0");
-				imgNode.style.paddingLeft = "10px";
-				var txtNode = document.createTextNode(" Fjern"); 
-				var newAnchor = document.createElement("a");
-				newAnchor.setAttribute("href", "#");
-				newAnchor.onclick = function() { removeAttachment(msgId,no); return false; }
-				newAnchor.appendChild(imgNode);
-				newAnchor.appendChild(txtNode);
-				newDiv.appendChild(newAnchor);
-				
-				$("att_"+msgId).removeChild($("add_att_link_"+msgId));
-				$("att_"+msgId).appendChild(newDiv);
-	
-				var txtNode = document.createTextNode("Legg ved enda en fil"); 
-				var newAnchor = document.createElement("a");
-				newAnchor.setAttribute("href", "#");
-				newAnchor.id = "add_att_link_"+msgId;
-				newAnchor.onclick = function() { addAttachment(msgId,nn); return false; }
-				newAnchor.appendChild(txtNode);
-				$("att_"+msgId).appendChild(newAnchor);
-	
-				//Element.update("att_"+msgId+"_"+no,html);
-			}
-	
-			function removeAttachment(msgId, no){
-				//console.info("Removing attachment with id: "+no);
-				$("att_"+msgId).removeChild($("att_"+msgId+"_"+no));
-			}
-		
+        
+            function addAttachment(event) {
+                event.preventDefault();
+			    item = event.delegateTarget.id;
+			    var tmp = item.substr(item.indexOf("_")+1);  // removing "messageToggler"
+			    if (tmp.indexOf("_") != -1) {
+			        threadId = tmp.substr(0,tmp.indexOf("_"));
+			        attId = tmp.substr(tmp.indexOf("_")+1)-0;
+			    } else {
+			        threadId = tmp;
+			        attId = 1;
+			    }
+			    console.info("Adding att. "+attId+" to thread "+threadId);
+                
+                var newDiv = "<div id=\"att_"+threadId+"_"+attId+"\" style=\"border: 1px solid #ddd; padding: 4px;\"> \
+                  <input type=\"file\" name=\"vedlegg"+attId+"\" /> \
+                  <a id=\"removeAttLink_"+threadId+"_"+attId+"\" href=\"#\" class=\"icn\" style=\"background-image:url(/images/delete.png);\">Fjern</a> \
+                  </div><a id=\"addAttLink_"+threadId+"_"+(attId+1)+"\" href=\"#\" class=\"icn\" style=\"background-image:url(/images/icns/attach.png);\">Legg ved enda en fil</a>";
+                            
+                jQuery("#addAttLink_"+threadId).remove();
+                jQuery("#addAttLink_"+threadId+"_"+attId).remove();
+                jQuery("#att_"+threadId).append(newDiv);
+                jQuery("#addAttLink_"+threadId+"_"+(attId+1)).click(addAttachment);
+                jQuery("#removeAttLink_"+threadId+"_"+attId).click(removeAttachment);    
+            }
+    
+            function removeAttachment(event){
+                event.preventDefault();
+			    item = event.delegateTarget.id;
+			    var tmp = item.substr(item.indexOf("_")+1);  // removing "messageToggler"
+			    if (tmp.indexOf("_") != -1) {
+			        threadId = tmp.substr(0,tmp.indexOf("_"));
+			        attId = tmp.substr(tmp.indexOf("_")+1)-0;
+			    } else {
+			        threadId = tmp;
+			        attId = 1;
+			    }
+			    console.info("Removing att. "+attId+" from thread "+threadId);
+			    jQuery("#att_"+threadId+"_"+attId).remove();
+            }
+            
 			//]]>
 			</script>
 		';
@@ -2140,7 +2223,7 @@ class messagecenter extends base {
 			$img_collapsed = $this->image_dir."collapsed.gif";
 			
 			if ($printThread) 
-				$toggleMsgCode = '<a href="#" onclick="toggleMsg('.$id.'); return false;" title="Trykk for å slå sammen eller utvide denne meldingen"><span id="expanded'.$id.'"><img src="'.$img_expanded.'" style="width:10px; height:10px;border:0px;" alt="Expanded" /></span><span id="collapsed'.$id.'" style="display:none;"><img src="'.$img_collapsed.'" style="width:10px; height:10px; border:0px;" alt="Collapsed" /></span></a>';
+				$toggleMsgCode = '<a href="#" id="messageToggler_'.$id.'" title="Trykk for å slå sammen eller utvide denne meldingen"><span id="expanded'.$id.'"><img src="'.$img_expanded.'" style="width:10px; height:10px;border:0px;" alt="Expanded" /></span><span id="collapsed'.$id.'" style="display:none;"><img src="'.$img_collapsed.'" style="width:10px; height:10px; border:0px;" alt="Collapsed" /></span></a>';
 			else
 				$toggleMsgCode = '';
 				
@@ -2284,9 +2367,9 @@ class messagecenter extends base {
 								<div class="footerLinks">
 								';
 								if ($sender_id != $me) {
-									$output .= '<a href="'.$reply.'" onclick="reply('.$id.'); return false;" class="reply">Svar til avsender</a> ';
+									$output .= '<a href="'.$reply.'" id="replylink_'.$id.'" class="reply">Svar til avsender</a> ';
 									if ($rcpt_count > 1) {
-										$output .= ' <a href="'.$replyall.'" onclick="replyAll('.$id.'); return false;" class="replyall">Svar til alle</a> ';
+										$output .= ' <a href="'.$replyall.'" id="replylinkAll_'.$id.'" class="replyall">Svar til alle</a> ';
 									}
 								}
 								$output .= '<a href="'.$delete.'" class="delete">Slett meldingen</a>

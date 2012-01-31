@@ -98,9 +98,14 @@ class rent extends base {
 		</div>
 		<script type=\"text/javascript\">
 			function velgLokale(nr) {
-				document.getElementById('leieKalender').innerHTML = \"Et øyeblikk...\";
-				var url = \"".$this->generateCoolUrl("/")."kalender?noprint=true&hall=\"+nr;
-				new Ajax.Updater('leieKalender', url);
+				jQuery('#leieKalender').html(\"Et øyeblikk...\");
+				jQuery.ajax({
+					    url: \"".$this->generateCoolUrl("/")."kalender?noprint=true&hall=\"+nr,
+					    dataType: \"html\",
+					    success: function(responseText){  
+                            jQuery(\"#leieKalender\").html(responseText);
+                        }                    
+                });				
 			}
 		</script>
 		";
@@ -246,17 +251,25 @@ class rent extends base {
 				}
 				function sendSoknad() {
 					document.getElementById('soknader').innerHTML = \"Et øyeblikk...\";
-					var allday = \$F('allday');
-					var sh = \$F('startHour');
-					var sm = \$F('startMin');
-					var eh = \$F('endHour');
-					var em = \$F('endMin');
-					var comment = Form.Element.serialize('kommentar');
-					var allday = Form.Element.serialize('allday');
+					var allday = jQuery('#allday').val();
+					var sh = jQuery('#startHour').val();
+					var sm = jQuery('#startMin').val();
+					var eh = jQuery('#endHour').val();
+					var em = jQuery('#endMin').val();
+					var comment = jQuery('#kommentar').serialize();
+					var allday = jQuery('#allday').serialize();
 					toggleForm(false);
-					var url = \"".$this->generateCoolUrl("/send-application/","noprint=true")."\";
 					var params = \"hall=$hall&year=$year&month=$month&day=$day&sh=\"+sh+\"&sm=\"+sm+\"&eh=\"+eh+\"&em=\"+em+\"&\"+comment+\"&\"+allday;
-					new Ajax.Updater('soknader', url, { method: 'post', parameters: params });
+					
+					jQuery.ajax({
+                            url: \"".$this->generateCoolUrl("/send-application/","noprint=true")."\",
+                            dataType: \"html\",
+                            data: params,
+                            type: \"POST\",
+                            success: function(responseText){  
+                                jQuery(\"#soknader\").html(responseText);
+                            }                    
+                    });
 				}
 			</script>
 		";	

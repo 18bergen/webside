@@ -451,15 +451,19 @@ class imagearchive extends comments {
 		//<![CDATA[
 			
 			function fetch_events() {
-				var url = "%events_uri%";
 				var pars = new Array();
 				pars.push("cal_page_id=" + $("cal_id").value);
 				pars = pars.join("&");
-				var success = function(t){ 
-					setText("span_event",t.responseText);
-				}
 				setText("span_event", "Vent litt...");
-				var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});
+				jQuery.ajax({
+                    url: "%events_uri%",
+                    type: "POST",
+                    data: pars, 
+                    dataType: "html",
+                    success: function(responseText){ 
+                        setText("span_event",responseText);
+                    }
+                });
 			}
 			
 			function select_imagedir(nr) {
@@ -472,7 +476,15 @@ class imagearchive extends comments {
 					setText("imgspan"+(nr+1),t.responseText);
 				}
 				setText("imgspan"+(nr+1), "Vent litt...");
-				var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});
+				jQuery.ajax({
+                    url: "%imgdir_uri%",
+                    type: "POST",
+                    data: pars, 
+                    dataType: "html",
+                    success: function(responseText){ 
+                        setText("imgspan"+(nr+1),responseText);
+                    }
+                });
 			}
 
 			function select_image(nr) {
@@ -481,11 +493,16 @@ class imagearchive extends comments {
 				pars.push("select_nr="+nr);
 				pars.push("select_value=" + $("img"+nr).value);
 				pars = pars.join("&");
-				var success = function(t){ 
-					setText("imgspan"+(nr+1),t.responseText);
-				}
 				setText("imgspan"+(nr+1), "Vent litt...");
-				var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});
+				jQuery.ajax({
+                    url: "%img_uri%",
+                    type: "POST",
+                    data: pars, 
+                    dataType: "html",
+                    success: function(responseText){ 
+                        setText("imgspan"+(nr+1),responseText);
+                    }
+                });
 			}
 			
 		//]]>
@@ -4884,11 +4901,16 @@ class imagearchive extends comments {
 					var pars = new Array();
 					pars.push("cal_page_id="+$("cal_id").value);
 					pars = pars.join("&");
-					var success = function(t){ 
-						setText("span_event",t.responseText);
-					}
 					setText("span_event", "Vent litt...");
-					var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});
+					jQuery.ajax({
+                        url: "'.$events_uri.'",
+                        type: "POST",
+                        data: pars, 
+                        dataType: "html",
+                        success: function(responseText){ 
+                            setText("span_event",responseText);
+                        }
+                    });
 				}
 								
 				function generateSlug(tittel){

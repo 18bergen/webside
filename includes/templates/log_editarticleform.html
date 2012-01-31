@@ -241,7 +241,7 @@
 			}
 			
 			function getAuthors() {
-				var authors = $F("authors");
+				var authors = jQuery("#authors").val();
 				if (authors == "") return [];
 				else return authors.split(",");
 			}
@@ -294,22 +294,28 @@
 			function updateAuthorList() {
 				var url = "%updateAuthorListUrl%";
 				var pars = new Array();
-				pars.push("authors="+escape($F("authors")));
+				pars.push("authors="+escape(jQuery("#authors").val()));
 				pars = pars.join("&");
-				var success = function(t){ 
-					YAHOO.util.Dom.setStyle("addAuthorProgress","display","none");					
-					YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
-					setText("authorlist",t.responseText);
-				}
-				var failure = function(t) {
-					YAHOO.util.Dom.setStyle("addAuthorProgress","display","none");					
-					YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");					
-					setText("authorlist","Å nei, det oppstod en feil.");
-				}
 				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","none");
 				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");
 				YAHOO.util.Dom.setStyle("addAuthorProgress","display","block");
-				var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success, onFailure:failure});
+				
+				jQuery.ajax({
+                    url: "%updateAuthorListUrl%",
+                    type: "POST",
+                    data: pars, 
+                    dataType: "html",
+                    success: function(responseText){ 
+                        YAHOO.util.Dom.setStyle("addAuthorProgress","display","none");					
+                        YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
+                        setText("authorlist",responseText);
+                    },
+                    error: function() {
+                        YAHOO.util.Dom.setStyle("addAuthorProgress","display","none");					
+                        YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");					
+                        setText("authorlist","Å nei, det oppstod en feil.");
+                    }
+                });
 			}
 
 			//]]>				

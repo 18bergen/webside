@@ -3,7 +3,7 @@
 class newsletters extends base {
 
 	var $getvars = array('writenew','previewletter','sendletter','newsletterarchive_page',
-		'shownewsletter','prefs','saveprefs'
+		'shownewsletter','prefs','saveprefs','sender','ajax_sendmail'
 	);
 
 	var $months = array("january","february","march","april","may","june","july","august","september","october","november","december");
@@ -61,6 +61,10 @@ class newsletters extends base {
 			return $this->previewNewsletter();
 		} else if (isset($_GET['sendletter'])){
 			return $this->sendNewsletter();
+		} else if (isset($_GET['sender'])){
+			return $this->printQueue();
+		} else if (isset($_GET['ajax_sendmail'])){
+			return $this->ajaxSendFromQueue();
 		} else if (isset($_GET['shownewsletter'])){
 			return $this->showNewsletter($_GET['shownewsletter']);
 		} else {
@@ -444,7 +448,7 @@ class newsletters extends base {
 				$this->addToErrorLog("Et nyhetsbrev kunne ikke sendes til ".$udata['name']." (".$udata['email']."). Feil: ".var_export($res['errors'],true));
             }
 		}
-        $mailer->send_from_queue($this->attachment_dir.'/');
+        //$mailer->send_from_queue($this->attachment_dir.'/');
 		$this->query("INSERT INTO $this->tablename 
 				(page,sender,recipients,subject,timestamp,body,version) 
 				VALUES ('".$this->page_id."',
@@ -463,7 +467,18 @@ class newsletters extends base {
 
 		$this->addToActivityLog("sendte nyhetsbrev til ".implode(", ",$newsletter['group_list']));
 
-		$this->redirect($this->generateURL("shownewsletter=$id",true),"Nyhetsbrevet ble sendt til ".count($newsletter['recipients'])." personer!");
+		//$this->redirect($this->generateURL("shownewsletter=$id",true),"Nyhetsbrevet ble sendt til ".count($newsletter['recipients'])." personer!");
+		$this->redirect($this->generateURL("sender=$id",true));
+	}
+	
+	function printQueue() {
+		$mailer = $this->initialize_mailer();
+		return $mailer->printQueue($this->generateUrl("ajax_sendmail=1"), $this->generateUrl("shownewsletter=".intval($_GET['sender']),true));
+	}
+    
+    function ajaxSendFromQueue() {
+		$mailer = $this->initialize_mailer();
+		$mailer->ajaxSendFromQueue('');
 	}
 
 	function showArchive(){
