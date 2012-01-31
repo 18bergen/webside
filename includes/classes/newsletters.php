@@ -443,7 +443,7 @@ class newsletters extends base {
 				$mail['html_body'] = $newsletter['html_body'];
 			}
             $res = $mailer->add_to_queue($mail);
-            if (empty($res['errors'])) {
+            if (!empty($res['errors'])) {
 				$this->addToErrorLog("Et nyhetsbrev kunne ikke sendes til ".$udata['name']." (".$udata['email']."). Feil: ".var_export($res['errors'],true));
             }
 		}
