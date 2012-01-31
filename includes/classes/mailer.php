@@ -78,7 +78,7 @@ class mailer extends base {
                     success: function(xhr_data) {
                         if (xhr_data.mail_sent == 'true') {
                             if (xhr_data.mail_left > 0) {
-                                jQuery('#mail_progressbar').html('Vennligst vent, sender epost… '+xhr_data.mail_sent+' epost gjenstår.<br /><img src=\"/images/progressbar1.gif\" />');
+                                jQuery('#mail_progressbar').html('Vennligst vent, sender epost… '+xhr_data.mail_left+' epost gjenstår.<br /><img src=\"/images/progressbar1.gif\" />');
                                 sendMail();
                             } else {
                                 jQuery('#mail_progressbar').html('Meldingen(e) er levert!');  
