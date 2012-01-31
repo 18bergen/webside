@@ -1103,7 +1103,7 @@ class messagecenter extends base {
 			$this->addToActivityLog("sendte en melding til ".call_user_func($this->make_memberlink,$recipients[0]));
 		else
 			$this->addToActivityLog("sendte en melding til ".count($recipients)." mottakere");
-		$this->redirect($this->generateCoolUrl("/sender/$message_id"),"Meldingen ble lagret!");
+		$this->redirect($this->generateCoolUrl("/sender/$message_id"));
 		
 	}
 	/*
