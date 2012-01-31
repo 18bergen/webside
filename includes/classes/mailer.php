@@ -62,6 +62,10 @@ class mailer extends base {
 	    global $bergen18globalconfig;
 
         require_once '../www/libs/swift-latest/lib/swift_required.php';        
+$mailer_working = array();
+for ($i = 0; $i < count($bergen18globalconfig['smtpServers']); $i++) {
+	$mailer_working[] = true;
+}
         	        
 		$res = $this->query("SELECT id, sender_name, sender_email, rcpt_name, rcpt_email, subject, plain_body, html_body, attachments FROM $this->tablename WHERE time_sent=0 ORDER BY time_added");
 		while ($row = $res->fetch_assoc()) {
@@ -100,31 +104,57 @@ class mailer extends base {
             
             $mailer_id = 0;
             $mailer_limit_reached = true;
-            while ($mailer_limit_reached) {
+$mail_sent = false; 
+            while (!$mail_sent) {
                 $mailer_id++;
                 if ($mailer_id > count($bergen18globalconfig['smtpServers'])) {
                     $this->fatalError("Oi, vi har overskredet sendingskvoten vår. Meldingen din er lagt i kø, og blir sendt ved neste anledning.");
                 }
-                $mailer = $bergen18globalconfig['smtpServers'][$mailer_id-1];
+		if ($mailer_working[$mailer_id-1]) {
+                
+		$mailer = $bergen18globalconfig['smtpServers'][$mailer_id-1];
                 $res2 = $this->query("SELECT COUNT(id) FROM bg_mailqueue WHERE time_sent > (NOW() - INTERVAL 1 HOUR) AND mailer=$mailer_id");
                 $n = $res2->fetch_row();
                 $n = intval($n[0]);
+		print "$n / ".$mailer['send_limit_per_hour']." mail sent from $mailer_id<br />";
                 $mailer_limit_reached = ($n >= $mailer['send_limit_per_hour']);
-            }
+                
+		$res2 = $this->query("SELECT COUNT(id) FROM bg_mailqueue WHERE time_sent > (NOW() - INTERVAL 1 DAY) AND mailer=$mailer_id");
+                $n = $res2->fetch_row();
+                $n = intval($n[0]);
+		print "$n mail/day sent from $mailer_id<br />";
+		if ($mailer_limit_reached) {
+		$mailer_working[$mailer_id-1] = false;
+		}
+		}
+
+		if ($mailer_working[$mailer_id-1]) {
+		    print "<br />Trying mailer ".$mailer['user']."...";
             
 		    $this->query("UPDATE $this->tablename SET mailer=$mailer_id, attempts = attempts + 1 WHERE id=$id");
     
-            $transport = Swift_SmtpTransport::newInstance($mailer['host'], $mailer['port'], $mailer['transport']);
-            $transport->setUsername($mailer['user']);
-            $transport->setPassword($mailer['pass']);
+		    $transport = Swift_SmtpTransport::newInstance($mailer['host'], $mailer['port'], $mailer['transport']);
+		    $transport->setUsername($mailer['user']);
+		    $transport->setPassword($mailer['pass']);
+		    
+		    $swiftmailer = Swift_Mailer::newInstance($transport);
             
-            $swiftmailer = Swift_Mailer::newInstance($transport);
-            $numSent = $swiftmailer->send($message);
-            if ($numSent) {
+		    try {
+		        $numSent = $swiftmailer->send($message);
+		    } catch (Exception $e) {
+	                $numSent = 0;
+                        echo 'Caught exception: ',  $e->getMessage(), "\n";
+			$mailer_working[$mailer_id-1] = false;
+                    }
+                    if ($numSent) {
 		        $this->query("UPDATE $this->tablename SET time_sent=NOW(), plain_body='HIDDEN', html_body='HIDDEN' WHERE id=$id");
-            }
-        }
+                        $mail_sent = true;
+print "SENT";
+                    }
+print "<br />";
+              }
 	}
-	
+   }
+  }	
 }
 ?>
