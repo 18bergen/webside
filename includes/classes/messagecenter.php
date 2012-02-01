@@ -1188,8 +1188,11 @@ class messagecenter extends base {
 	
 	function printQueue($message_id) {
 	    $message_id = intval($message_id);
+		$res = $this->query("SELECT thread FROM $this->table_messages where id=$message_id");
+		$row = mysql_fetch_assoc($res);
+		$thread_id = intval($row['thread']);
 		$mailer = $this->initialize_mailer();
-		return $mailer->printQueue($this->generateCoolUrl("/send"), $this->generateCoolUrl("/readthread/$message_id"));
+		return $mailer->printQueue($this->generateCoolUrl("/send"), $this->generateCoolUrl("/readthread/$thread_id"));
 	}
     
     function ajaxSendFromQueue() {
