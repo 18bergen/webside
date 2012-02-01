@@ -1805,10 +1805,12 @@ class messagecenter extends base {
 		if ($this->page_no > ($this->item_count/$this->items_per_page)) $this->page_no = ceil($this->item_count/$this->items_per_page);
 		if ($this->page_no < 1) $this->page_no = 1;
 		
+		# Somehow, the MIN(CONCAT( combination needs a letter first to
+		# return the string as utf8....
 		$res = $this->query("SELECT
 				$g.thread,
 				$g.isnewsletter, 
-				MIN(concat($g.id,'|',$g.sender,'|',$g.sender_name,'|',$g.subject)) as first_msg, 
+				MIN(concat('a',$g.id,'|',$g.sender,'|',$g.sender_name,'|',$g.subject)) as first_msg, 
 				SUM($u.is_read) as unread_count,
 				MAX($g.timestamp) as newest,
 				COUNT($u.id) as msg_count
@@ -1863,7 +1865,7 @@ class messagecenter extends base {
 			}
 
 
-			$dat = explode("|",stripslashes($row['first_msg']));
+			$dat = explode("|",mb_substr(stripslashes($row['first_msg']),1));
 			$message_id = array_shift($dat);
 			$sender_id = array_shift($dat);
 			$sender_name = array_shift($dat);
