@@ -60,14 +60,22 @@ class mailer extends base {
 	
 	function printQueue($ajaxUrl, $completeUrl) {	
 	    return "
-	        <div id='mail_progressbar'>Un mumento</div>
+	        <div id='mail_progressbar'>
+	            
+	        </div>
+	        <div id='mail_errors'>
+	            
+	        </div>
+	        
 	        <noscript>
 	            Beklager, denne funksjonen krever at du har JavaScript påslått. 
 	            Vennligst skru på JavaScript og last siden på nytt.
 	        </noscript>
 	        <script>
-             
-             function sendMail() {
+            
+            errorsOccured = 0;
+            mailDelivered = 0;
+            function sendMail() {
                  jQuery.ajax({
                     url: \"$ajaxUrl\",
                     dataType: 'json',
@@ -77,20 +85,34 @@ class mailer extends base {
                     },
                     success: function(xhr_data) {
                         if (xhr_data.mail_sent == 'true') {
+                            mailDelivered += 1;
                             if (xhr_data.mail_left > 0) {
                                 jQuery('#mail_progressbar').html('Vennligst vent, sender epost… '+xhr_data.mail_left+' epost gjenstår.<br /><img src=\"/images/progressbar1.gif\" />');
                                 sendMail();
                             } else {
-                                jQuery('#mail_progressbar').html('Meldingen(e) er levert!');  
-                                document.location.href = \"$completeUrl\";
+                                if (errorsOccured > 0) {
+                                    jQuery('#mail_progressbar').html(mailDelivered+' epost(er) er levert! '+errorsOccured+' epost(er) kunne ikke leveres! Send gjerne feilmeldingene under til webmaster.');                                  
+                                } else {
+                                    jQuery('#mail_progressbar').html(mailDelivered+' epost(er) er levert!');  
+                                    document.location.href = \"$completeUrl\";
+                                }
                             }
                         } else {
-                            if (xhr_data.mail_left == 0) {
-                                jQuery('#mail_progressbar').html('Mailen er allerede sendt.');                        
-                                document.location.href = \"$completeUrl\";
-                            } else {
-                                jQuery('#mail_progressbar').html('Beklager, det oppstod en feil under levering av eposten. Meldingen din er lagret i en kø, og vil bli forsøkt levert ved nærmeste anledning.');                        
+                            if (xhr_data.error_msg != '') {
+                                errorsOccured += 1;
+                                jQuery('#mail_errors').append('<p style=\"padding:10px;border:1px solid red;background:white;\">'+xhr_data.error_msg+'</p>');                        
                             }
+                            if (xhr_data.mail_left > 0) {
+                                sendMail();
+                            } else {
+                                if (errorsOccured > 0) {
+                                    jQuery('#mail_progressbar').html(mailDelivered+' epost(er) er levert! '+errorsOccured+' epost(er) kunne ikke leveres! Send gjerne feilmeldingene under til webmaster.');
+                                } else {
+                                    jQuery('#mail_progressbar').html('Mailen er allerede sendt.');                        
+                                    document.location.href = \"$completeUrl\";                                
+                                }
+                            }
+
                         }
                     }
                   });
@@ -123,10 +145,10 @@ class mailer extends base {
             $mailer_working[] = true;
         }
         	        
-		$res = $this->query("SELECT id, sender_name, sender_email, rcpt_name, rcpt_email, subject, plain_body, html_body, attachments FROM $this->tablename WHERE time_sent=0 ORDER BY time_added");
+		$res = $this->query("SELECT id, sender_name, sender_email, rcpt_name, rcpt_email, subject, plain_body, html_body, attachments FROM $this->tablename WHERE time_sent=0 AND permanent_failure=0 ORDER BY time_added");
 		$queuesize = $res->num_rows;
 		if ($queuesize == 0) {
-            return array('mail_sent' => 'false', 'mail_left' => 0);		
+            return array('mail_sent' => 'false', 'mail_left' => 0, 'error_msg' => '');		
 		}
 		$row = $res->fetch_assoc();
         $id = intval($row['id']);
@@ -142,7 +164,13 @@ class mailer extends base {
         $message = Swift_Message::newInstance();
         $message->setSubject($subject);
         $message->setFrom(array($sender_email => $sender_name));
-        $message->setTo(array($rcpt_email => $rcpt_name));
+        try {
+            $message->setTo(array($rcpt_email => $rcpt_name));
+        } catch (Swift_RfcComplianceException $e) {
+            $this->query("UPDATE $this->tablename SET permanent_failure=1 WHERE id=$id");
+            return array('mail_sent' => 'false', 'mail_left' => $queuesize, 'error_msg' => $e->getMessage() );
+        }
+
         $message->setReplyTo(array($sender_email => $sender_name));
         $message->setBody($plain_body);
 
@@ -204,7 +232,7 @@ class mailer extends base {
                     $numSent = $swiftmailer->send($message);
                 } catch (Exception $e) {
                     $numSent = 0;
-                    echo 'Caught exception: ',  $e->getMessage(), "\n";
+                    //echo 'Caught exception: ',  $e->getMessage(), "\n";
                     $mailer_working[$mailer_id-1] = false;
                 }
                 if ($numSent) {
