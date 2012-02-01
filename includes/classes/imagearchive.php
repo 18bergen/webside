@@ -390,7 +390,7 @@ class imagearchive extends comments {
 	var $template_imagethumb_nolinks = '
 	
 		<div class="noframe" style="width:%framewidth%px;height:%framewidth%px;">
-			<img src="/18bergen%imgsrc%" alt="%title%" style="width:%width%px;height:%height%px;" />
+			<img src="%imgsrc%" alt="%title%" style="width:%width%px;height:%height%px;" />
 		</div>
 	';
 	
