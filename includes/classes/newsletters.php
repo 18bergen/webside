@@ -704,4 +704,3 @@ class newsletters extends base {
 }
 
 ?>
-
