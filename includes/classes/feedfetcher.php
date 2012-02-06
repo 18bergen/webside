@@ -62,7 +62,7 @@ class FeedFetcher {
 				</div><!-- ".$stream_id."_nyheter_content -->
 				";
 			}
-			if ($feed_no < count($feeds)) $output .= "<br />&nbsp;";
+			if ($feed_no < count($feeds)) $output .= "<div style='height:12px;'></div>";
 		}
 		return $output;
 	}
