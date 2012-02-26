@@ -62,7 +62,7 @@ class frontpage extends base {
 	function get_upcoming_events() {
 		$cal = $this->initializeCalendarInstance();
 		$events = $cal->getCalendarEvents(0, array( 'onlyFutureEvents' => true, 'maxFutureDays' => $this->upcoming_events_days ));
-		if (count($events) == 0) return '<li><em>Det store intet</em></li>';
+		if (count($events) == 0) return '<li><em>Intet de neste '.$this->upcoming_events_days.' dagene.</em></li>';
 		$output = '';
 		foreach ($events as $event) {
 		    $dsa = getdate($event['startdate']);
