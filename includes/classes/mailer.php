@@ -48,7 +48,7 @@ class mailer extends base {
             $this->query("INSERT INTO $this->tablename
                 (time_added, sender_name, sender_email, rcpt_name, rcpt_email, subject, plain_body, html_body, attachments)
                 VALUES
-                (NOW(),\"$sender_name\",\"$sender_email\",\"$rcpt_name\",\"$rcpt_email\",\"$subject\",\"".addslashes($plain_body)."\",\"".addslashes($html_body)."\",\"".addslashes($attachments)."\")"
+                (NOW(),\"$sender_name\",\"$sender_email\",\"$rcpt_name\",\"$rcpt_email\",\"".addslashes($subject)."\",\"".addslashes($plain_body)."\",\"".addslashes($html_body)."\",\"".addslashes($attachments)."\")"
             );
             $mailqueue_id = $this->insert_id();
 		}
