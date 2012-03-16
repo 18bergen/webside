@@ -16,6 +16,8 @@ class messagecenter extends base {
 	var $template_safe_html 			= "mailschema_safe.html";
 	var $template_anon_plain 			= "mailschema_anonymous.txt";
 	var $template_anon_html 			= "mailschema_anonymous.html";
+	var $template_newsletter_plain 		= "newsletter_simple.txt";
+	var $template_newsletter_html 		= "newsletter_simple.html";
 	
 	var $label_newmessage = "Send ny melding";
 	var $label_reply = "Svar på melding";
@@ -97,33 +99,39 @@ class messagecenter extends base {
     		<input type="hidden" name="MAX_FILE_SIZE" value="%maxfilesize%" />
     		
 			<table cellpadding="2" cellspacing="0" class="skjema">
-				<tr><td width="70" valign="top">%label_to%: </td><td>
+				<tr><td width="70" valign="top" style="font-weight:bold;">%label_to%: </td><td>
 					%recipients%		
 				</td></tr>
+				<tr style="%vis_nyhetsbrev%">
+					<td style="font-weight:bold;">Nyhetsbrev: </td>
+					<td>
+						<input name="newsletterHeading" value="%newsletterHeading%" style="width:100%;" />
+					</td>
+				</tr>
 				
 				%begincommentifloggedin%
 				<tr>
-					<td>%label_yourname%: </td>
+					<td style="font-weight:bold;">%label_yourname%: </td>
 					<td><input type="text" size="50" name="sendarnamnj" value="%sendername%" /></td>
 				</tr><tr>
-					<td>%label_youremail%: </td>
+					<td style="font-weight:bold;">%label_youremail%: </td>
 					<td><input type="text" size="50" name="sendaradress" value="%sendermail%" /></td>
 				</tr>
 				%endcommentifloggedin%
 				
 				<tr style="%vis_emne%">
-					<td>Emne: </td>
-					<td><input type="text" size="50" name="emne" value="%emne%" style="width: 397px;" /></td>
+					<td style="font-weight:bold;">Emne: </td>
+					<td><input type="text" size="50" name="emne" value="%emne%" style="width:100%;" /></td>
 				</tr>
 				<tr style="%vis_vedlegg%">
-					<td>%label_attachments%: </td>
+					<td style="font-weight:bold;">%label_attachments%: </td>
 					<td>
 						%vedlegg%
 					</td>
 				</tr>
 				<tr>
-					<td valign="top">%label_body%: </td>
-					<td><textarea name="melding" style="width: 400px; height: 150px;">%melding%</textarea>
+					<td valign="top" style="font-weight:bold;">%label_body%: </td>
+					<td><textarea name="melding" style="width:100%; height: 150px;">%melding%</textarea>
 					<div style="color:#444;">
 						%label_sendmsginfo%
 					</div></td>
@@ -294,44 +302,95 @@ class messagecenter extends base {
 		$attachment = "";
 		$recipients = array();
 		
+		$newsletterHeading = "";
+
+        // Lag liste over mottakere
+        
 		if (isset($_SESSION['errors'])){
 			$i = 1;
-			while (isset($_SESSION['postdata']["recipient$i"]) && intval($_SESSION['postdata']["recipient$i"]) > 0) {
-				$r = intval($_SESSION['postdata']["recipient$i"]);
-				if ($memberdb->isUser($r)){ 
-					$recipients[$r] = 1;
-				}
-				$i++;
-			}
 			if (isset($_SESSION['postdata']['rcpts'])) {
 				$rc = explode(',',$_SESSION['postdata']['rcpts']);
-				foreach ($rc as $r) {
-					if ($_SESSION['postdata']['rcpt'.$r] == 'on'){ 
-						if ($memberdb->isUser($r)){ 
-							$recipients[$r] = 1;
-						} else {
-							return $this->notSoFatalError("Det eksisterer intet medlem med id $r");
-						}
-					}
-				}			
 			}
-		} else if ((isset($_GET['recipients'])) && (!empty($_GET['recipients']))) {
-			$rc = explode(',',$_GET['recipients']);
-			if (count($rc) > 1 && empty($this->login_identifier)) {
-				return "
-					<div style='display:block; border: 1px solid red; padding: 5px; margin-bottom: 10px; font-size:11px; background: white;'>
-						Så lenge du ikke er logget inn kan du sende til maks én person om gangen.
-					</div>
-				".$this->permissionDenied();
+			if (isset($_SESSION['postdata']['recipients'])) {
+			    $rc = explode(',',$_SESSION['postdata']['recipients']);
+			    $groupId = $_SESSION['postdata']['groupId'];
 			}
-			foreach ($rc as $r) {
-				if (!is_numeric($r)) return $this->notSoFatalError("Ugyldig mottakerliste"); 
-				if ($memberdb->isUser($r)){ 
-					$recipients[$r] = 1;
-				} else {
-					return $this->notSoFatalError("Det eksisterer intet medlem med id $r");
-				}	
-			}
+		} else if (isset($_GET['recipients'])) {
+		    $rc = explode(',',$_GET['recipients']);
+		    if (isset($_GET['groupId'])) {
+    		    $groupId = intval($_GET['groupId']);
+    		}
+		}
+		if (isset($rc)) {
+            if (count($rc) > 1) {
+                // pass
+            } else if (is_numeric($rc[0])) {
+                // pass
+            } else {
+                if (!$this->isLoggedIn() || !isset($groupId)) {
+                    return $this->permissionDenied();
+                }
+                /*                
+                Temp solution
+                */
+                global $memberdb;
+                $group = $memberdb->getGroupById($groupId);
+                $members = $group->members;
+                
+                $guardians = array();
+                foreach ($members as $mid) {
+                    foreach ($memberdb->getMemberById($mid)->guardians as $g) {
+                        $guardians[] = $g;
+                    }
+                }
+	    	    $guardians = array_unique($guardians);
+		        $membersAndGuardians = array_merge($members, $guardians);
+                switch ($rc[0]) {
+                    case 'members':
+                        $rc = $members;
+                        $rcptMsg = "Medlemmer i ".$group->caption." (totalt ".count($members)." personer)
+                            <input type='hidden' name='recipients' value='members'/><input type='hidden' name='groupId' value='$groupId'/>";
+                        $newsletterHeading = "Informasjon til medlemmer i ".$group->caption;
+                        break;
+                    case 'guardians':
+                        $rc = $guardians;
+                        $rcptMsg = "Foresatte til medlemmer i ".$group->caption." (totalt ".count($guardians)." personer)
+                            <input type='hidden' name='recipients' value='guardians'/><input type='hidden' name='groupId' value='$groupId'/>";
+                        $newsletterHeading = "Informasjon til foresatte for medlemmer i ".$group->caption;
+                        break;
+                    case 'members;guardians':
+                        $rcptMsg = "Medlemmer i ".$group->caption." og deres foresatte (totalt ".count($membersAndGuardians)." personer)
+                            <input type='hidden' name='recipients' value='members;guardians'/><input type='hidden' name='groupId' value='$groupId'/>";
+                        $newsletterHeading = "Informasjon til medlemmer i ".$group->caption;
+                        $rc = $membersAndGuardians;
+                        break;
+                    default:
+                        return "ukjent mottakerliste";
+                }
+            }
+            if (count($rc) > 1 && empty($this->login_identifier)) {
+                return "
+                    <div style='display:block; border: 1px solid red; padding: 5px; margin-bottom: 10px; font-size:11px; background: white;'>
+                        Så lenge du ikke er logget inn kan du sende til maks én person om gangen.
+                    </div>
+                ".$this->permissionDenied();
+            }
+            foreach ($rc as $r) {
+                if (!is_numeric($r)) return $this->notSoFatalError("Ugyldig mottakerliste"); 
+                if ($memberdb->isUser($r)){ 
+        		    if (isset($_SESSION['postdata']['rcpts'])) {
+                        if (isset($_SESSION['postdata']['rcpt'.$r]) && ($_SESSION['postdata']['rcpt'.$r] == 'on')){ 
+                            $recipients[$r] = 1;
+                        } else {
+                            $recipients[$r] = 0;                        
+                        }
+                    } else {
+                        $recipients[$r] = 1;
+                    }
+                } else {
+                    return $this->notSoFatalError("Det eksisterer intet medlem med id $r");
+                }	
+            }
 		} else {
 			if (empty($this->login_identifier)) {
 				return $this->permissionDenied();
@@ -406,7 +465,11 @@ class messagecenter extends base {
 						</div>
 					";
 				} else {
-					if (count($recipients) == 1) {
+				    if (isset($rcptMsg)) {
+						array_push($rcptCode,"
+							<input type='hidden' name='rcpt$r' id='rcpt$r' value='on' />
+						");				    
+				    } else if (count($recipients) == 1) {
 						array_push($rcptCode,"
 							<label for='rcpt$r' style='display:block;float:left;width:200px;'>
 								<input type='hidden' name='rcpt$r' id='rcpt$r' value='on' />
@@ -427,7 +490,8 @@ class messagecenter extends base {
 			if (empty($rcptCode)) {
 				$recipients = array();
 			} else {
-				$rcptCode = "<input type='hidden' name='rcpts' value='".implode(",",array_keys($recipients))."' />".implode("",$rcptCode);
+			    if (isset($rcptMsg)) $rcptCode = $rcptMsg;
+				else $rcptCode = "<input type='hidden' name='rcpts' value='".implode(",",array_keys($recipients))."' />".implode("",$rcptCode);
 			}
 		}
 		if (empty($recipients)) {
@@ -465,6 +529,8 @@ class messagecenter extends base {
 			if (isset($postdata['melding'])) $melding = htmlspecialchars($postdata['melding']);
 			if (isset($postdata['sendarnamnj'])) $sendername = htmlspecialchars($postdata['sendarnamnj']);
 			if (isset($postdata['sendaradress'])) $sendermail = htmlspecialchars($postdata['sendaradress']);
+			if (isset($postdata['newsletterHeading'])) $newsletterHeading = htmlspecialchars($postdata['newsletterHeading']);
+			if (isset($postdata['groupId'])) $groupId = htmlspecialchars($postdata['groupId']);
 			$attachments = $_SESSION['attachments'];
 			unset($_SESSION['errors']);
 			unset($_SESSION['postdata']);
@@ -531,6 +597,9 @@ class messagecenter extends base {
 		$r1a[] = "%maxfilesize%";					$r2a[] = $this->attachment_maxsize;
 		$r1a[] = "%maxfilesize_kb%";				$r2a[] = round($this->attachment_maxsize/1024);
 		$r1a[] = "%cancelbtn%";						$r2a[] = "";
+		$r1a[] = "%vis_nyhetsbrev%";				$r2a[] = ($newsletterHeading == "") ? "display:none;" : "";
+		$r1a[] = "%newsletterHeading%";				$r2a[] = $newsletterHeading;
+
 		$outp = str_replace($r1a, $r2a, $this->schema_template);
 		
 		return '
@@ -838,33 +907,72 @@ class messagecenter extends base {
 	
 	function sendMessage() {
 	
-		$recipients = array();
-		if (isset($_POST['recipient1'])) {
-			$no = 1;
-			while (isset($_POST['recipient'.$no])) {
-				$r = intval($_POST['recipient'.$no]);
-				if ($r > 0) {
-					$recipients[] = $r;
-				}
-				$no++;
-			}
-		} else if (isset($_POST['rcpts'])) {
-			$rc = explode(",",$_POST['rcpts']);
-			foreach ($rc as $r) {
-				if (is_numeric($r)) {
-					if (isset($_POST["rcpt$r"]) && ($_POST["rcpt$r"] == 'on')) {
-						$recipients[] = $r;
-					}
-				}
-			}
-		} else {
-			$this->fatalError("Ingen mottakere ble spesifisert");
-		}
+	    // Lag liste over mottakere
+	    
+	    
+        if (isset($_POST['recipients'])) {
+            global $memberdb;
+            $rc = $_POST['recipients'];
+            $groupId = $_POST['groupId'];
+
+            $group = $memberdb->getGroupById($groupId);
+            $members = $group->members;
+            
+            $guardians = array();
+            foreach ($members as $mid) {
+                foreach ($memberdb->getMemberById($mid)->guardians as $g) {
+                    $guardians[] = $g;
+                }
+            }
+            $guardians = array_unique($guardians);
+            $membersAndGuardians = array_merge($members, $guardians);
+            switch ($rc) {
+                case 'members':
+                    $recipients = $members;
+                    $newsletterHeading = "Informasjon til medlemmer i ".$group->caption;
+                    break;
+                case 'guardians':
+                    $recipients = $guardians;
+                    $newsletterHeading = "Informasjon til foresatte for medlemmer i ".$group->caption;
+                    break;
+                case 'members;guardians':
+                    $recipients = $membersAndGuardians;
+                    $newsletterHeading = "Informasjon til medlemmer i ".$group->caption;
+                    break;
+                default:
+                    $this->fatalError("ukjent mottakerliste");
+            }
+	    } else {    
+
+            $recipients = array();
+            if (isset($_POST['recipient1'])) {
+                $no = 1;
+                while (isset($_POST['recipient'.$no])) {
+                    $r = intval($_POST['recipient'.$no]);
+                    if ($r > 0) {
+                        $recipients[] = $r;
+                    }
+                    $no++;
+                }
+            } else if (isset($_POST['rcpts'])) {
+                $rc = explode(",",$_POST['rcpts']);
+                foreach ($rc as $r) {
+                    if (is_numeric($r)) {
+                        if (isset($_POST["rcpt$r"]) && ($_POST["rcpt$r"] == 'on')) {
+                            $recipients[] = $r;
+                        }
+                    }
+                }
+            } else {
+                $this->fatalError("Ingen mottakere ble spesifisert");
+            }
+        }
 		$recipients = array_unique($recipients);
-			
+		
 		$errors = array();
 		
 		$subject = $_POST['emne'];
+		$newsletterHeading = $_POST['newsletterHeading'];
 		$body = $_POST['melding'];
 		$body = str_replace("\r\n","\n",$body);
 		$body = str_replace("\r","\n",$body);
@@ -872,6 +980,8 @@ class messagecenter extends base {
 		$attachments = array();
 		
 		if (!empty($this->login_identifier)) {
+
+    	    // Vedlegg
 
 			foreach ($_POST as $n => $v) {
 				if (strpos($n,'vedlegg') === 0) {
@@ -953,6 +1063,7 @@ class messagecenter extends base {
 				}
 			}
 		}
+		
 		if (!empty($this->login_identifier)) {
 			$sender = $this->login_identifier;
 			$u = call_user_func($this->lookup_member,$sender);
@@ -962,40 +1073,18 @@ class messagecenter extends base {
 			$sender = 0;
 			$sender_name = addslashes($_POST['sendarnamnj']);
 			$sender_email = addslashes($_POST['sendaradress']);
-			if (empty($sender_name)) {
-				$errors[] = 'empty_name';			
-			}
-			if (empty($sender_email)) {
-				$errors[] = 'empty_email';				
-			}
-			if (empty($sender_email)) {
-				$errors[] = 'empty_email';				
-			}
-			if (strip_tags($sender_name) != $sender_name) {
-				$errors[] = 'html_name';
-			}
-			if (strip_tags($sender_email) != $sender_email) {
-				$errors[] = 'html_email';
-			}
+			if (empty($sender_name)) $errors[] = 'empty_name';			
+			if (empty($sender_email)) $errors[] = 'empty_email';				
+			if (empty($sender_email)) $errors[] = 'empty_email';				
+			if (strip_tags($sender_name) != $sender_name) $errors[] = 'html_name';
+			if (strip_tags($sender_email) != $sender_email) $errors[] = 'html_email';
 		}	
-		if (empty($subject)) {
-			$errors[] = 'empty_subject';				
-		}
-		if (empty($body)) {
-			$errors[] = 'empty_body';				
-		}
-		if (strip_tags($subject) != $subject) {
-			$errors[] = 'html_subject';
-		}
-		if (strip_tags($body) != $body) {
-			$errors[] = 'html_body';
-		}
-		if (count($recipients) <= 0) {
-			$errors[] = 'no_recipients';		
-		}
-		if (!$this->isValidEmail($sender_email)) {
-			$errors[] = 'invalid_email';			
-		}
+		if (empty($subject)) $errors[] = 'empty_subject';				
+		if (empty($body)) $errors[] = 'empty_body';				
+		if (strip_tags($subject) != $subject) $errors[] = 'html_subject';
+		if (strip_tags($body) != $body) $errors[] = 'html_body';
+		if (count($recipients) <= 0) $errors[] = 'no_recipients';		
+		if (!$this->isValidEmail($sender_email)) $errors[] = 'invalid_email';			
 
 		$replyto = 0;
 		if (isset($_POST['replyto']) && is_numeric($_POST['replyto'])) $replyto = $_POST['replyto'];
@@ -1003,6 +1092,12 @@ class messagecenter extends base {
 		if (count($errors) > 0) {
 			$_SESSION['errors'] = array_unique($errors);
 			$_SESSION['postdata'] = $_POST;
+			if (!isset($_SESSION['postdata']['rcpts']) && empty($newsletterHeading)) {
+    			$_SESSION['postdata']['rcpts'] = implode(',',$recipients);
+    			foreach ($recipients as $r) {
+    			    $_SESSION['postdata']['rcpt'.$r] = 'on';    			
+    			}
+    		}
 			$_SESSION['attachments'] = $attachments;
 			if ($replyto > 0) 
 				$this->redirect($this->generateCoolURL("/reply/$replyto"),"Meldingen ble ikke sendt pga. et eller flere problemer.",'error');
@@ -1018,8 +1113,16 @@ class messagecenter extends base {
 		$owners = $recipients;
 		$owners[] = $this->login_identifier;
 		
-		$html_body = $this->makeHtmlUrls($body,60,"...");
+		if (!empty($newsletterHeading)) {
+		    $isnewsletter = 1;
+	    	$html_body = $body;
+		} else {
+		    $isnewsletter = 0;
+    	    // Klikkbare lenker
+	    	$html_body = $this->makeHtmlUrls($body,60,"...");
 		
+		}
+				
 		if ($replyto > 0) {
 			$res = $this->query("SELECT thread FROM $this->table_messages WHERE id=$replyto");
 			if ($res->num_rows != 1) {
@@ -1043,9 +1146,9 @@ class messagecenter extends base {
 			$message_id = $this->insert_id();
 		} else {
 			$this->query("INSERT INTO $this->table_messages 
-				(sender, sender_name, sender_email, recipients, subject, body, timestamp, replyto)
+				(sender, sender_name, sender_email, recipients, subject, body, timestamp, replyto, isnewsletter, newsletterheading)
 				VALUES
-				(\"$sender\",\"$sender_name\",\"$sender_email\",\"$rcpts\",\"".addslashes($subject)."\",\"".addslashes($html_body)."\",\"$timestamp\",\"$replyto\")"
+				(\"$sender\",\"$sender_name\",\"$sender_email\",\"$rcpts\",\"".addslashes($subject)."\",\"".addslashes($html_body)."\",\"$timestamp\",\"$replyto\", \"$isnewsletter\", \"".addslashes($newsletterHeading)."\")"
 			);
 			if ($this->affected_rows() == 0) {
 				$this->fatalError("Message could not be saved in db!");
@@ -1080,7 +1183,7 @@ class messagecenter extends base {
 		$numsent = 0;
 		foreach ($recipients as $r) {
 			if ($user_mail_settings[$r] == '1') {
-				$errors = $this->queueMail($r,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments);
+				$errors = $this->queueMail($r,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments,$newsletterHeading);
 				if (count($errors)>0) {
 				    $allerrors[] = array(
 				        'rcpt' => $r,
@@ -1118,7 +1221,7 @@ class messagecenter extends base {
 	*  0.0 HTML_MESSAGE           BODY: HTML included in message
 	*  2.5 HTML_IMAGE_ONLY_16     BODY: HTML: images with 1200-1600 bytes of words
 	*/
-	function queueMail($recipient,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments) {
+	function queueMail($recipient,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments,$newsletterHeading) {
 		global $memberdb;
 		$recipient = call_user_func($this->lookup_member, $recipient);
         $rcpt_name = $recipient->fullname;
@@ -1130,19 +1233,35 @@ class messagecenter extends base {
 		$url_root = "http://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
 		$url_reply = "http://".$_SERVER['SERVER_NAME'].$this->generateCoolUrl("/reply/$message_id");
         
+		$headerImg = rtrim($url_root,"/")."/".trim($this->image_dir,"/")."/email_header3.png";
+		$url_root = "http://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
+
 		$r1a = array(); $r2a = array();
 		$r1a[] = '%sender_name%';		$r2a[] = $sender_name;
 		$r1a[] = '%sender_email%';		$r2a[] = $sender_email;
 		$r1a[] = '%rcpt_name%';		    $r2a[] = $rcpt_name;
 		$r1a[] = '%rcpt_email%';		$r2a[] = $rcpt_email;
+		$r1a[] = '%subject%';		    $r2a[] = $subject;
 		$r1a[] = '%message_plain%';		$r2a[] = $body;
 		$r1a[] = '%message_html%';		$r2a[] = $bodyHtml;
 		$r1a[] = '%site_name%';			$r2a[] = $this->site_name;
 		$r1a[] = '%url_root%';			$r2a[] = $url_root;
 		$r1a[] = '%url_reply%';			$r2a[] = $url_reply;
+		$r1a[] = '%newsletter_name%';   $r2a[] = $newsletterHeading;
+		$r1a[] = "%header_image%";		$r2a[] = $headerImg;
+		$r1a[] = "%url_main%";			$r2a[] = $url_root;
+		$r1a[] = "%timestamp%";			$r2a[] = strftime('%A %e. %B %Y',time());
+
 		$r1a[] = '%ip%';				$r2a[] = $_SERVER['REMOTE_ADDR'];
 		
-		if ($this->isLoggedIn()){
+		if (!empty($newsletterHeading)) {
+		    // Meldingen er et nyhetsbrev
+		    if (!$this->isLoggedIn()) { print $this->permissionDenied(); exit(); }
+
+			$plainBody = str_replace($r1a, $r2a, file_get_contents($this->template_dir.$this->template_newsletter_plain));
+			$htmlBody = str_replace($r1a, $r2a, file_get_contents($this->template_dir.$this->template_newsletter_html));
+		
+		} else if ($this->isLoggedIn()){
 			
 			$plainBody = str_replace($r1a, $r2a, file_get_contents($this->template_dir.$this->template_safe_plain));
 			$htmlBody = str_replace($r1a, $r2a, file_get_contents($this->template_dir.$this->template_safe_html));
@@ -2082,6 +2201,7 @@ class messagecenter extends base {
 				$g.subject,
 				$g.body,
 				$g.isnewsletter,
+				$g.newsletterheading,
 				$g.timestamp,
 				$g.replyto,
 				$u.is_read,
@@ -2099,6 +2219,7 @@ class messagecenter extends base {
 		
 		$message_id = $row['id'];
 		$isNewsletter = $row['isnewsletter'];
+		$newsletterHeading = $row['newsletterheading'];
 		$subject = stripslashes($row['subject']);
 		$body = stripslashes($row['body']);
 		if (!$isNewsletter) $body = nl2br($body);
@@ -2325,13 +2446,9 @@ class messagecenter extends base {
 			}
 			
 			if ($isNewsletter) {
+    			$body = str_replace("\n","<br />\n",$body);
+	    		$body = $this->makeHtmlUrls($body,60,"...");
 						
-				if (isset($_GET['noprint'])) {
-					$this->sendContentType();
-					//$body = str_replace("<img src='","<img src='".$this->image_dir,$body);
-					print $body;
-					exit();
-				}
 				$output .= '
 							
 					<div class="msg">
@@ -2340,14 +2457,26 @@ class messagecenter extends base {
 							'."$toggleMsgCode $timestamp $wrote $author_uri til $rcpts:".'
 						</div>
 						<div id="msgmain'.$id.'">				
-							<p style="padding:20px; border: 1px solid #ccc; background: #ffffcc;">
-								Denne meldingen er et nyhetsbrev.<br /><br />
-								<a href="'.$this->generateURL('noprint=true').'" target="_blank">Vis nyhetsbrev</a>
-							</p>
+
+                            <div style="font-size: 10pt; color: #fff; letter-spacing: 1px;padding:10px 10px 3px 10px;text-align:left;background:#88b852;  border-bottom:6px solid #88b852;">
+                                '.$newsletterHeading.'
+                            </div>
+
+                            <div style="padding:20px;border-bottom:6px solid #88b852;">
+                                <div style="font-size: 16pt; color: #770000; letter-spacing: 2px;padding:0px 0px 15px 0px;">
+                                    '.$subject.'
+                                </div>
+                                '.$body.'
+                            </div>
+                            <div style="padding-top: 20px; font-size:10px; text-align: center; color:#888888;">
+            
+                            </div>				
+
 							<div class="footerLinks">
 							';
-							if ($sender_id != $me) $output .= '<a href="'.$reply.'" class="reply">Svar til avsender</a> 
-								<a href="'.$replyall.'" class="replyall">Svar til alle</a> '; 
+							if ($sender_id != $me) {
+							    $output .= '<a href="'.$this->generateCoolUrl('/newmessage/','recipients='.$sender_id).'" class="reply">Send melding til avsender</a>';
+							}
 							$output .= '<a href="'.$delete.'" class="delete">Slett meldingen</a>
 							</div>
 							<hr style="clear:both;visibility:hidden; margin:0px;" />

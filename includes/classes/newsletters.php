@@ -442,6 +442,7 @@ class newsletters extends base {
             if ($receive_html[$ident]) {
 				$mail['html_body'] = $newsletter['html_body'];
 			}
+
             $res = $mailer->add_to_queue($mail);
             if (!empty($res['errors'])) {
 				$this->addToErrorLog("Et nyhetsbrev kunne ikke sendes til ".$udata['name']." (".$udata['email']."). Feil: ".var_export($res['errors'],true));
@@ -462,7 +463,7 @@ class newsletters extends base {
 		
 		$this->mcenter_instance = new messagecenter(); 
 		call_user_func($this->prepare_classinstance, $this->mcenter_instance, $this->messagecenter);
-		$this->mcenter_instance->saveNewsletter($newsletter['recipients'], $newsletter['subject'], $newsletter['html_body']);
+		$this->mcenter_instance->saveNewsletter($newsletter['recipients'], $newsletter['subject'], $newsletter['raw_body']);
 
 		$this->addToActivityLog("sendte nyhetsbrev til ".implode(", ",$newsletter['group_list']));
 

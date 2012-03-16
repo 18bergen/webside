@@ -4357,7 +4357,7 @@ class memberlist_actions extends memberlist {
 		
 		$gruppe = $this->groups[$id];	
 		$output = "";		
-		
+
 		$parents = array();
 		foreach ($this->groups[$id]->members as $m) {
 			foreach ($this->members[$m]->guardians as $g) {
@@ -4365,12 +4365,15 @@ class memberlist_actions extends memberlist {
 			}
 		}
 		$parents = array_unique($parents);
-		$people_and_parents = array_merge($this->groups[$id]->members, $parents);
 		
-		$mailUrlMembers = $this->messageUrl."?recipients=".implode(",",$this->groups[$id]->members);		
+		$mailUrlMembers = $this->messageUrl."?recipients=members&groupId=".$id;
+		$mailUrlParents = $this->messageUrl."?recipients=guardians&groupId=".$id;
+		$mailUrlAll = $this->messageUrl."?recipients=members;guardians&groupId=".$id;
+		
+		/*$mailUrlMembers = $this->messageUrl."?recipients=".implode(",",$this->groups[$id]->members);		
 		$mailUrlParents = $this->messageUrl."?recipients=".implode(",",$parents);		
 		$mailUrlAll = $this->messageUrl."?recipients=".implode(",",$people_and_parents);		
-
+*/
 
 		$caption = $gruppe->caption;
 		if ($gruppe->kategori == "SP") $caption = 'Patruljen '.$caption;

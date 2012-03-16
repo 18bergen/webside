@@ -1,0 +1,8 @@
+# %newsletter_name%:
+# %subject%
+# Skrevet av %sender_name% (%sender_email%)
+
+%message_plain%
+
+-- 
+Sendt fra 18. Bergen sin nettside, %url_main%
