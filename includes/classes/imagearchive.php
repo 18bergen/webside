@@ -1894,7 +1894,7 @@ class imagearchive extends comments {
 				$r1a[] = "%infotext%";			$r2a[] = "%dateinfo% Det ble lagt inn i bildearkivet av %uploader%";
 			} else {
 				$r1a[] = "%main_image%";		$r2a[] = $this->template_mainImage;
-				$r1a[] = "%infotext%";			$r2a[] = "%dateinfo% Det ble lagt inn i bildearkivet av %uploader% og er tilgjengelig i %fullwidth% x %fullheight% px for innloggede brukere.";
+				$r1a[] = "%infotext%";			$r2a[] = "%dateinfo% Det ble lagt inn i bildearkivet av %uploader% og er tilgjengelig i %fullwidth% x %fullheight% px for innloggede brukere. Publisert under en <a href='http://creativecommons.org/licenses/by-sa/3.0/no/'>Creative Commons lisens</a>.";
 				$r1a[] = "%width%";				$r2a[] = $thumb_width;
 				$r1a[] = "%height%";			$r2a[] = $thumb_height;
 				$r1a[] = "%fullwidth%";			$r2a[] = $image_width;
