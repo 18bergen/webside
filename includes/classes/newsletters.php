@@ -242,7 +242,7 @@ class newsletters extends base {
 		
 		$headerImg = rtrim($url_root,"/")."/".trim($this->image_dir,"/")."/email_header3.png";
 		
-		$templateHtml = file_get_contents('../includes/templates/newsletter.html');
+		$templateHtml = file_get_contents('../includes/templates/email/newsletter.html');
 		$s1 = array();					$s2 = array();
 		$s1[] = "%newsletter_name%";	$s2[] = $newsletter_name;
 		$s1[] = "%header_image%";		$s2[] = $headerImg;
@@ -257,7 +257,7 @@ class newsletters extends base {
 		$s1[] = "%url_unsubscribe%";	$s2[] = $url_self."?prefs";
 		$htmlLetter = str_replace($s1,$s2,$templateHtml);
 
-		$templatePlain = file_get_contents('../includes/templates/newsletter.txt');
+		$templatePlain = file_get_contents('../includes/templates/email/newsletter.txt');
 		$s1 = array();					$s2 = array();
 		$s1[] = "%newsletter_name%";	$s2[] = strtoupper($newsletter_name);
 		$s1[] = "%header_image%";		$s2[] = $headerImg;
