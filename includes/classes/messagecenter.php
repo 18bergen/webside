@@ -73,6 +73,7 @@ class messagecenter extends base {
 		'empty_subject' => "Du må skrive noe i emnefeltet",
 		'empty_body' => "Du må skrive noe i meldingsfeltet",
 		'empty_name' => "Du må fylle inn navnet ditt",
+		'email_notworking' => "Epostadressen virker ikke lenger (epost kommer i retur)",
 		'empty_email' => "Du må fylle inn e-postadressen din",
 		'no_recipients' => "Du må velge minst en mottaker",
 		'toomany_recipients' => "Som gjest har du kun tilgang til å sende mail til en adresse om gangen. Logg inn for å sende til flere.",
@@ -1161,6 +1162,7 @@ class messagecenter extends base {
 				$this->query("UPDATE $this->table_attachments SET message_id='$message_id' WHERE id=$a_id");						
 			}
 		}
+		
 		$owners = array_unique($owners);
 		foreach ($owners as $owner) {
 			$is_read = ($owner == $this->login_identifier) ? 1 : 0; 
@@ -1180,7 +1182,7 @@ class messagecenter extends base {
 		$user_mail_settings = call_user_func($this->get_useroptions,$this, 'mail_incoming', $recipients);
 		
 		$allerrors = array();
-		$numsent = 0;
+		$numqueued = 0;
 		foreach ($recipients as $r) {
 			if ($user_mail_settings[$r] == '1') {
 				$errors = $this->queueMail($r,$sender,$sender_name,$sender_email,$subject,$body,$message_id,$attachments,$newsletterHeading);
@@ -1190,18 +1192,17 @@ class messagecenter extends base {
 				        'errors' => $errors
 				    );
 				} else {
-				    $numsent++;
+				    $numqueued++;
 				}
 			}
 		}
 		
-		/*
 		$_SESSION['message_sent_to'] = $recipients;
 		$_SESSION['message_status'] = array(
-		    'numsent' => $numsent,
-		    'allerrors' => $allerrors
+		    'numqueued' => $numqueued,
+		    'errors' => $allerrors
 		);
-		*/
+		
 		if (count($recipients) == 1)
 			$this->addToActivityLog("sendte en melding til ".call_user_func($this->make_memberlink,$recipients[0]));
 		else
@@ -1226,6 +1227,11 @@ class messagecenter extends base {
 		$recipient = call_user_func($this->lookup_member, $recipient);
         $rcpt_name = $recipient->fullname;
         $rcpt_email = $recipient->email;
+
+		$valid = $this->query("SELECT * FROM bg_mailnotworking WHERE addr=\"".addslashes($rcpt_email)."\"");
+		if ($valid->num_rows == 1) {
+		    return array("email_notworking");
+		}
 		
 		$bodyHtml = nl2br($body);
 		$bodyHtml = $this->makeHtmlUrls($bodyHtml,60,"...");
@@ -1482,50 +1488,11 @@ class messagecenter extends base {
 	function viewMessageCenter() {
 	    
 		$output = "";
-        if (isset($_SESSION['message_sent_to'])) {
-            $rcpts = $_SESSION['message_sent_to'];
-            for ($i = 0; $i < count($rcpts); $i++) {
-                $rcpts[$i] = call_user_func($this->make_memberlink, $rcpts[$i]);
-            }
-            $output .= "
-            <div style='border:3px solid #880;padding:20px 20px 20px 140px;margin:5px; background:url(/images/mailsent.png) no-repeat top left #ffffcc;'>
-            <strong>Melding sendt</strong>
-            <p>
-              Meldingen har blitt levert til ".count($rcpts)." personer i 18. Bergens meldingssystem.
-            </p>
-            <p>
-              Meldingen har blitt sendt som epost til ".$_SESSION['message_status']['numsent']." personer.
-            ";
-            $notsent = count($_SESSION['message_status']['allerrors']);
-            if ($notsent > 0) {
-                $output .= "Kunne ikke sende epost til følgende personer:<ul>";
-                foreach ($_SESSION['message_status']['allerrors'] as $e) {
-                    $recipient = call_user_func($this->make_memberlink, $e['rcpt']);
-                    $errs = array();
-                    foreach ($e['errors'] as $err) {
-                        $errs[] = $this->errorMessages[$err];
-                    }
-                    $output .= '<li>'.$recipient.' ('.implode(', ',$errs).')</li>';
-                }
-                $output .= "</ul>";
-            }
-            $output .= "</p>";
-            $output .= "</div>";
-            unset($_SESSION['message_sent_to']);
-            unset($_SESSION['message_status']);
-            if (empty($this->login_identifier)){ 
-                return $output;
-            }
-        } else {
             if (empty($this->login_identifier)){
                 if (isset($_SESSION['message_sent_to'])) unset($_SESSION['message_sent_to']);
                 $output .= $this->permissionDenied(); 
                 return $output; 
             }
-        }
-		
-		if (isset($_SESSION['message_sent_to'])) unset($_SESSION['message_sent_to']);
-		if (isset($_SESSION['message_status'])) unset($_SESSION['message_status']);
 	
 		$output .= '
 			<p>
@@ -2022,11 +1989,49 @@ class messagecenter extends base {
 	}
 	
 	function printThread($thread) {
+
+        $output = "";
+        
+        if (isset($_SESSION['message_sent_to'])) {
+            $rcpts = $_SESSION['message_sent_to'];
+            for ($i = 0; $i < count($rcpts); $i++) {
+                $rcpts[$i] = call_user_func($this->make_memberlink, $rcpts[$i]);
+            }
+            $output .= "
+            <div style='border:3px solid #880;padding:20px 20px 20px 20px;margin:5px; background:#ffffff;'>
+            <ul style='padding:0px;margin:0px;list-style: none;'>
+              <li style='background:url(\"/images/icns/accept.png\") no-repeat left;padding:2px 2px 2px 20px;'>Levert til ".count($rcpts)." personer i 18. Bergens interne meldingssystem.</li>
+            ";
+            if ($_SESSION['message_status']['numqueued'] > 0) {
+              $output .= "<li style='background:url(\"/images/icns/accept.png\") no-repeat left;padding:2px 2px 2px 20px;'>Levert til  ".count($_SESSION['message_status']['numqueued'])." personer per epost.</li>";
+            }
+            $notsent = count($_SESSION['message_status']['errors']);
+            if ($notsent > 0) {
+                foreach ($_SESSION['message_status']['errors'] as $e) {
+                    $recipient = call_user_func($this->make_memberlink, $e['rcpt']);
+                    $errs = array();
+                    foreach ($e['errors'] as $err) {
+                        $errs[] = $this->errorMessages[$err];
+                    }
+                    $output .= "<li style='background:url(\"/images/icns/exclamation.png\") no-repeat left; padding:2px 2px 2px 20px;'>Kunne ikke levere epost til ".$recipient.'!<br />'.implode(', ',$errs)."</li>";
+                }
+                $output .= "</ul>";
+            }
+            $output .= "</li></ul>";
+            $output .= "</div>";
+            unset($_SESSION['message_sent_to']);
+            unset($_SESSION['message_status']);
+            if (empty($this->login_identifier)){ 
+                return $output;
+            }
+        } 
+		if (isset($_SESSION['message_sent_to'])) unset($_SESSION['message_sent_to']);
+		if (isset($_SESSION['message_status'])) unset($_SESSION['message_status']);
+
 	
 		if (empty($this->login_identifier)) return $this->permissionDenied(); 
 		if (!is_numeric($thread)) return $this->notSoFatalError("Meldingen finnes ikke",array('logError' => false));
 		
-		$output = "";
 		$uid = $this->login_identifier;
 		$u = $this->table_user;
 		$g = $this->table_messages;

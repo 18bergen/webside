@@ -1605,9 +1605,16 @@ class memberlist_actions extends memberlist {
 			else if (empty($profile->homephone)) $phone = $profile->cellular;
 			else if (empty($profile->cellular)) $phone = $profile->homephone;
 			else $phone = $profile->homephone.' / '.$profile->cellular;
-			$email = empty($profile->email) ? 
-				'<em>Mangler epost</em>' : 
-				'<a href="%sendmsgurl%">'.$profile->email.'</a>';
+			if (empty($profile->email)) {
+			    $email = '<em>Mangler epost</em>';
+			} else {
+				$res = $this->query("SELECT * FROM bg_mailnotworking WHERE addr=\"".addslashes($profile->email)."\"");
+				if ($res->num_rows == 1) {
+    				$email = '<a href="%sendmsgurl%" style="color:red;">'.$profile->email.'</a><div style="font-weight:bold;color:red;">NB! Denne adressen virker ikke lenger!</div>';
+				} else {
+	    			$email = '<a href="%sendmsgurl%">'.$profile->email.'</a>';
+	    		}
+			}
 		} else {
 			$home_address = '<em>Vises kun for innloggede brukere</em>'; 
 			$phone = '<em>Vises kun for innloggede brukere</em>'; 
