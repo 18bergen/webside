@@ -2430,7 +2430,7 @@ class messagecenter extends base {
 			}
 			call_user_func(
 				$this->add_to_breadcrumb, 
-				'<a href="'.$this->generateCoolURL('/readmessage/$id/').'">'.$subject.'</a>'
+				'<a href="'.$this->generateCoolURL("/readmessage/$id/").'">'.$subject.'</a>'
 			);
 		
 		}
