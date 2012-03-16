@@ -608,6 +608,9 @@ class newsletters extends base {
 		$rcpts = explode(",",$row['recipients']);
 		$rcptcount = count($rcpts);
 
+		if (isset($_SESSION['message_sent_to'])) unset($_SESSION['message_sent_to']);
+		if (isset($_SESSION['message_status'])) unset($_SESSION['message_status']);
+
 		$rcptlists = $this->prepareRecipientLists();
 
 		call_user_func(
