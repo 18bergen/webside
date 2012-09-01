@@ -359,7 +359,7 @@ class cms_basic extends base {
 				if (empty($this->login_identifier)) break;
 				$member = call_user_func($this->lookup_member, $this->login_identifier);
 				if ($member->rights < $rights) break;
-				if ($group && !in_array($ownergroup,$member->memberof)) break; 
+				if ($group && ($member->rights == $rights) && !in_array($ownergroup,$member->memberof)) break; 
 				if ($debug) print "access granted!";
 				return true;
 			case "webmaster":
