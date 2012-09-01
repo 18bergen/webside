@@ -1034,7 +1034,7 @@ class cms_basic extends base {
 				$who = stripslashes($row['who']);
 				$rights = stripslashes($row['rights']);
 				$group = (stripslashes($row['groupowner']) == "1");			
-			}
+            }
 			switch ($who) {
 				case "all":
 					if ($this->debug) print "$name = true\n";
@@ -1047,8 +1047,8 @@ class cms_basic extends base {
 						$instance->$name = true;
 						break;
 					}
-					if ($member->rights < $rights) break;
-					if ($group && !in_array($ownergroup,$member->memberof)) break; 
+                    if ($member->rights < $rights) break;
+                    if ($group && ($member->rights == $rights) && !in_array($ownergroup,$member->memberof)) break;
 					if ($this->debug) print "$name = true\n";
 					$instance->$name = true;
 					break;
