@@ -1093,8 +1093,10 @@ class calendar extends calendar_basic {
 					%next%
 			</p>
 				
+			<!--
 			<a name="fb_share" type="button_count" href="http://www.facebook.com/sharer.php" style="float:right;margin-top:20px;">Del</a>
 			<script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" type="text/javascript"></script>
+			-->
 			
 			<h2>%title%</h2>
 			<p class="hidefromprint">
