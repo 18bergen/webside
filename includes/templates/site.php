@@ -33,6 +33,16 @@
   <script type="text/javascript" src="/libs/NiftyCube/niftycube.js"></script>
 
   <script type="text/javascript" src="/libs/jquery/jquery-1.10.2.min.js"></script>
+  <!-- jQuery UI core + widget only -->
+<!--
+  <script type="text/javascript" src="/libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
+-->
+  <script type="text/javascript" src="/libs/jquery-file-upload-8.6.0/js/vendor/jquery.ui.widget.js"></script>
+  <script type="text/javascript" src="/libs/jquery-file-upload-8.6.0/js/jquery.iframe-transport.js"></script>
+  <script type="text/javascript" src="/libs/jquery-file-upload-8.6.0/js/jquery.fileupload.js"></script>
+  <!--
+    <script type="text/javascript" src="/libs/bootstrap/bootstrap.min.js"></script>
+  -->
   <script> jQuery.noConflict(); </script>
 
   <!--

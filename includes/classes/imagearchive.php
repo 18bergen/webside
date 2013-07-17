@@ -1207,7 +1207,7 @@ class imagearchive extends comments {
 					  '.$this->label_deletearchive.'
 				</a>',
 			'addPhotos' => '
-				<a href="'.$this->generateURL('action=uploadInfo').'" 
+				<a href="'.$this->generateURL('action=uploadImages').'" 
 					class="icn" style="background-image:url(/images/icns/add.png);" 
 					title="'.$this->label_addimagestoarchive_hint.'">
 					  '.$this->label_addimagestoarchive.'
@@ -1382,7 +1382,7 @@ class imagearchive extends comments {
 		$url_addarchive = $this->generateURL("addarchive");
 		$url_editarchivesettings = $this->generateURL("action=albumSettings");
 		$url_organize = $this->generateURL('action=organizeImages');
-		$url_addimages = $this->generateURL('action=uploadInfo');
+		$url_addimages = $this->generateURL('action=uploadImages');
 		$url_slideshow = $this->generateURL("slideshow");
 		$url_zip = $this->generateURL('action=downloadAlbum');
 		$url_deletearchive = $this->generateURL('action=deleteAlbum');
@@ -2524,35 +2524,14 @@ class imagearchive extends comments {
 			$path = $this->generatePath($albumId);
 			$output .= "<h2>Laste opp bilder til «".$path[1]."»</h2>\n";
 			
-			$jup = new javaupload();
-			$jup->jupload_dir = ROOT_DIR.$this->java_path_to_jupload;
-			$jup->actionurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL(array("'action=uploadImagesDo","userid=$this->login_identifier"));
-			$jup->completeurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL('action=processUploadedImages');
-			$jup->errorurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL('action=uploadError');		
+			$jup = new JqueryUpload();
+			#$jup->jupload_dir = ROOT_DIR.$this->java_path_to_jupload;
+			$jup->actionurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL(array("action=uploadImagesDo","userid=$this->login_identifier"));
+			#$jup->completeurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL('action=processUploadedImages');
+			#$jup->errorurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL('action=uploadError');		
 			$output .= $jup->printUploadForm();
 			
 			$output .= "
-				<h2>Hjelp</h2>
-				<ul>
-					<li style='margin-bottom: 8px;'>
-						<b>Det er ingenting ovenfor!</b><br />
-						Vent først litt. Programmet trenger litt tid for å starte. Dersom ingenting skjer, 
-						sjekk at du har Java innstallert <a href='".$this->generateURL('action=uploadInfo')."'>her</a>.
-					</li>
-					<li style='margin-bottom: 8px;'>
-						<b>Feilmeldingen \"server disconnected: connection reset by peer: socket write error\" kommer</b><br />
-						Prøv å ikke laste opp så mange bilder på en gang. Maks 20 om gangen er en grei regel.
-					</li>
-					<li style='margin-bottom: 8px;'>
-						<b>Det står java.lang.NoClassDefFoundError: (osv..)</b><br />
-						Hvis det står noe sånt ovenfor, har du mest sannsynlig en for gammel versjon av JAVA innstallert.
-						Les mer om hvordan du innstallerer nyeste versjon av JAVA <a href='".$this->generateURL('action=uploadInfo')."'>her</a>.
-					</li>
-					<li style='margin-bottom: 8px;'>
-						<b>Filene jeg velger kommer ikke opp i listen!</b><br />
-						Dette skjer av og til og vil som regel ordne seg hvis du oppdaterer siden (trykk F5 eller Ctrl-R) og prøver på nytt.
-					</li>
-				</ul>
 				<h2>Tips</h2>
 				<ul>
 					<li style='margin-bottom: 8px;'>
