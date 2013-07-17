@@ -88,6 +88,11 @@ class CKFinder_Connector_CommandHandler_Thumbnail extends CKFinder_Connector_Com
             }
         }
 
+		/*************************** Modified by DM BEGIN ****************************/
+		global $bg18,$baseDir;
+		$bg18->checkThumbnail($sourceFilePath,$baseDir);
+		/**************************** Modified by DM END *****************************/
+
         $size = filesize($thumbFilePath);
         $sourceImageAttr = getimagesize($thumbFilePath);
         $mime = $sourceImageAttr["mime"];
