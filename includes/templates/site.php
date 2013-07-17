@@ -32,7 +32,7 @@
   <script type="text/javascript" src="/jscript/firebug/firebug.js"></script>
   <script type="text/javascript" src="/libs/NiftyCube/niftycube.js"></script>
 
-  <script type="text/javascript" src="/libs/jquery/jquery-1.7.1.min.js"></script>
+  <script type="text/javascript" src="/libs/jquery/jquery-1.10.2.min.js"></script>
   <script> jQuery.noConflict(); </script>
 
   <!--
