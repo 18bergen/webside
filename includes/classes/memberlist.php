@@ -522,7 +522,7 @@ class memberlist extends base {
 				);
 			} else {
 				$dir = $this->memberImagesDir.$tmp['UserId'].'/';
-				$basename = $tmp['ProfilePicture'];
+				$basename = $tmp['ProfilePicture']['FileName'];
 				$tmp['ForumPicture'] = array(
 					'UploadedPicture' => true,
 					'FileName'        => $basename,
