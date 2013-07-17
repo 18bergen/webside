@@ -2,29 +2,14 @@
 
 date_default_timezone_set('Europe/Oslo');
 
-switch ($_SERVER['SERVER_NAME']){
-	case "xanadu.local":
-	case "localhost":
-	case "127.0.0.1":
-	case "10.37.129.2":
-	case "192.168.2.185":
-	case "169.254.167.169":
-		define('ROOT_DIR','/18bergen');
-		break;
-	default:
-		if (substr($_SERVER['SERVER_NAME'],0,3) == '10.')
-			define('ROOT_DIR','/18bergen');
-		else
-			define('ROOT_DIR','');
-		break;
-}
+define('ROOT_DIR','');
 
 define('BG_CLASS_PATH',dirname(__FILE__).'/classes/');
 define('BG_WWW_PATH',dirname(dirname(__FILE__)).'/www/');
 define('BG_LIB_PATH',dirname(dirname(__FILE__)).'/www/libs/');
 
-define('LIB_CKFINDER_URI', '/libs/ckfinder-2.2.1/');
-define('LIB_CKEDITOR_URI', '/libs/ckeditor-3.6.4/');
+define('LIB_CKFINDER_URI', '/libs/ckfinder-2.3.1/');
+define('LIB_CKEDITOR_URI', '/libs/ckeditor-4.1.2/');
 define('LIB_YUI_URI', 'http://yui.yahooapis.com/2.9.0/');
 
 /*
