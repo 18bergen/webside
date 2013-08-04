@@ -91,6 +91,7 @@
                 dataType: 'json',
                 autoUpload: false,
                 singleFileUploads: true,
+                limitConcurrentUploads: 3,
                 imageMaxWidth: 3264,
                 imageMaxHeight: 3264,
                 disableImageResize: /Android(?!.*Chrome)|Opera/
@@ -106,7 +107,7 @@
 
                 var uploadFile = data.files[0];
                 if (!(/\.(jpg|jpeg)$/i).test(uploadFile.name)) {
-                    alert("Kun jpg-filer blir spist");
+                    alert("Kun jpg-filer blir spist. "+ uploadFile.name + " blir ikke lagt til.");
                     return;
                 }
 
@@ -169,7 +170,7 @@
                 }
                 if (--uploadsPending <= 0) {
                     //console.info('all done');
-                    //window.location = '%completeurl%';
+                    window.location = '%completeurl%';
                 }
             })
             .on('fileuploadfail', function(e, data) {
