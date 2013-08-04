@@ -92,31 +92,26 @@
 
 			// ============================ (1) Load YUI lib ===================================
 
-			function onYuiLoaderComplete() {
+			$(document).ready(function() {
 				initTogglers();
-				new YAHOO.widget.Button("publiserKnapp");
-				new YAHOO.widget.Button("kladdKnapp");
-				YAHOO.util.Event.addListener("event_id","change",onEventIdChanged);
+				$("#event_id").on("change", onEventIdChanged);
 				onEventIdChanged(null);
-			}
-			loader.require("button","connection","json");
-			loader.insert();		
+			});
 
 			// ============================ (2) INIT PANELS ====================================
 			
 			function initTogglers() {
-				var handles = YAHOO.util.Dom.getElementsByClassName('handle','h2','main_col');
-				for (i = 0; i < handles.length; i++) {
-					YAHOO.util.Event.addListener(handles[i],'click',clickHandle);
-				}
-			}	
+				$('#main_col h2.handle').each(function(key, el) {
+					$(el).on('click', clickHandle);
+				});
+			}
 
 			function clickHandle(e) {
-				var el = YAHOO.util.Event.getTarget(e).parentNode; 
-				if (YAHOO.util.Dom.hasClass(el,'closed')) {
-					YAHOO.util.Dom.removeClass(el,'closed');
+				var $el = $(e.target).parent();
+				if ($el.hasClass('closed')) {
+					$el.removeClass('closed');
 				} else {
-					YAHOO.util.Dom.addClass(el,'closed');
+					$el.addClass('closed');
 				}
 			}
 						
@@ -127,66 +122,61 @@
 			// =========== (3) CHECK IF SELECTED EVENT IS RELATED TO A PHOTO ALBUM =============
 						
 			function onEventIdChanged(e) {
-				newEventId = $('event_id').options[$('event_id').selectedIndex].value;
+				newEventId = $('#event_id').val();
 				if (newEventId == "0") {
-					YAHOO.util.Dom.setStyle("imagearchive_yes","display","none");
-					YAHOO.util.Dom.setStyle("imagearchive_no","display","block");
+					$("#imagearchive_yes").hide();
+					$("#imagearchive_no").show();
 				} else {
-					YAHOO.util.Dom.setStyle("imagearchive_wait","display","block");
-					YAHOO.util.Dom.setStyle("imagearchive_yes","display","none");					
-					YAHOO.util.Dom.setStyle("imagearchive_no","display","none");
+					$("#imagearchive_wait").show();
+					$("#imagearchive_yes").hide();
+					$("#imagearchive_no").hide();
 					getAlbumIdFromEventId(newEventId);
 				}
 			}
 			
 			function getAlbumIdFromEventId(eventId) {
-				$('event_id').disabled = true;				
+				$('#event_id').prop('disabled', true);
 				var url = "%urlGetAlbumId%";
-				YAHOO.util.Connect.asyncRequest("POST", url, {
-					success: gotAlbumId,
-					failure: getAlbumIdFailed
-				}, "event_id="+eventId);
+				$.post(url, {event_id: eventId})
+				.done(gotAlbumId)
+				.error(getAlbumIdFailed);
 			}
 
-			function gotAlbumId(o) {
-				$('event_id').disabled = false;
-				YAHOO.util.Dom.setStyle("imagearchive_wait","display","none");
-				try {
-					var json = YAHOO.lang.JSON.parse(o.responseText);
-					if (json.error == "0") {
-						var hasAlbum = json.hasAlbum;
-						if (hasAlbum) {
-							var photoCount = json.photo_count;
-							var photos = json.photos;
-							YAHOO.util.Dom.setStyle("imagearchive_yes","display","block");
-							$('imagearchive_info').innerHTML = "<div style='padding-bottom:10px;'>Bildearkivet inneholder "+photoCount+" bilder fra dette arrangementet. Bildene som vises i loggen vil være et tilfeldig utvalg fra disse og ikke nødvendigvis de som vises under.</div>"+photos
-						} else {
-							YAHOO.util.Dom.setStyle("imagearchive_no","display","block");
-						}
+			function gotAlbumId(response) {
+				//console.log(response);
+				$('#event_id').prop('disabled', false);
+				$("#imagearchive_wait").hide();
+				if (response.error == "0") {
+					var hasAlbum = response.hasAlbum;
+					if (hasAlbum) {
+						var photoCount = response.photo_count;
+						var photos = response.photos;
+						$("#imagearchive_yes").show();
+						$('#imagearchive_info').html("<div style='padding-bottom:10px;'>Bildearkivet inneholder "+photoCount+" bilder fra dette arrangementet. Bildene som vises i loggen vil være et tilfeldig utvalg fra disse og ikke nødvendigvis de som vises under.</div>"+photos);
 					} else {
-						errorMsg(json.error);
+						$("#imagearchive_no").show();
 					}
-				} catch (e) {
-					errorMsg("Det oppstod en feil under lagringen ("+o.responseText+")");
+				} else {
+					errorMsg(response.error);
 				}
 			}
 			
 			function getAlbumIdFailed(o) {
-				$('event_id').disabled = false;
-				YAHOO.util.Dom.setStyle("imagearchive_wait","display","none");
+				$('#event_id').prop('disabled', false);
+				$("#imagearchive_wait").hide();
 				errorMsg("Det oppstod en feil");					
 			}
 
 			function errorMsg(txt) {
-				YAHOO.util.Dom.setStyle("imagearchive_error","display","block");
-				$("imagearchive_error").innerHTML = txt;
+				$("#imagearchive_error").show();
+				$("#imagearchive_error").html(txt);
 			}
 						
 			// =========================== (4) INIT CKEDITOR ===================================
 				
 			var editor;
 			
-			YAHOO.util.Event.onDOMReady(initCKeditor);				
+			$(document).ready(initCKeditor);
 					
 			/* http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.html#instanceReady */
 			function initCKeditor() {
@@ -225,8 +215,8 @@
 			// Called when a file is selected in CKFinder:
 			function SetFileField( fileUrl, data ) {
 				var f = pathToThumbs + fileUrl.substr(pathToUserFiles.length);
-				$("lead_image").value = f;				
-				$("ingressbildespan").innerHTML = "<img src=\'" + f + "\' alt=\'Velg bilde\' border=\'0\' style=\'margin:5px;\' />"
+				$("#lead_image").val(f);				
+				$("#ingressbildespan").html("<img src=\'" + f + "\' alt=\'Velg bilde\' border=\'0\' style=\'margin:5px;\' />");
 			}
 			
 			// ===================== (5) EDITABLE AUTHOR LIST =============================
@@ -241,34 +231,34 @@
 			}
 			
 			function getAuthors() {
-				var authors = jQuery("#authors").val();
+				var authors = $("#authors").val();
 				if (authors == "") return [];
 				else return authors.split(",");
 			}
 
 			function setAuthors(authors) {
-				return $("authors").value = authors.join(",");
+				return $("#authors").val(authors.join(","));
 			}
 			
 			function addAuthorForm() {
-				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","none");
-				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","block");
+				$("#addAuthorBtnPanel").hide();
+				$("#addAuthorFieldPanel").show();
 			}
 
 			function cancelAuthorForm() {
-				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
-				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");
+				$("#addAuthorBtnPanel").show();
+				$("#addAuthorFieldPanel").hide();
 			}
 			
 			function addAuthor(){					
 				var authors = getAuthors();
-				var newAuthorId = $("addAuthorSelect").options[$("addAuthorSelect").selectedIndex].id;
+				var newAuthorId = $("#addAuthorSelect").val();
 				if (authors.length == 0) {
 					authors = [newAuthorId];
 				} else {
 					if (authors.in_array(newAuthorId)) {
-						YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");					
-						YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
+						$("#addAuthorFieldPanel").hide();					
+						$("#addAuthorBtnPanel").show();
 						return;
 					}
 					authors.push(newAuthorId);
@@ -293,28 +283,26 @@
 			
 			function updateAuthorList() {
 				var url = "%updateAuthorListUrl%";
-				var pars = new Array();
-				pars.push("authors="+escape(jQuery("#authors").val()));
-				pars = pars.join("&");
-				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","none");
-				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");
-				YAHOO.util.Dom.setStyle("addAuthorProgress","display","block");
+				var pars = {
+					authors: $("#authors").val()
+				}
+				$("#addAuthorBtnPanel").hide();
+				$("#addAuthorFieldPanel").hide();
+				$("#addAuthorProgress").show();
 				
-				jQuery.ajax({
+				$.ajax({
                     url: "%updateAuthorListUrl%",
                     type: "POST",
                     data: pars, 
-                    dataType: "html",
-                    success: function(responseText){ 
-                        YAHOO.util.Dom.setStyle("addAuthorProgress","display","none");					
-                        YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
-                        setText("authorlist",responseText);
-                    },
-                    error: function() {
-                        YAHOO.util.Dom.setStyle("addAuthorProgress","display","none");					
-                        YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");					
-                        setText("authorlist","Å nei, det oppstod en feil.");
-                    }
+                    dataType: "html"
+                }).done(function(responseText){ 
+                    $("#addAuthorProgress").hide();
+                    $("#addAuthorBtnPanel").show();
+                    setText("authorlist",responseText);
+                }).error(function() {
+                    $("#addAuthorProgress").hide();
+                    $("#addAuthorBtnPanel").show();
+                    setText("authorlist","Å nei, det oppstod en feil.");
                 });
 			}
 

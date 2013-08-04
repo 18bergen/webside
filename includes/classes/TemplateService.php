@@ -327,7 +327,6 @@ class TemplateService extends base {
 		$s1[] = "%analytics%";			$s2[] = $googleAnalytics;
 		$s1[] = "%ckfinder_uri%";		$s2[]  = LIB_CKFINDER_URI;
 		$s1[] = "%ckeditor_uri%";		$s2[]  = LIB_CKEDITOR_URI;
-		$s1[] = "%yui_uri%";			$s2[]  = LIB_YUI_URI;
 		$s1[] = "%timestamp%";			$s2[]  = strftime("%A %e. %B %Y, kl. %H:%M",time());
 		//$s1[] = "%landsleir%";			$s2[] = $landsleirSpesial;
 		

@@ -131,9 +131,9 @@ class sms extends base {
 			//<![CDATA[
 				function updateCounter() {
 					var charsPerMsg = '.$this->maxCharsPerMsg.';
-					var currentChars = $("sms_melding").value.length;
+					var currentChars = $("#sms_melding").val().length;
 					var msgs = Math.ceil(currentChars/charsPerMsg);
-					$("antalltegn").innerHTML = currentChars + " tegn = "+msgs+" melding(er)";
+					$("#antalltegn").html(currentChars + " tegn = "+msgs+" melding(er)");
 				}
 			//]]>
 			</script>
@@ -157,14 +157,14 @@ class sms extends base {
 			$g = call_user_func($this->lookup_group, $gr);
 			foreach ($g->members as $me) {
 				$m = call_user_func($this->lookup_member, $me);
-				if (strlen($m->cellular) == 8){
+				if (mb_strlen($m->cellular) == 8){
 					$recipients[$m->ident] = "47".$m->cellular;
 				}
 			}
 		}
 		$recipients = array_unique($recipients);
 		$msg = $_POST['sms_melding'];
-		$msg_len = strlen($msg);
+		$msg_len = mb_strlen($msg);
 		$rcpt_len = count($recipients);
 		
 		$msg_count = ceil($msg_len/$this->maxCharsPerMsg);
@@ -191,7 +191,7 @@ class sms extends base {
 			//<![CDATA[
 			
 				function sms_form_submit() {
-					$("sms_submit_btn").disabled = "disabled";
+					$("#sms_submit_btn").prop("disabled", true);
 				}
 			
 			//]]>
@@ -247,7 +247,7 @@ class sms extends base {
 		  $request.= $key."=".urlencode($val); //we have to urlencode the values
 		  $request.= "&"; //append the ampersand (&) sign after each paramter/value pair
 		}
-		$request = substr($request, 0, strlen($request)-1); //remove the final ampersand sign from the request
+		$request = mb_substr($request, 0, mb_strlen($request)-1); //remove the final ampersand sign from the request
 		
 		$url = $this->tm4b_gateway; //this is the url of the gateway's interface
 		$ch = curl_init(); //initialize curl handle 
@@ -328,7 +328,7 @@ class sms extends base {
 		  $request.= $key."=".urlencode($val); //we have to urlencode the values
 		  $request.= "&"; //append the ampersand (&) sign after each paramter/value pair
 		}
-		$request = substr($request, 0, strlen($request)-1); //remove the final ampersand sign from the request
+		$request = mb_substr($request, 0, mb_strlen($request)-1); //remove the final ampersand sign from the request
 		
 		$url = $this->tm4b_gateway; //this is the url of the gateway's interface
 		$ch = curl_init(); //initialize curl handle 
@@ -394,7 +394,7 @@ class sms extends base {
 			$n = ($n == 1) ? 2 : 1;
 			$id = $row['id'];
 			$msg = stripslashes($row['msg']);
-			if (strlen($msg) > 60) $msg = substr($msg,0,50)."...";
+			if (mb_strlen($msg) > 60) $msg = mb_substr($msg,0,50)."...";
 			$url_details = $this->generateURL(array("sms_action=details","sms_id=$id"));
 			$output .= "
 				<tr class='forum$n'>
@@ -524,11 +524,11 @@ class sms extends base {
 		$timestamp = addslashes($_GET['date']); // YYMMDDhhmm
 		$recipient = $_GET['recipient'];
 		
-		$year = substr($timestamp,0,2);
-		$month = substr($timestamp,2,2);
-		$day = substr($timestamp,4,2);
-		$hour = substr($timestamp,6,2);
-		$min = substr($timestamp,8,2);
+		$year = mb_substr($timestamp,0,2);
+		$month = mb_substr($timestamp,2,2);
+		$day = mb_substr($timestamp,4,2);
+		$hour = mb_substr($timestamp,6,2);
+		$min = mb_substr($timestamp,8,2);
 		$sec = 0;
 		$timestamp = mktime ($hour,$min,$sec,$month,$day,$year);
 		

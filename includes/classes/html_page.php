@@ -343,7 +343,7 @@ class html_page extends base {
 					Et øyeblikk... <img src="'.$this->image_dir.'progressbar1.gif" alt="Progressbar" />
 				
 				</div>
-				<div style="visibility:hidden;" id="editoruber">
+				<div style="display:none;" id="editoruber">
 
 				<ul id="maintab" class="shadetabs">				
 					'.$tabs.'
@@ -398,12 +398,12 @@ var CKsToLoad = '.count($pageVersions).';
 var CKsLoaded = 0;
 var CKeditors = [];
 
+var autoBackup0 = new AutoBackup("'.$backupUrl.'"); 
 
-var autoBackup0 = new BG18.autoBackup("'.$backupUrl.'"); 
-
-function initCKeditors(e) {
+function initCKeditors() {
 
 	if (CKEDITOR.env.isCompatible) {
+
 	';
 	for ($i = 1; $i <= count($pageVersions); $i++) {
 	$lang = $pageVersions[$i-1]['lang'];
@@ -441,8 +441,8 @@ function initCKeditors(e) {
 	$output .= '
 	} else {
 
-		$("editorprogress").style.display = "none";
-		$("editoruber").style.visibility = "visible";
+		$("#editorprogress").hide()
+		$("#editoruber").show();
 
 		//Start Tab Content script for UL with id="maintab" Separate multiple ids each with a comma.
 		initializetabcontent("maintab")
@@ -450,12 +450,13 @@ function initCKeditors(e) {
 }
 
 function CKeditorLoaded( lang ) {
+
 	// Ta backup hvert 90de sekund
 	CKsLoaded++;
 	if (CKsLoaded == CKsToLoad) {
-		$("editorprogress").style.display = "none";
-		$("editoruber").style.visibility = "visible";
-		
+		$("#editorprogress").hide();
+		$("#editoruber").show();
+
 		//Start Tab Content script for UL with id="maintab" Separate multiple ids each with a comma.
 		initializetabcontent("maintab")
 		
@@ -463,13 +464,9 @@ function CKeditorLoaded( lang ) {
 	}
 }
 
-function onYuiLoaderComplete() {
+$(document).ready(function() {
 	initCKeditors();
-}
-
-
-loader.require("json","connection");
-loader.insert();
+});
 
 //--></script>
 
@@ -571,8 +568,8 @@ loader.insert();
 			WHERE id='$id'"
 		);
 		
-		$data = json_decode(file_get_contents('php://input'),true);
-		
+		$data = $_POST['data'];
+
 		$langs = array();
 		foreach ($data as $d) {
 			$content = $d['content'];
@@ -592,6 +589,7 @@ loader.insert();
 			}
 		}
 		
+		header("Content-Type: application/json; charset=utf-8");
 		print json_encode(array('error' => '0', 'backupsDone' => $langs));
 		exit();
 	}

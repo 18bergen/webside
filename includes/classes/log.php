@@ -851,7 +851,7 @@ class log extends comments {
 				
 		$namesArray = "";
 		foreach ($this->getActiveMembersList(array('SortBy' => 'FullName')) as $user_id => $u) {
-			$namesArray .= "<option id=\"$user_id\">".$u['FullName']."</option>\n";
+			$namesArray .= "<option value=\"$user_id\">".$u['FullName']."</option>\n";
 		}
 		
 		$this->setDefaultCKEditorOptions();
@@ -1024,11 +1024,13 @@ class log extends comments {
 		$ia = $this->iarchive_instance;
 		$albumId = $ia->getAlbumIdFromEventId($event_id);
 		if ($albumId == 0) {
+			header("Content-Type: application/json; charset=utf-8"); 
 			print json_encode(array(
 				'error' => 0,
 				'hasAlbum' => false
 			));
 		} else {
+			header("Content-Type: application/json; charset=utf-8"); 
 			print json_encode(array(
 				'error' => 0,
 				'hasAlbum' => true,

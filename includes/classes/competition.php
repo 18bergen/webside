@@ -155,14 +155,13 @@ class competition extends base {
 			$groupIDs[] = $id;
 			$groupsStr .= '<tr><td valign="top">'.$g['name'].': </td><td valign="top"><input type="text" id="formGroupP'.$id.'" value="" size="10" /></td><td valign="top"><div id="formGroupP'.$id.'nfo" style="color:red;font-size:10px;padding-left:5px;"></span></td></tr>';
 			$listeners .= '
-				YAHOO.util.Event.addListener("formGroupP'.$id.'","keydown",checkIntKey);
-				YAHOO.util.Event.addListener("formGroupP'.$id.'","blur",onTxtBlur);';
+				$("#formGroupP'.$id.'").on("keydown",checkIntKey);
+				$("#formGroupP'.$id.'").on("blur",onTxtBlur);';
 		}
 		$groupsStr .= '</table>';
 
 		$chartDataUrl = $this->generateCoolUrl("/chart-data");
 		$tableDataUrl = $this->generateCoolUrl("/table-data");
-		$swfUrl = LIB_YUI_URI.'build/charts/assets/charts.swf';
 		
 		if ($this->allow_write) {
 			$addUrl = $this->generateCoolUrl("/add-entry");
@@ -191,31 +190,31 @@ class competition extends base {
 					var parts = ['.implode($groupIDs,",").'];
 				
 					function cancelContribForm(e) {
-						YAHOO.util.Event.stopEvent(e);
-						YAHOO.util.Dom.setStyle("btnAddContrib","display","");
-						YAHOO.util.Dom.setStyle("formAddContribDiv","display","none");	
-						YAHOO.util.Dom.setStyle("workIndicator","display","none");
-						YAHOO.util.Dom.setStyle("successIndicator","visibility","hidden");
+						e.preventDefault();
+						$("#btnAddContrib").css("display","");
+						$("#formAddContribDiv").css("display","none");	
+						$("#workIndicator").css("display","none");
+						$("#successIndicator").css("visibility","hidden");
 					}
 					
 					function addContribForm(e) {
-						YAHOO.util.Event.stopEvent(e);
-						YAHOO.util.Dom.setStyle("btnAddContrib","display","none");
-						YAHOO.util.Dom.setStyle("formAddContribDiv","display","block");
-						//$("formDesc").value = "";
-						$("formDesc").focus();
+						e.preventDefault();
+						$("#btnAddContrib").css("display","none");
+						$("#formAddContribDiv").css("display","block");
+						//$("#formDesc").val("");
+						$("#formDesc").focus();
 					}
 					
 					function submitNewContrib(e) {
-						YAHOO.util.Event.stopEvent(e);
+						e.preventDefault();
 						/*
 							Note: As of YUI 2.8.0, there is a bug in JSON.stringify
 							so arrays don\'t get right, while objects do. Therefore, we
 							avoid arrays.
 						*/
 						var postData = { 
-							description: $("formDesc").value,
-							maxPoints: $("formMaxP").value
+							description: $("#formDesc").val(),
+							maxPoints: $("#formMaxP").val()
 						};
 						if (postData["description"] == "") {
 							alert("Du glemte(?) å fylle inn beskrivelse");
@@ -228,99 +227,91 @@ class competition extends base {
 						for (var i = 0; i < parts.length; i++) {
 							postData["group"+parts[i]] = $("formGroupP"+parts[i]).value;
 						}
-						YAHOO.lang.JSON.useNativeStringify = false;
-						var chartData = YAHOO.lang.JSON.stringify(postData);
 
-						YAHOO.util.Dom.setStyle("successIndicator","visibility","hidden");
-						YAHOO.util.Dom.setStyle("workIndicator","display","");
+						$("#successIndicator").css("visibility","hidden");
+						$("#workIndicator").show();
 
 						disableForm();
 
-						YAHOO.util.Connect.asyncRequest("POST", "'.$addUrl.'", {
-							success: contribAdded,
-							failure: contribAddFailed
-						}, "req="+chartData);
+						$.post("'.$addUrl.'", postData).done(contribAdded).error(contribAddFailed)
 					}
 					
 					function errorMsg(msg) {
-						YAHOO.util.Dom.setStyle("divErrorMsg","display","block");				
-						$("divErrorMsg").innerHTML = msg;
+						$("#divErrorMsg").show();				
+						$("#divErrorMsg").html(msg);
 					}
 					
 					function clearError() {
-						YAHOO.util.Dom.setStyle("divErrorMsg","display","none");			
+						$("#divErrorMsg").hide();			
 					}
 
 					function disableForm() {
-						$("btnSubmitContrib").disabled = "disabled";
-						$("btnCancelContrib").disabled = "disabled";
-						$("formDesc").disabled = "disabled";
-						$("formMaxP").disabled = "disabled";
+						$("#btnSubmitContrib").prop("disabled", true);
+						$("#btnCancelContrib").prop("disabled", true);
+						$("#formDesc").prop("disabled", true);
+						$("#formMaxP").prop("disabled", true);
+						
 						for (var i = 0; i < parts.length; i++) {
-							$("formGroupP"+parts[i]).disabled = "disabled";
+							$("#formGroupP"+parts[i]).prop("disabled", true);
 						}
 					}
 					
 					function enableForm() {
-						$("btnSubmitContrib").disabled = "";
-						$("btnCancelContrib").disabled = "";
-						$("formDesc").disabled = "";
-						$("formMaxP").disabled = "";
+						$("#btnSubmitContrib").prop("disabled", false);
+						$("#btnCancelContrib").prop("disabled", false);
+						$("#formDesc").prop("disabled", false);
+						$("#formMaxP").prop("disabled", false);
+						
 						for (var i = 0; i < parts.length; i++) {
-							$("formGroupP"+parts[i]).disabled = "";
+							$("#formGroupP"+parts[i]).prop("disabled", false);
 						}
 					}
 					
-					function contribAdded(o) {
+					function contribAdded(response) {
 						enableForm();
-						YAHOO.util.Dom.setStyle("successIndicator","visibility","visible");
-						YAHOO.util.Dom.setStyle("workIndicator","display","none");
+						$("#successIndicator").css("visibility","visible");
+						$("#workIndicator").hide();
 						//$("inpPartName").disabled = "";
-						$("formDesc").value = "";
-						$("formMaxP").value = "";
+						$("#formDesc").val("");
+						$("#formMaxP").val("");
 						for (var i = 0; i < parts.length; i++) {
-							$("formGroupP"+parts[i]).value = "";
+							$("#formGroupP"+parts[i]).val("");
 						}
-						$("formDesc").focus();
-						try {
-							var json = YAHOO.lang.JSON.parse(o.responseText);
-							clearError();
-						} catch (e) {
-							errorMsg(o.responseText);
-						}
+						$("#formDesc").focus();
+						json = response;
 						barChart0.refreshData();
 						tableData.sendRequest();
 					}
 					
 					function contribAddFailed(o) {
 						enableForm();
-						YAHOO.util.Dom.setStyle("workIndicator","visibility","hidden");
+						$("#workIndicator").css("visibility","hidden");
 						
 					}
 					
 					function rowDeleted(o) {
-						YAHOO.util.Dom.setStyle("btnDeleteRow","display","");
-						YAHOO.util.Dom.setStyle("deleteProgress","visibility","hidden");
+						$("#btnDeleteRow").css("display","");
+						$("#deleteProgress").css("visibility","hidden");
 						var json = YAHOO.lang.JSON.parse(o.responseText);
 						barChart0.refreshData();
 						tableData.sendRequest();
 					}
 					
 					function rowDelFailed(o) {
-						YAHOO.util.Dom.setStyle("btnDeleteRow","display","");
-						YAHOO.util.Dom.setStyle("deleteProgress","visibility","hidden");						
+						$("#btnDeleteRow").css("display","");
+						$("#deleteProgress").css("visibility","hidden");						
 					}
 					
 					
 					function deleteSelectedRow(e) {
-						YAHOO.util.Event.stopEvent(e);
+						e.preventDefault();
 						if (selectedRow == -1) {
 							alert("Du må velge en rad.");
 							return;
 						}
 						if (confirm("Er du helt sikker på at du ønsker å slette denne raden?")) {
-							YAHOO.util.Dom.setStyle("btnDeleteRow","display","none");
-							YAHOO.util.Dom.setStyle("deleteProgress","visibility","visible");
+							$("#btnDeleteRow").css("display","none");
+							$("#deleteProgress").css("visibility","visible");
 							var postData = { id: selectedRow };
 							var chartData = YAHOO.lang.JSON.stringify(postData);
 							YAHOO.util.Connect.asyncRequest("POST", "'.$delUrl.'", {
@@ -332,7 +323,7 @@ class competition extends base {
 					}
 					
 					function checkIntKey(e,f,g) {
-						YAHOO.util.Dom.setStyle("successIndicator","visibility","hidden");
+						$("#successIndicator").css("visibility","hidden");
 
 						if ((!e.shiftKey && !e.altKey) && ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105))) {
 							// ok
@@ -341,31 +332,31 @@ class competition extends base {
 						} else {
 							var t = YAHOO.util.Event.getTarget(e);
 							$(t.id+"nfo").innerHTML = "Skriv kun inn tall (#"+e.keyCode+")"; 
-							YAHOO.util.Event.stopEvent(e);
+							e.preventDefault();
 						}
 					}
 					
 					function onTxtBlur(e) {
 						var t = YAHOO.util.Event.getTarget(e);
 						$(t.id+"nfo").innerHTML = "";
-						var maxP = Number($("formMaxP").value);
+						var maxP = Number($("#formMaxP").val());
 						var P = Number(t.value);
 						if (isNaN(P)) P = 0;
 						t.value = P;
 						if ((t.id != "formMaxP") && (maxP > 0) && (P > maxP)) {
 							$(t.id+"nfo").innerHTML = "Verdien ("+P+") overskrider maks antall poeng ("+maxP+")";
-							YAHOO.util.Event.stopEvent(e);
+							e.preventDefault();
 						}
 					}
 					
 					function initAdminStuff() {
-						YAHOO.util.Dom.setStyle("formAddContribDiv","display","none");
-						YAHOO.util.Event.addListener("btnDeleteRow","click",deleteSelectedRow);
-						YAHOO.util.Event.addListener("btnAddContrib","click",addContribForm);
-						YAHOO.util.Event.addListener("btnCancelContrib","click",cancelContribForm);
-						YAHOO.util.Event.addListener("formAddContrib","submit",submitNewContrib);
-						YAHOO.util.Event.addListener("formMaxP","keydown",checkIntKey);
-						YAHOO.util.Event.addListener("formMaxP","blur",onTxtBlur);
+						$("#formAddContribDiv").css("display","none");
+						$("#btnDeleteRow").on("click",deleteSelectedRow);
+						$("#btnAddContrib").on("click",addContribForm);
+						$("#btnCancelContrib").on("click",cancelContribForm);
+						$("#formAddContrib").on("submit",submitNewContrib);
+						$("#formMaxP").on("keydown",checkIntKey);
+						$("#formMaxP").on("blur",onTxtBlur);
 						'.$listeners.'
 					}
 					
@@ -411,7 +402,6 @@ class competition extends base {
 
 					// ============================= Generate chart ==============================
 
-					YAHOO.widget.Chart.SWFURL = "'.$swfUrl.'";
 					
 					var chartData = new YAHOO.util.DataSource( "'.$chartDataUrl.'" );
 					//use POST so that IE doesn\'t cache the data
@@ -604,70 +594,64 @@ class competition extends base {
 		$output .= '
 		
 		<script type="text/javascript">
-			//<![CDATA[
 			
 			var parts = ['.implode($parts,",").'];
 		
 			function cancelPartForm(e) {
-				YAHOO.util.Event.stopEvent(e);
-				YAHOO.util.Dom.setStyle("btnAddPart","display","");
-				YAHOO.util.Dom.setStyle("addPartForm","display","none");			
+				e.preventDefault();
+				$("#btnAddPart").show();
+				$("#addPartForm").hide();			
 			}
 			
 			function addPartForm(e) {
-				YAHOO.util.Event.stopEvent(e);
-				YAHOO.util.Dom.setStyle("btnAddPart","display","none");
-				YAHOO.util.Dom.setStyle("addPartForm","display","block");
-				$("inpPartName").value = "";
-				$("inpPartName").focus();
+				e.preventDefault();
+				$("#btnAddPart").hide();
+				$("#addPartForm").show();
+				$("#inpPartName").val("");
+				$("#inpPartName").focus();
 			}
 			
 			function submitNewPart(e) {
-				YAHOO.util.Event.stopEvent(e);
-				var postData = { name: $("inpPartName").value };
+				e.preventDefault();
+				var postData = { name: $("#inpPartName").val() };
 				var chartData = YAHOO.lang.JSON.stringify(postData);
-				YAHOO.util.Dom.setStyle("workIndicator","visibility","visible");
-				$("inpPartName").blur();
-				$("inpPartName").disabled = "disabled";
-				YAHOO.util.Connect.asyncRequest("POST", "'.$addUrl.'", {
-					success: partAdded,
-					failure: partAddFailed
-				}, chartData );
+				$("#workIndicator"").css("visibility","visible");
+				$("#inpPartName").blur();
+				$("#inpPartName").prop("disabled", true);
+				$.post("'.$addUrl.'", chartData)
+				.done(partAdded)
+				.error(partAddFailed);
 			}
 			
 			function errorMsg(msg) {
-				YAHOO.util.Dom.setStyle("divErrorMsg","display","block");				
-				$("divErrorMsg").innerHTML = msg;
+				$("#divErrorMsg").show();				
+				$("#divErrorMsg").html(msg);
 			}
 			
 			function clearError() {
-				YAHOO.util.Dom.setStyle("divErrorMsg","display","none");			
+				$("#divErrorMsg").hide();			
 			}
 			
-			function partAdded(o) {
-				YAHOO.util.Dom.setStyle("workIndicator","visibility","hidden");
-				$("inpPartName").disabled = "";
-				$("inpPartName").value = "";
-				$("inpPartName").focus();
-				try {
-					var json = YAHOO.lang.JSON.parse(o.responseText);
-					clearError();
-				} catch (e) {
-					errorMsg(o.responseText);
-				}
+			function partAdded(response) {
+				console.log(response);
+				$("#workIndicator".css("visibility","hidden");
+				$("#inpPartName").prop("disabled", false);
+				$("#inpPartName").val("");
+				$("#inpPartName").focus();
+				json = response;
 				parts.push(json);
 				redraw();
 			}
 			
 			function partAddFailed(o) {
-				YAHOO.util.Dom.setStyle("workIndicator","visibility","hidden");
-				
+				$("#workIndicator").css("visibility","hidden");	
 			}
 			
-			function partDeleted(o) {
-				var json = YAHOO.lang.JSON.parse(o.responseText);
+			function partDeleted(response) {
+				console.log(response);
+				var json = response;
 				parts = json;
-				console.log(parts);
+				//console.log(parts);
 				redraw();
 			}
 			
@@ -683,31 +667,21 @@ class competition extends base {
 						"</tr>";
 				}
 				o += "</table>";
-				$("partsTable").innerHTML = o;
+				$("#partsTable").html(o);
 			}
 			
 			function confirmDeletePart(id) {
 				if (confirm("Er du helt sikker?")) {
 					var postData = { id: id };
-					var chartData = YAHOO.lang.JSON.stringify(postData);
-					YAHOO.util.Connect.asyncRequest("POST", "'.$delUrl.'", {
-						success: partDeleted,
-						failure: partDelFailed
-					}, chartData );
+					$.post("'.$delUrl.'", postData).done(partDeleted).error(partDelFailed);
 				}
 			}
-
-			loader.require("connection","json");
-			loader.insert();
-				
-			function onYuiLoaderComplete() {
+			
+			$(document).ready(function() {
+				$("#btnAddPart").on("click", addPartForm);
+				$("#btnCancelNewPart").on("click", cancelPartForm);
+				$("#newPartForm").on("submit", submitNewPart);
 				redraw();
-			}
-						
-			YAHOO.util.Event.onDOMReady(function() {
-				YAHOO.util.Event.addListener("btnAddPart","click",addPartForm);
-				YAHOO.util.Event.addListener("btnCancelNewPart","click",cancelPartForm);
-				YAHOO.util.Event.addListener("newPartForm","submit",submitNewPart);
 			});
 			
 		//]]>

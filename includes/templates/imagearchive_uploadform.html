@@ -1,0 +1,171 @@
+
+        
+        <form id="fileupload" action="%actionurl%" method="POST" enctype="multipart/form-data">
+            <!-- Browsers with JavaScript disabled -->
+            <noscript>Denne siden krever at JavaScript er påskrudd.</noscript>
+
+            <p>
+                Tips: Hold inne shift-tasten for å velge flere filer samtidig
+            </p>
+
+            <div>
+
+                <span class="fileinput-button">
+                    <span>Legg til filer...</span>
+                    <!-- The file input field used as target for the file upload widget -->
+                    <input type="file" name="files[]" multiple>
+                </span>
+
+                <button type="submit" class="start" disabled="disabled">Last opp</button>
+            </div>
+
+            <div class="please_wait" style="display:none; font-size:200%; margin-top:20px;">
+                Vennligst vent
+            </div>
+
+            <!-- The global progress bar -->
+            <div id="progress" class="ui-progressbar ui-widget ui-widget-content ui-corner-all" role="progressbar" style="width: 490px;margin:20px 0;">
+                <div class="ui-progressbar-value ui-widget-header ui-corner-left bar" style="width: 0%;"></div>
+            </div>
+
+            <!-- The container for the uploaded files -->
+            <table id="files" class="files">
+                <tbody>
+                </tbody>
+            </table>
+
+        </form>
+
+        <script type="text/javascript">
+        /*
+         * jQuery File Upload Plugin JS Example 8.3.0
+         * https://github.com/blueimp/jQuery-File-Upload
+         *
+         * Copyright 2010, Sebastian Tschan
+         * https://blueimp.net
+         *
+         * Licensed under the MIT license:
+         * http://www.opensource.org/licenses/MIT
+         */
+
+        $(function () {
+            'use strict';
+
+            var queue = [],
+                uploadsPending = 0;
+
+            $('.fileinput-button, button.start').button();
+
+            $('#fileupload').on('submit', function(e) {
+                e.preventDefault();
+                $('.fileinput-button, button.start').button({disabled: true});
+                $('.please_wait').show();
+
+                uploadsPending = queue.length;
+                for (var i = 0; i < queue.length; i++) {
+                    queue[i].submit();
+                }
+
+            });
+
+            // Initialize the jQuery File Upload widget:
+            $('#fileupload')
+            .fileupload({
+                // Uncomment the following to send cross-domain cookies:
+                //xhrFields: {withCredentials: true}
+
+                dataType: 'json',
+
+                autoUpload: false,
+
+                disableImageResize: /Android(?!.*Chrome)|Opera/
+                    .test(window.navigator.userAgent),
+                previewMaxWidth: 80,
+                previewMaxHeight: 60,
+                previewCrop: true,
+
+            })
+            .on('fileuploadadd', function (e, data) {
+                // The add callback is invoked as soon as files are added to the fileupload
+                // widget (via file input selection, drag & drop or add API call).
+
+                //console.log(data);
+                queue.push(data);
+
+                $('#fileupload .start').button({disabled: false});
+                //console.info("UploadAdd");
+                data.context = $('<tr class="file-row"/>').appendTo('#files tbody');
+                $.each(data.files, function (index, file) {
+                    var cell = $('<td/>').text(file.name);
+                    $('<td/>').appendTo(data.context);
+                    cell.appendTo(data.context);
+                    cell = $('<td/>').append('<b />').append('...');
+                    cell.appendTo(data.context);
+                });
+            })
+            .on('fileuploadprocessalways', function (e, data) {
+                var index = data.index,
+                    file = data.files[index],
+                    row = data.context;
+                
+                //console.info('ProcessAlways: ' + data.index);
+
+                if (file.preview) {
+                    row.find('td:nth-child(1)').html(file.preview);
+                }
+                if (file.error) {
+                    node
+                        .append('<br>')
+                        .append(file.error);
+                }
+            })
+            .on('fileuploaddone', function (e, data) {
+                $.each(data.result.files, function (index, file) {
+                    var link = $('<a>')
+                        .attr('target', '_blank')
+                        .prop('href', file.url);
+                    $(data.context.children()[index])
+                        .wrap(link);
+                });
+            })
+            .on('fileuploadprogressall', function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                //console.info(progress + ' %');
+                $('#progress .bar').css('width', progress + '%');
+            })
+            .on('fileuploaddone', function(e, data) {
+                //console.info('upload done');
+                if (--uploadsPending <= 0) {
+                    //console.info('all done');
+                    window.location = '%completeurl%';
+                }
+            });
+
+            // Enable iframe cross-domain access via redirect option:
+            // $('#fileupload').fileupload(
+            //     'option',
+            //     'redirect',
+            //     window.location.href.replace(
+            //         /\/[^\/]*$/,
+            //         '/cors/result.html?%s'
+            //     )
+            // );
+            
+            // Load existing files:
+            /*
+            $('#fileupload').addClass('fileupload-processing');
+            $.ajax({
+                // Uncomment the following to send cross-domain cookies:
+                //xhrFields: {withCredentials: true},
+                url: $('#fileupload').fileupload('option', 'url'),
+                dataType: 'json',
+                context: $('#fileupload')[0]
+            }).always(function () {
+                $(this).removeClass('fileupload-processing');
+            }).done(function (result) {
+                $(this).fileupload('option', 'done')
+                    .call(this, null, {result: result});
+            });*/
+
+        });
+        </script>

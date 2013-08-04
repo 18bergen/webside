@@ -1,576 +1,458 @@
 /*
-    class: BG18.photoTagger
-    
-*/
-
-/*
-    Constructor: photoTagger
-    Initializes the object.
-*/
-BG18.photoTagger = function(enable,tag_url,untag_url,myName,everybody) {
-
-	this._enabled = (enable == true);
-	this._tagurl = tag_url;
-	this._untagurl = untag_url;
-	this._myName = myName;
-	this._everybody = everybody;
-    
-}
-
-YAHOO.extend(BG18.photoTagger, BG18.base, {
-        
-    _className: "BG18.photoTagger",    
-    _containedId: '',    
-    _enabled: false,
-    _tagurl: '',
-    _untagurl: '',
-    _myName: '',
-    _everybody: [],
-    _people: [],
-    _dragging: false,
-    _areaMouseOver: false,
-    
-    _frame: { x: 0, y: 0, width: 0, height: 0 },
-        
-    /* Ids of html elements */
-    _elArea: 'pointer_div',
-    _elCross: 'cross',
-    _elText: 'tagged_users',
-    _elForm: 'crossform',
-    _elFormUser: 'tagged_user',
-    _elFormBtnMe: 'btn_tagme',
-    _elFormBtnCancel: 'btn_tagcancel',
-    _elFormBtnSave: 'btn_tagsave',
-
-    isUndefined: function(o) {
-        return typeof o === 'undefined';
-    },
-
-	init: function(enable) {
-		YAHOO.util.Event.onContentReady(this._elArea, this.onContentReady, this, true);
-		//YAHOO.util.Event.onDOMReady(this.onContentReady,this,true);
-	},
+	class: PhotoTagger
 	
-	getPersonById: function(uId) {
-		for (var i = 0; i < this._people.length; i++) {
-			if (this._people[i]['id'] == uId) return this._people[i];
+*/
+function PhotoTagger(enabled, tag_url, untag_url, my_name, everybody) {
+
+	var _people = [],
+		_dragging = false,
+		_areaMouseOver = false,
+		
+		_frame = { x: 0, y: 0, width: 0, height: 0 },
+
+		_startX,
+		_startY,
+			
+		/* Ids of html elements */
+		_elArea = '#pointer_div',
+		_elCross = '#cross',
+		_elText = '#tagged_users',
+		_elForm = '#crossform',
+		_elFormUser = '#tagged_user',
+		_elFormBtnMe = '#btn_tagme',
+		_elFormBtnCancel = '#btn_tagcancel',
+		_elFormBtnSave = '#btn_tagsave';
+
+	enabled = (enabled == true);
+
+	this.addPerson = function(uId, uName, uUrl, x, y, width, height) {
+		_people.push({
+			id: uId,
+			name: uName,
+			url: uUrl,
+			left: x,
+			top: y,
+			width: width,
+			height: height
+		});
+	};
+	
+	this.init = function() {
+
+		$(_elFormBtnMe).on('click', onBtnTagMeClick);
+		$(_elFormBtnCancel).on('click', onBtnCancelClick);
+		$(_elFormBtnSave).on('click', onBtnSaveClick);
+
+		//$(_elArea).on('click',this.onAreaClick);
+		$(_elArea).on('mouseover', handleMouseOver)
+				  .on('mouseout', handleMouseOut)
+				  .on('mousedown', handleMouseDown)
+				  .on('mouseup', handleMouseUp)
+				  .on('mouseover', function(evt) { evt.preventDefault(); })	
+				  .on('mouseout', function(evt) { evt.preventDefault(); });
+
+		redrawText();
+		
+		makeAutoComplete();
+		
+	};
+
+	function getPersonById(uId) {
+		for (var i = 0; i < _people.length; i++) {
+			if (_people[i].id === uId) {
+				return _people[i];
+			}
 		}
 		return false;	
-	},
-	
-	addPerson: function(uId, uName, uUrl, x, y, width, height) {
-		this._people.push({
-			'id': uId,
-			'name': uName,
-			'url': uUrl,
-			'x': x,
-			'y': y,
-			'width': width,
-			'height': height
-		});
-	},
-	
-	onContentReady: function(e) {
-
-		YAHOO.util.Event.on(this._elFormBtnMe,'click',this.onBtnTagMeClick,this,true);
-		YAHOO.util.Event.on(this._elFormBtnCancel,'click',this.onBtnCancelClick,this,true);
-		YAHOO.util.Event.on(this._elFormBtnSave,'click',this.onBtnSaveClick,this,true);
-
-		//YAHOO.util.Event.on(this._elArea,'click',this.onAreaClick,this,true);
-		YAHOO.util.Event.on(this._elArea,'mouseover',this.handleMouseOver,this,true);
-		YAHOO.util.Event.on(this._elArea,'mouseout',this.handleMouseOut,this,true);
-		YAHOO.util.Event.on(this._elArea,'mousedown',this.handleMouseDown,this,true);
-		YAHOO.util.Event.on(this._elArea,'mouseup',this.handleMouseUp,this,true);
-		YAHOO.util.Event.on(this._elForm,'mouseover',function(event) {
-			YAHOO.util.Event.stopEvent(event);
-		});
-		YAHOO.util.Event.on(this._elForm,'mouseout',function(event) {
-			YAHOO.util.Event.stopEvent(event);
-		});
-
-		this.redrawText();
+	}
 		
-		this.makeAutoComplete();
-		
-	},
-	
-	makeAutoComplete: function() {
-	
-		var self = this;
-		var oDS = new YAHOO.util.LocalDataSource(this._everybody);
-		var acObj = new YAHOO.widget.AutoComplete(this._elFormUser, this._elFormUser+'_ac', oDS, {
-			animVert: false,
-			useIFrame: false,
-			forceSelection: true,
-			allowBrowserAutocomplete: false,
-			useShadow: true
+	function makeAutoComplete() {
+		$(_elFormUser).autocomplete({
+			source: everybody,
+			minLength: 2
 		});
-        
-		var self = this;
-		this.addEditorKeyListener = new YAHOO.util.KeyListener(this._elFormUser, 
-			{ keys:[YAHOO.util.KeyListener.KEY.ENTER, 
-					YAHOO.util.KeyListener.KEY.ESCAPE] },
-			{ fn:function(type, args, obj) {
-				switch (args[0]) {
-					case YAHOO.util.KeyListener.KEY.ENTER:
-						self.savePerson();
-						break;
-					case YAHOO.util.KeyListener.KEY.ESCAPE:
-						self.hideTagForm();
-						break;
-				}
-			} } 
-		);
-		this.addEditorKeyListener.enable();
-		acObj.containerExpandEvent.subscribe(this.addEditorACexpand, this, true);
-		acObj.containerCollapseEvent.subscribe(this.addEditorACcollapse, this, true);	
+	}	
 	
-	},
-
-	addEditorACexpand: function() { this.addEditorKeyListener.disable(); },
-	addEditorACcollapse: function() { this.addEditorKeyListener.enable(); },
-	
-	savePerson: function() {
-		console.log("save person");	
-	},
-	
-	redrawText: function() {
+	function redrawText() {
 		var a,aDel,p,frame,innerframe,i;
 		
-		YAHOO.util.Event.purgeElement(this._elText, true);
-		var elms = YAHOO.util.Dom.getElementsByClassName('tagged_person_frame','div',this._elArea);
-		for (i = 0; i < elms.length; i++) {
-			$(this._elArea).removeChild($(elms[i]));
+		$(_elText+', '+_elText+' *').off();
+
+		$(_elArea + ' div.tagged_person_frame').remove();
+		$(_elText).html('<span style="display:inline-block;vertical-align:middle;float:left;">På bildet: </span>');
+
+		if (_people.length === 0) {
+			$(_elText).append('<em>Ukjent</em>');
+		}
+		for (i = 0; i < _people.length; i++) {
+			p = _people[i];
+
+			a = '<a id="ppl_' + p.id + '" href="' + p.url + '" class="tagged_person_link">' + p.name + ' <i class="delete" title="Fjern denne personen">X</i></a>';
+			$(_elText).append(a);
+
+			frame = '<div id="frame_' + p.id + '" class="tagged_person_frame" style="width:' + p.width + 'px; height: ' + p.height + 'px;"><div style="background-color:rgba(255,255,255,.4);"></div></div>';
+			$(_elArea).append(frame);
+			
+		}
+
+		$('.tagged_person_frame')
+			.on('mouseover', frameRollover)
+			.on('mouseout', frameRollout);
+
+		$('.tagged_person_link')
+			.on('mouseover', personRollover)
+			.on('mouseout', personRollout)
+			.on('click', handlePersonClick);
+
+		Nifty('.tagged_person_link','small transparent');
+	}
+
+	function frameRollover(event) {
+		var id = parseInt($(event.currentTarget).attr('id').split('_')[1], 10);
+		//console.info('  enter person ' + id);
+		var p = getPersonById(id);
+		focusPerson(p);
+		event.preventDefault();		
+	}
+
+	function frameRollout(event) {
+		var id = parseInt($(event.currentTarget).attr('id').split('_')[1], 10);
+		var rel = event.relatedTarget;
+		if (rel && rel.id === 'frame_'+id) {
+
+		} else if (rel && rel.parentNode && rel.parentNode.id === 'frame_'+id) {
+
+		} else {
+			var p = getPersonById(id);
+			//console.info('  leave person ' + id);
+			unfocusPerson(p);
 		}		
+	}
+
+	function personRollover(event) {
+		var id = parseInt($(event.currentTarget).attr('id').split('_')[1], 10);
+		showPerson(getPersonById(id));
+	}
+
+	function personRollout(event) {
+		var id = parseInt($(event.currentTarget).attr('id').split('_')[1], 10);
+		hidePerson(getPersonById(id));
+	}
+	
+	function handlePersonClick(event) {
+		var id = parseInt($(event.currentTarget).attr('id').split('_')[1], 10);
+		//console.log(id);
+		if ($(event.target).hasClass('delete')) {
+			event.preventDefault();
+			removePerson(id);
+		}
+	}
+	
+	function removePerson(id) {
+		untagMember(id);
+		hidePerson(getPersonById(id));
+	}
+	
+	function drawFrame(p) {
+		var areaXY = $(_elArea).offset(),
+			xy = {
+				left: areaXY.left + p.left, 
+				top: areaXY.top + p.top
+			};
 		
-		$(this._elText).innerHTML = '<span style="display:inline-block;vertical-align:middle;float:left;">På bildet: </span>';
-		
-		if (this._people.length == 0) {
-			$(this._elText).innerHTML += '<em>Ukjent</em>';	
+		$('#frame_' + p.id)
+			.show()
+			.css('opacity', '.4')
+			.offset(xy);
+
+	}
+	
+	function clearFrame() {
+		for (var i = 0; i < _people.length; i++) {
+			$('#frame_'+_people[i].id).hide();
 		}
-		for (i = 0; i < this._people.length; i++) {
-			p = this._people[i];
-
-			a = document.createElement('a');
-			a.setAttribute('id', 'ppl_'+p['id']);
-			a.innerHTML = p['name'];
-			a.setAttribute('href', p['url']);
-			$(this._elText).appendChild(a);
-			YAHOO.util.Dom.addClass(a,'tagged_person_link');
-
-			aDel = document.createElement('a');
-			aDel.innerHTML = 'X';
-			aDel.setAttribute('href', '#');
-			aDel.setAttribute('title', 'Fjern denne personen');
-			a.appendChild(aDel);
-
-			frame = document.createElement('div');
-			frame.setAttribute('id', 'frame_'+p['id']);
-//			YAHOO.util.Dom.setStyle(frame,'background','#fff');
-			$(this._elArea).appendChild(frame);
-			YAHOO.util.Dom.addClass(frame,'tagged_person_frame');
-			YAHOO.util.Dom.setStyle(frame,'width',p['width']+'px');
-			YAHOO.util.Dom.setStyle(frame,'height',p['height']+'px');
-			
-			innerframe = document.createElement('div');
-			frame.appendChild(innerframe);
-			YAHOO.util.Dom.setStyle(innerframe,'background','#fff');
-			YAHOO.util.Dom.setStyle(innerframe,'opacity','.1');
-			YAHOO.util.Event.addListener(innerframe,'mouseover',this.frameRollover,p['id'],this);
-			YAHOO.util.Event.addListener(innerframe,'mouseout',this.frameRollout,p['id'],this);
-
-			
-			YAHOO.util.Event.addListener(a,'mouseover',this.personRollover,p['id'],this);
-			YAHOO.util.Event.addListener(a,'mouseout',this.personRollout,p['id'],this);
-
-			YAHOO.util.Event.addListener(a,'click',this.handlePersonClick,p['id'],this);
-			YAHOO.util.Event.addListener(aDel,'click',this.removePerson,p['id'],this);
-			
+	}
+	
+	function showAllFrames() {
+		for (var i = 0; i < _people.length; i++) {
+			drawFrame(_people[i]);
 		}
-		Nifty('a.tagged_person_link','small transparent');
-	},
+	}
 	
-	frameRollover: function(event, uId) {
-		var p = this.getPersonById(uId);		
-		this.focusPerson(p);
-		//console.log('  enter person '+uId);
-		YAHOO.util.Event.stopEvent(event);		
-	},
-
-	frameRollout: function(event, uId) {
-		var rel = YAHOO.util.Event.getRelatedTarget(event);
-		if (this.isUndefined(rel) && rel.id == 'frame_'+uId) {}
-		else if (this.isUndefined(rel.parentNode) && rel.parentNode.id == 'frame_'+uId) {}
-		else {
-			var p = this.getPersonById(uId);
-			//console.log('  leave person '+uId);
-			this.unfocusPerson(p);
-		}		
-	},
-	
-	personRollover: function(event, uId) {
-		var p = this.getPersonById(uId);		
-		this.showPerson(p);
-	},
-
-	personRollout: function(event, uId) {
-		var p = this.getPersonById(uId);
-		this.hidePerson(p);
-	},
-	
-	handlePersonClick: function(event, uId) {
-		//YAHOO.util.Event.stopEvent(event);	
-	},
-	
-	removePerson: function(event, uId) {
-		YAHOO.util.Event.stopEvent(event);
-		this.untagMember(uId);
-		var p = this.getPersonById(uId);
-		this.hidePerson(p);
-	},
-	
-	drawFrame: function(p) {
-		//var p = this._people[uId];
-		var areaXY = YAHOO.util.Dom.getXY(this._elArea);
-		var xy = [areaXY[0]+p['x'], areaXY[1]+p['y']];
-		
-		YAHOO.util.Dom.setStyle('frame_'+p['id'],'visibility','visible');
-		YAHOO.util.Dom.setStyle('frame_'+p['id'],'opacity','.4'); // "opacity" is normalized across modern browsers	
-		YAHOO.util.Dom.setXY('frame_'+p['id'], xy);
-
-		/*YAHOO.util.Dom.setStyle(this._elCross,'visibility','visible');
-		YAHOO.util.Dom.setStyle(this._elCross,'width',width+'px');
-		YAHOO.util.Dom.setStyle(this._elCross,'height',height+'px');
-		YAHOO.util.Dom.setXY(this._elCross,[x,y]);		
-		*/
-	},
-	
-	clearFrame: function() {
-		//YAHOO.util.Dom.setStyle(this._elCross,'visibility','hidden');
-		for (var i = 0; i < this._people.length; i++) {
-			YAHOO.util.Dom.setStyle('frame_'+this._people[i]['id'],'visibility','hidden');
-		}
-	},
-	
-	showAllFrames: function() {
-		for (var i = 0; i < this._people.length; i++) {
-			this.drawFrame(this._people[i]);
-		}
-	},
-	
-	hideAllFrames: function() {
-		for (var i = 0; i < this._people.length; i++) {
-			YAHOO.util.Dom.setStyle('frame_'+this._people[i]['id'],'visibility','hidden');
+	function hideAllFrames() {
+		for (var i = 0; i < _people.length; i++) {
+			$('#frame_'+_people[i].id).hide();
 		}	
-	},
+	}
 	
-	showPerson: function(p) {
-		this.showAllFrames();
-		this.focusPerson(p);	
-	},
+	function showPerson(p) {
+		showAllFrames();
+		focusPerson(p);	
+	}
 	
-	hidePerson: function(p) {
-		this.unfocusPerson(p);	
-		this.hideAllFrames();
-	},
+	function hidePerson(p) {
+		unfocusPerson(p);	
+		hideAllFrames();
+	}
 
-	focusPerson: function(p) {		
-		YAHOO.util.Dom.setStyle('frame_'+p['id'],'opacity','1'); // Normalizes "opacity" across modern browsers
-		YAHOO.util.Dom.setStyle('name_float','visibility','visible');
-		YAHOO.util.Dom.setStyle('name_float','opacity','.8'); // Normalizes "opacity" across modern browsers
+	function focusPerson(p) {
 
-		var areaXY = YAHOO.util.Dom.getXY(this._elArea);
-		var xy = [areaXY[0]+p['x']+p['width']/2-140/2, areaXY[1]+p['y']+p['height']+15];
-		YAHOO.util.Dom.setXY('name_float',xy);
-		$('name_float').innerHTML = p['name'];
-	},
+		var areaXY = $(_elArea).offset();
+		var xy = {
+			left: areaXY.left + p.left + p.width/2 - 140/2, 
+			top: areaXY.top + p.top + p.height + 15
+		};
+		$('#frame_' + p.id).css('opacity', '1');
+		$('#name_float').show()
+						.css('opacity', '.8')
+						.offset(xy)
+						.html(p.name);
+	}
 	
-	unfocusPerson: function(p) {
-		YAHOO.util.Dom.setStyle('frame_'+p['id'],'opacity','.4'); // Normalizes "opacity" across modern browsers	
-		YAHOO.util.Dom.setStyle('name_float','visibility','hidden');
-	},
+	function unfocusPerson(p) {
+		$('#frame_'+p.id).css('opacity','.4'); // Normalizes "opacity" across modern browsers	
+		$('#name_float').hide();
+	}
 	
-	handleMouseOver: function(event) {
+	function handleMouseOver(event) {
 		
-		var target = YAHOO.util.Event.getTarget(event);
-		var targetParent = target.parentNode;
-		var rel = YAHOO.util.Event.getRelatedTarget(event);
+		var target = event.target;
+		var targetParent = $(target).parent();
+		var rel = event.relatedTarget;
 
-		if (target != $(this._elArea)) return;
+		if (target !== $(_elArea).get(0)) return;
 
-		/*console.group('mouseover');
-		console.log(target);
-		console.log(rel);
-		console.log(rel.parentNode);
-		*/
 		/* NOTE: relatedTarget may be undefined */
-		if (this.isUndefined(rel)) {
+		if (rel) {
 		
-		} else if (YAHOO.util.Dom.hasClass(rel,'tagged_person_frame')) {
-			/* Pointer was moved from a person to the background */
-		//	console.log('from frame');
-			//console.groupEnd();
-			return;
-		} else if (!this.isUndefined(rel.parentNode)) {
-			//console.log(rel.parentNode);
-			if (YAHOO.util.Dom.hasClass(rel.parentNode,'tagged_person_frame')) {
+			if ($(rel).hasClass('tagged_person_frame')) {
 				/* Pointer was moved from a person to the background */
-				//console.log('from frame inner');
+			//	console.log('from frame');
 				//console.groupEnd();
-				return;		
+				return;
+			} else if ( $(rel).parent() ) {
+				//console.log(rel.parentNode);
+				if ($(rel).parent().hasClass('tagged_person_frame')) {
+					/* Pointer was moved from a person to the background */
+					//console.log('from frame inner');
+					//console.groupEnd();
+					return;		
+				}
 			}
 		}
 
 		/* Pointer entered the photo from outside */
-		console.info('Pointer entered photo');
-		this._areaMouseOver = true;
+		//console.info('Pointer entered photo');
+		_areaMouseOver = true;
 		//console.groupEnd();
-		this.showAllFrames();
+		showAllFrames();
 		
-	},
+	}
 	
-	handleMouseOut: function(event) {
+	function handleMouseOut(event) {
 		/* NOTE: relatedTarget may be undefined */
-		var target = YAHOO.util.Event.getTarget(event);
-		var targetParent = target.parentNode;
-		var rel = YAHOO.util.Event.getRelatedTarget(event);
+		var target = event.target;
+		var targetParent = $(target).parent();
+		var rel = event.relatedTarget;
 
-		if (target != $(this._elArea)) return;
+		if (target !== $(_elArea).get(0)) return;
 
-		/*console.group('mouseout');
-		console.log(target);
-		console.log(rel);
-		console.groupEnd();
 		*/
-		/* NOTE: relatedTarget may be undefined */
-		if (this.isUndefined(rel)) {
+		/* NOTE: relatedTarget may be undefined or null */
+		if (rel) {
 		
-		} else if (YAHOO.util.Dom.hasClass(rel,'tagged_person_frame')) {
-			/* Pointer was moved from a person to the background */
-			//console.log('from frame');
-			//console.groupEnd();
-			return;
-		} else if (!this.isUndefined(rel.parentNode)) {
-			//console.log(rel.parentNode);
-			if (YAHOO.util.Dom.hasClass(rel.parentNode,'tagged_person_frame')) {
+			if ($(rel).hasClass('tagged_person_frame')) {
 				/* Pointer was moved from a person to the background */
-			//	console.log('from frame inner');
-			//	console.groupEnd();
-				return;		
+				return;
+			} else if ( $(rel).parent() ) {
+				//console.log(rel.parentNode);
+				if ($(rel).parent().hasClass('tagged_person_frame')) {
+					/* Pointer was moved from a person to the background */
+					return;		
+				}
 			}
 		}
 
-		console.info("Pointer left photo");
-		this._areaMouseOver = false;
-		this.hideAllFrames();
+		if (_dragging) {
+			return;
+		}
 
-	},
+		//console.info("Pointer left photo");
+		_areaMouseOver = false;
+		hideAllFrames();
+
+	}
 		
-	handleMouseDown: function(event) {
-		if (this._enabled) {
+	function handleMouseDown(event) {
+		if (enabled) {
 
-			var clickedItem = YAHOO.util.Event.getTarget(event);
-			var xy = YAHOO.util.Event.getXY(event);
+			var clickedItem = event.target;
+			var xy = {left: event.pageX, top: event.pageY};
 
-			if (clickedItem == $(this._elArea) || clickedItem == $(this._elCross)) {
+			if (clickedItem == $(_elArea).get(0) || clickedItem == $(_elCross).get(0)) {
 
-				YAHOO.util.Dom.setStyle(this._elCross,'visibility','hidden');
-				YAHOO.util.Dom.setStyle(this._elForm,'visibility','hidden');
-				
-				if (this._dragging) {
-					this.endDrag(xy[0],xy[1]);
+				$(_elCross).hide();
+				$(_elForm).hide();
+
+				if (_dragging) {
+					endDrag(xy.left, xy.top);
 					return;
 				}
-						
-				this.startDrag(xy[0], xy[1]);
+
+				startDrag(xy.left, xy.top);
 			}
 		}	
-	},
+	}
 
-	handleMouseMove: function(event) {
-		var xy = YAHOO.util.Event.getXY(event);
-		var width = xy[0] - this._startX;
-		var height = xy[1] - this._startY;
-
-		var x,y,w,h;		
-		w = Math.abs(width);
-		h = Math.abs(height);
-		if (width < 0) x = xy[0]; else x = this._startX;
-		if (height < 0) y = xy[1]; else y = this._startY;
-
-		YAHOO.util.Dom.setStyle(this._elCross,'visibility','visible');
-		YAHOO.util.Dom.setXY(this._elCross,[x,y]);
-		YAHOO.util.Dom.setStyle(this._elCross,'width',w+'px');
-		YAHOO.util.Dom.setStyle(this._elCross,'height',h+'px');
+	function handleMouseMove(event) {
+		var left, top, width, height;
+		var xy = {left: event.pageX, top: event.pageY};
 		
-	},
+		width = xy.left - _startX;
+		height = xy.top - _startY;
+
+		left = (width < 0) ? xy.left : _startX;
+		top = (height < 0) ? xy.top : _startY;
+
+		$(_elCross)
+			.show()
+			.css('width', Math.abs(width)+'px')
+			.css('height', Math.abs(height)+'px')
+			.offset({left: left, top: top});
+
+	}
 	
-	handleMouseUp: function(event) {
-		if (!this._dragging) return;
-		var xy = YAHOO.util.Event.getXY(event);
-		this.endDrag(xy[0],xy[1]);
-	},
+	function handleMouseUp(event) {
+		if (!_dragging) return;
+		var xy = {left: event.pageX, top: event.pageY};
+		endDrag(xy.left, xy.top);
+	}
 	
-	startDrag: function(x,y) {
-		console.info('Start drag');
-		this._dragging = true;
-		this._startX = x;
-		this._startY = y;
-		YAHOO.util.Dom.setXY(this._elCross,[x,y]);
-        YAHOO.util.Event.on(this._elArea, "mousemove", this.handleMouseMove, this, true);
-	},
+	function startDrag(x, y) {
+		//console.info('Start drag');
+		_dragging = true;
+		_startX = x;
+		_startY = y;
+		$(_elCross).offset({left: x, top: y});
+		$(_elArea).on('mousemove', handleMouseMove);
+		showAllFrames();
+	}
 		
-	endDrag: function(x,y) {
-		console.info('End drag');
-		YAHOO.util.Dom.setStyle(this._elCross,'visibility','visible');
-		this._dragging = false;
-        YAHOO.util.Event.removeListener(this._elArea, "mousemove", this.handleMouseMove);
+	function endDrag(x,y) {
+		var left, top, width, height;		
+		//console.info('End drag');
+		$(_elCross).show();
+		_dragging = false;
+		$(_elArea).off("mousemove");
 
-		var width = x - this._startX;
-		var height = y - this._startY;
+		width = x - _startX;
+		height = y - _startY;
 
-		var x,y,w,h;		
-		w = Math.abs(width);
-		h = Math.abs(height);
-		if (width < 0) x = x; else x = this._startX;
-		if (height < 0) y = y; else y = this._startY;
+		left = (width < 0) ? x : _startX;
+		top = (height < 0) ? y : _startY;
 
-		this.showTagForm(x,y,w,h);
-	},
+		showTagForm(left, top, Math.abs(width), Math.abs(height));
+	}
 	
-	onAreaClick: function(event) {		
-		if (this._enabled) {
+	function onAreaClick(event) {		
+		if (enabled) {
 
-			var clickedItem = YAHOO.util.Event.getTarget(event);
-			var xy = YAHOO.util.Event.getXY(event);
+			var clickedItem = event.target;
+			var xy = {left: event.pageX, top: event.pageY};
 						
-			if (clickedItem == $(this._elArea) || clickedItem == $(this._elCross)) {
-				console.info("Vis form");
-				this.showTagForm(xy[0], xy[1]);
+			if (clickedItem == $(_elArea) || clickedItem == $(_elCross)) {
+				//console.info("Vis form");
+				showTagForm(xy.left, xy.top);
 			}
 		}
-	},
+	}
 	
-	onBtnCancelClick: function(event) {
-		this.hideTagForm();
-	},
+	function onBtnCancelClick(event) {
+		hideTagForm();
+	}
 	
-	onBtnSaveClick: function(event) {
-		YAHOO.util.Event.stopEvent(event);
-		this.tagMember();
-	},
+	function onBtnSaveClick(event) {
+		event.preventDefault();
+		tagMember();
+	}
 	
-	onBtnTagMeClick: function(event) {
-		$(this._elFormUser).value = this._myName;
-		this.tagMember();
-	},
+	function onBtnTagMeClick(event) {
+		$(_elFormUser).val(my_name);
+		tagMember();
+	}
 	
-	showTagForm: function(X,Y,w,h) {
-		var areaXY = YAHOO.util.Dom.getXY(this._elArea);
-		var areaW = $(this._elArea).offsetWidth;
-		var areaH = $(this._elArea).offsetHeight;
-		//YAHOO.util.Dom.setStYle(this._elCross,'visibility','visible');
+	function showTagForm(X,Y,w,h) {
+		var areaXY = $(_elArea).offset();
+		var areaW = $(_elArea).offsetWidth;
+		var areaH = $(_elArea).offsetHeight;
+		//YAHOO.util.Dom.setStYle(_elCross,'visibility','visible');
 		if (w < 10 && h < 10) {
 			w =  100;
 			h = 100;
 			X = X - w/2;
 			Y = Y - h/2;
-			if (X<areaXY[0]+1) X = areaXY[0]+1;
-			if (Y<areaXY[1]+1) Y = areaXY[1]+1;
-			if (X+w > areaXY[0]+areaW-2) X = areaXY[0]+areaW-w-2;
-			if (Y+h > areaXY[1]+areaH-2) Y = areaXY[1]+areaH-h-2;
-			YAHOO.util.Dom.setXY(this._elCross,[X,Y]);
-			YAHOO.util.Dom.setStyle(this._elCross,'width',w+'pX');
-			YAHOO.util.Dom.setStyle(this._elCross,'height',h+'pX');			
+			if (X<areaXY.left+1) X = areaXY.left+1;
+			if (Y<areaXY.top+1) Y = areaXY.top+1;
+			if (X+w > areaXY.left+areaW-2) X = areaXY.left+areaW-w-2;
+			if (Y+h > areaXY.top+areaH-2) Y = areaXY.top+areaH-h-2;
+			$(_elCross).offset({left: X, top: Y});
+			$(_elCross).css('width',w+'pX');
+			$(_elCross).css('height',h+'pX');			
 		}
 		
-		var absXY = YAHOO.util.Dom.getXY(this._elCross);
-		YAHOO.util.Dom.setStyle(this._elForm,'visibility','visible');
-		YAHOO.util.Dom.setXY(this._elForm,[
-			absXY[0]+w/2-180/2,
-			absXY[1]+h+5
-		]);
-		console.info(absXY);
-		
-		this._frame = { x: X-areaXY[0], y: Y-areaXY[1], width: w, height: h };
-		$(this._elFormUser).value = "";
-		$(this._elFormUser).focus();
-	},
-	
-	hideTagForm: function() {
-		Element.setStyle(this._elCross,{visibility:"hidden"});						
-		Element.setStyle(this._elForm,{visibility:"hidden"});
-		$(this._elFormUser).value = "";
-	},
-		
-	tagMember: function() {
-		YAHOO.util.Dom.setStyle(this._elCross,'visibility','hidden');
-		YAHOO.util.Dom.setStyle(this._elForm,'visibility','hidden');	
-		var pName = $(this._elFormUser).value;
-		this.makeAjaxRequest(this._tagurl,{
-			fullname: pName,
-				frame: this._frame
+		var absXY = $(_elCross).offset();
+		$(_elForm).show();
+		$(_elForm).offset({
+			left: absXY.left+w/2-180/2,
+			top: absXY.top+h+5
 		});
-	},
-	
-	untagMember: function(id) {
-		this.makeAjaxRequest(this._untagurl,{
-			tag_uid: id
-		});
-	},
-	
-	ajaxSuccess: function(ajax) {
-		//console.info(ajax['people']);
-		$(this._elText).innerHTML = 'Med på bildet: ';
-		this._people = ajax['people'];
-		this.redrawText();
-		if (ajax['error'] != '0') {
-			var d = document.createElement('div');
-			d.innerHTML = ajax['error'];
-			$(this._elText).appendChild(d);
-			YAHOO.util.Dom.setStyle(d,'color','#f00');
-			YAHOO.util.Dom.setStyle(d,'padding','5px');
-		}
-		if (this._areaMouseOver) {
-			this.showAllFrames();	
-		}
-	},
-	
-	ajaxFailure: function(result) {
-		$(this._elText).innerHTML = 'Det oppstod en feil: '+result;
-	},
-	
-	makeAjaxRequest: function(url, parameters) {
-		console.info('Making AJAX request…');
-		console.log(YAHOO.lang.JSON.stringify(parameters));
-		//$(this._elText).innerHTML = 'Oppdaterer…';
-		var self = this;
-		YAHOO.util.Connect.asyncRequest('POST',url, { 
-			success: function(o){
-				try {
-					var json = YAHOO.lang.JSON.parse(o.responseText);
-					self.ajaxSuccess(json);
-				} catch (x) {
-					self.ajaxFailure(x+'<br />'+o.responseText);
-				}
-			},
-			failure: function(o){ self.ajaxFailure(o); }		
-		}, 'json='+YAHOO.lang.JSON.stringify(parameters));
+		//console.info(absXY);
+		
+		_frame = { x: X-areaXY.left, y: Y-areaXY.top, width: w, height: h };
+		$(_elFormUser).val('');
+		$(_elFormUser).focus();
 	}
 	
-});
-/*
-		if (event.srcElement) {					// Internet Explorer
-			clickedItem = event.srcElement.id;
-		} else if (event.target) {			  	// Netscape and Firefox
-			clickedItem = event.target.id;
-		}
+	function hideTagForm() {
+		$(_elCross).hide();						
+		$(_elForm).hide();
+		$(_elFormUser).val('');
+	}
 		
-		if (this._enabled) {
-			if (clickedItem == this._divArea) {
-				pos_x = event.offsetX?(event.offsetX):event.pageX-$(this._divArea).offsetLeft;
-				pos_y = event.offsetY?(event.offsetY):event.pageY-$(this._divArea).offsetTop;
-				this.showTagForm(pos_x, pos_y);
-			}
+	function tagMember() {
+		$(_elCross).hide();
+		$(_elForm).hide();	
+		var pName = $(_elFormUser).val();
+		$.post(tag_url, { fullname: pName, frame: _frame })
+		 .done(ajaxSuccess)
+		 .error(ajaxFailure);
+	}
+	
+	function untagMember(id) {
+		$.post(untag_url, { tag_uid: id })
+		 .done(ajaxSuccess)
+		 .error(ajaxFailure);
+	}
+	
+	function ajaxSuccess(ajax) {
+		//console.info(ajax['people']);
+		_people = ajax['people'];
+		$(_elText).innerHTML = 'Med på bildet: ';
+		redrawText();
+		if (ajax.error != '0') {
+			var d = document.createElement('div');
+			d.innerHTML = ajax.error;
+			$(_elText).appendChild(d);
+			$(d).css('color','#f00');
+			$(d).css('padding','5px');
 		}
-*/
+		if (_areaMouseOver) {
+			showAllFrames();	
+		}
+	}
+	
+	function ajaxFailure(result) {
+		$(_elText).innerHTML = 'Det oppstod en feil: '+result;
+	}
+
+}

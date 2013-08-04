@@ -266,8 +266,7 @@ class calendar extends calendar_basic {
 	
 	function generateTimeField($form, $identifier, $value = "-1", $className = ""){
 
-		$bfr = "<select name=\"".$identifier."_time\" id=\"".$identifier."_time\" size=\"1\" class=\"$className\" 
-			onChange=\"checkForUnknownTime('$form', '$identifier', this);\">\n";
+		$bfr = "<select name=\"".$identifier."_time\" id=\"".$identifier."_time\" size=\"1\" class=\"$className\">\n";
 		// 01 represents ?? - unknown time
 		$selc = (($value != "-1") && ('01' == date("i",$value))) ? $selc = " selected='selected'" : "";
 		$bfr .= "  <option value='heledagen'".$selc."> </option>\n";
@@ -284,21 +283,22 @@ class calendar extends calendar_basic {
 	}
 	
 	function parseDateTimeFromPOST($identifier){	
-		foreach (array('day','month','year','time') as $s) {
-			if (!isset($_POST[$identifier.'_'.$s])) {
-				$this->fatalError($identifier.'_'.$s.' not found in _POST');
-			}
+		if (!isset($_POST[$identifier])) {
+			$this->fatalError($identifier.' not found in _POST');
 		}
-		$ds_day = intval($_POST[$identifier.'_day']);
-		$ds_month = intval($_POST[$identifier.'_month']);
-		$ds_year = intval($_POST[$identifier.'_year']);
+		if (!isset($_POST[$identifier.'_time'])) {
+			$this->fatalError($identifier.'_time not found in _POST');
+		}
+
+		$ds_date = explode('-', $_POST[$identifier]);
+
 		if ($_POST[$identifier.'_time'] == 'heledagen') {
 			$ds_h = 0; $ds_m = 0;
 		} else {
 			list($ds_h,$ds_m) = explode(':',$_POST[$identifier.'_time']);		
 			$ds_h = intval($ds_h); $ds_m = intval($ds_m);
 		}
-		$tim = mktime($ds_h,$ds_m,0,$ds_month,$ds_day,$ds_year);
+		$tim = mktime($ds_h,$ds_m,0,$ds_date[1],$ds_date[2],$ds_date[0]);
 		return strftime("%F %T",$tim);
 	}
 
@@ -1164,7 +1164,7 @@ class calendar extends calendar_basic {
 		$output = str_replace($r1a, $r2a, $this->eventdetails_template).'
 				<script type="text/javascript">
 				//<![CDATA[
-					YAHOO.util.Event.onDOMReady(function() {
+					$(document).ready(function() {
 						Nifty("div.whiteInfoBox");
 					});
 				//]]>
@@ -1610,12 +1610,16 @@ class calendar extends calendar_basic {
 		exit();
 		*/
 
-		$val = addslashes($_GET['cal_location'])."%";
+		$val = addslashes($_GET['term'])."%";
 		$res = $this->query("SELECT caption FROM $this->table_locations WHERE caption LIKE \"$val\" LIMIT 20");
 
+		$arr = array();
 		while ($row = $res->fetch_assoc()) {
-			print stripslashes($row['caption'])."\n";
+			$arr[] = stripslashes($row['caption']);
 		}
+
+		header('Content-Type: application/json; charset=utf-8');
+		print json_encode($arr);
 		exit();
 	
 	}
@@ -1746,22 +1750,27 @@ class calendar extends calendar_basic {
 		exit();
 		*/
 
-		$val = addslashes($_GET['cal_subject'])."%";
+		$val = addslashes($_GET['term'])."%";
 		$res = $this->query(
 			"SELECT id,caption FROM $this->table_calendar WHERE caption LIKE \"$val\"
 			AND calendar_id IN (".$this->show_calendars.")
 			GROUP BY caption ORDER BY COUNT(id) DESC, caption ASC LIMIT 20"
 		);
-		header("Content-Type: text/html; charset=utf-8");
+		header("Content-Type: application/json; charset=utf-8");
+		
+		$arr = array();
 		if ($res->num_rows == 1) {
 		    $row = $res->fetch_assoc();
-		    if (stripslashes($row['caption']) == $val) exit();
-		}  
-		while ($row = $res->fetch_assoc()) {
-			print stripslashes($row['caption'])."\n";
+		    if (stripslashes($row['caption']) == $val) {
+		    	print json_encode($arr);
+		    	exit();
+		    }
 		}
-		exit();
-	
+		while ($row = $res->fetch_assoc()) {
+			$arr[] = stripslashes($row['caption']);
+		}
+		print json_encode($arr);
+		exit();	
 	}
 
 	/* ================================ SETTINGS: RESPONSIBLES ================================= */		

@@ -5,7 +5,7 @@ Version 2.1 - 23.07.10
 	Added photo counts table
 
 Version 2.0 - 28.12.09
-    Modified folder structure for compliance with CKFinder
+	Modified folder structure for compliance with CKFinder
 
 Version 1.8 - 26.06.09
 	Removed chmodding
@@ -233,53 +233,35 @@ class imagearchive extends comments {
 		
 			var bildeTittel = "";
 
-			// ============================ 1) Load YUI lib ===================================
-
-			loader.require("connection","json");
-			loader.insert();
-				
-			function onYuiLoaderComplete() {
-				// make edit link clickable
-			}
 		
 			function errorMsg(txt) {
-				$("img_title").innerHTML = \'<form method="post" onsubmit="saveTitle(); return false;"><input type="text" id="title_edit" value="\'+bildeTittel+\'" style="border: 1px solid #888; width:300px;" /></form><div style="color:red;font-weight:bold;">\'+txt+\'</div>\';
-				$("title_edit").focus();
+				$("#img_title").html(\'<form method="post" onsubmit="saveTitle(); return false;"><input type="text" id="title_edit" value="\'+bildeTittel+\'" style="border: 1px solid #888; width:300px;" /></form><div style="color:red;font-weight:bold;">\'+txt+\'</div>\');
+				$("#title_edit").focus();
 			}
 			
 			// ============================ 1) Edit and save title ================================
 
 			function editTitle() {
-				bildeTittel = $("bildetittel").value;
+				bildeTittel = $("#bildetittel").val();
 				bildeTittel = bildeTittel.replace(new RegExp("\"", "g"),"&quot;");
-				$("img_title").innerHTML = \'<form method="post" onsubmit="saveTitle(); return false;"><input type="text" id="title_edit" value="\'+bildeTittel+\'" style="border: 1px solid #888; width:300px;" /></form>\';
-				$("title_edit").focus();
+				$("#img_title").html(\'<form method="post" onsubmit="saveTitle(); return false;"><input type="text" id="title_edit" value="\'+bildeTittel+\'" style="border: 1px solid #888; width:300px;" /></form>\');
+				$("#title_edit").focus();
 			}
 			
 			function saveTitle() {
 				var url = "%title_url%";
-				bildeTittel = $("title_edit").value;
-				$("img_title").innerHTML = "Lagrer…";
-				YAHOO.util.Connect.asyncRequest("POST", url, {
-					success: titleSaved,
-					failure: titleSaveFailed
-				}, "title="+bildeTittel);
+				bildeTittel = $("#title_edit").val();
+				$("#img_title").html("Lagrer…");
+				$.post(url, {title: bildeTittel})
+				.done(titleSaved)
+				.error(titleSaveFailed);
 			}
 
-			function titleSaved(o) {
-				try {
-					var json = YAHOO.lang.JSON.parse(o.responseText);
-					if (json.error == "0") {
-						var newTitle = json.title;
-						var titleAsDisplayed = newTitle;
-						if (titleAsDisplayed=="") titleAsDisplayed = "<em style=\"font-weight:normal; color: #888;\">Ingen tittel</em>";
-						$("img_title").innerHTML = \'<div onclick="editTitle();" style="cursor:pointer;"><input type="hidden" id="bildetittel" value="\'+newTitle+\'" />\'+titleAsDisplayed+\'</div>\';
-					} else {
-						errorMsg(json.error);
-					}
-				} catch (e) {
-					errorMsg("Det oppstod en feil under lagringen ("+o.responseText+")");
-				}
+			function titleSaved(json) {
+				var newTitle = json.title;
+				var titleAsDisplayed = newTitle;
+				if (titleAsDisplayed=="") titleAsDisplayed = "<em style=\"font-weight:normal; color: #888;\">Ingen tittel</em>";
+				$("#img_title").html(\'<div onclick="editTitle();" style="cursor:pointer;"><input type="hidden" id="bildetittel" value="\'+newTitle+\'" />\'+titleAsDisplayed+\'</div>\');
 			}
 			
 			function titleSaveFailed(o) {
@@ -353,7 +335,7 @@ class imagearchive extends comments {
 		</div>
 		<script type="text/javascript">
 		//<![CDATA[
-			YAHOO.util.Event.onDOMReady(function() {
+			$(document).ready(function() {
 				Nifty("h3.whiteInfoBox");
 			});
 		//]]>
@@ -413,25 +395,10 @@ class imagearchive extends comments {
 		</div>
 		<script type="text/javascript">
 			//<![CDATA[
-			function getObject(objectId){
-				if(document.getElementById && document.getElementById(objectId)) {
-					return document.getElementById(objectId); // W3C DOM
-			    } else if (document.all && document.all(objectId)) {
-					return document.all(objectId); // MSIE 4 DOM
-			 } else if (document.layers && document.layers[objectId]) {
-					return document.layers[objectId]; // NN 4 DOM.. note: this won"t find nested layers
-			    } else {
-					return false;
-			    }
-			}	
-
-			function setText(layername, newtext){
-				var theObject = getObject(layername);
-					theObject.innerHTML = newtext;
-			}
+			
 
 			function setProgress(percent){
-				var theObject = getObject("pbar");
+				var theObject = $("#pbar");
 					theObject.style.width = percent;
 			}
 			//]]>
@@ -452,57 +419,54 @@ class imagearchive extends comments {
 			
 			function fetch_events() {
 				var pars = new Array();
-				pars.push("cal_page_id=" + $("cal_id").value);
+				pars.push("cal_page_id="+$("#cal_id").val());
 				pars = pars.join("&");
-				setText("span_event", "Vent litt...");
-				jQuery.ajax({
-                    url: "%events_uri%",
-                    type: "POST",
-                    data: pars, 
-                    dataType: "html",
-                    success: function(responseText){ 
-                        setText("span_event",responseText);
-                    }
-                });
+				$("#span_event").html("Vent litt...");
+				$.ajax({
+					url: "%events_uri%",
+					type: "POST",
+					data: pars, 
+					dataType: "html"
+				}).done(function(responseText){ 
+					$("#span_event").html(responseText);
+				});
 			}
 			
 			function select_imagedir(nr) {
 				var url = "%imgdir_uri%";
 				var pars = new Array();
 				pars.push("select_nr="+nr);
-				pars.push("select_value=" + $("img"+nr).value);
+				pars.push("select_value=" + $("#img"+nr).val());
 				pars = pars.join("&");
 				var success = function(t){ 
-					setText("imgspan"+(nr+1),t.responseText);
+					$("#imgspan"+(nr+1)).html(t.responseText);
 				}
-				setText("imgspan"+(nr+1), "Vent litt...");
-				jQuery.ajax({
-                    url: "%imgdir_uri%",
-                    type: "POST",
-                    data: pars, 
-                    dataType: "html",
-                    success: function(responseText){ 
-                        setText("imgspan"+(nr+1),responseText);
-                    }
-                });
+				$("#imgspan"+(nr+1)).html("Vent litt...");
+				$.ajax({
+					url: "%imgdir_uri%",
+					type: "POST",
+					data: pars, 
+					dataType: "html"
+				}).done(function(responseText){ 
+					$("#imgspan"+(nr+1)).html(responseText);
+				});
 			}
 
 			function select_image(nr) {
 				var url = "%img_uri%";
 				var pars = new Array();
 				pars.push("select_nr="+nr);
-				pars.push("select_value=" + $("img"+nr).value);
+				pars.push("select_value=" + $("#img"+nr).val());
 				pars = pars.join("&");
-				setText("imgspan"+(nr+1), "Vent litt...");
-				jQuery.ajax({
-                    url: "%img_uri%",
-                    type: "POST",
-                    data: pars, 
-                    dataType: "html",
-                    success: function(responseText){ 
-                        setText("imgspan"+(nr+1),responseText);
-                    }
-                });
+				$("#imgspan"+(nr+1)).html("Vent litt...");
+				$.ajax({
+					url: "%img_uri%",
+					type: "POST",
+					data: pars, 
+					dataType: "html"
+				}).done(function(responseText){ 
+					$("#imgspan"+(nr+1)).html(responseText);
+				});
 			}
 			
 		//]]>
@@ -771,7 +735,7 @@ class imagearchive extends comments {
 			'moveimage','movetodir','domoveimage','addarchive','makethumbs','makethumb','setsource',
 			'slideshow','stats','thumbscreated','tag','untag','movearchive','domovearchive',
 			'fetcharchive','fetch-events','fetch-imglist','fetch-img','testupload','testupload-do',
-			'testupload-view','action');
+			'testupload-view','action', 'force');
 
 		if (isset($_GET['archive_page'])){
 			if (!is_numeric($_GET['archive_page'])) $this->fatalError("Invalid page!");
@@ -816,7 +780,7 @@ class imagearchive extends comments {
 				
 				if ($curDirID === false){
 					if ($this->current_directory == "/") $curDirID = $this->createRootDirectory();
-                    else return $this->pageNotFound($this->label_archivenotfound); # base function
+					else return $this->pageNotFound($this->label_archivenotfound); # base function
 				} else {
 					$this->current_image = $tmp2;
 				}
@@ -837,19 +801,19 @@ class imagearchive extends comments {
 		);
 
 		if (isset($this->current_image)){
-            if (!is_numeric($this->current_image)) return $this->pageNotFound(
-                'Det etterspurte albumet eller bildet ble ikke funnet!'
-            );
+			if (!is_numeric($this->current_image)) return $this->pageNotFound(
+				'Det etterspurte albumet eller bildet ble ikke funnet!'
+			);
 			$this->current_image = intval($this->current_image);
 			$res = $this->query("SELECT id FROM $this->table_files 
 				WHERE id=$this->current_image AND directory=$this->current_directory"
 			);
 			if ($res->num_rows != 1)
-                return $this->pageNotFound(
-                    'Bildet finnes ikke. Sjekk at adrressen er riktig.<br /><br />'.
-                    'Du kan forsøke å finne bildet i albumet «<a href="'.$this->generateCoolUrl($this->current_directory_details['directory']).'">'.
-                    $this->current_directory_details['caption'].'</a>»'
-                ); # base function
+				return $this->pageNotFound(
+					'Bildet finnes ikke. Sjekk at adrressen er riktig.<br /><br />'.
+					'Du kan forsøke å finne bildet i albumet «<a href="'.$this->generateCoolUrl($this->current_directory_details['directory']).'">'.
+					$this->current_directory_details['caption'].'</a>»'
+				); # base function
 		}
 		
 		/*
@@ -970,178 +934,20 @@ class imagearchive extends comments {
 
 				<script type=\"text/javascript\">
 				//<![CDATA[
-								
-				var Dom = YAHOO.util.Dom;
-				var Event = YAHOO.util.Event;
-				var DDM;
 
-				function onYuiLoaderComplete() {
-					initDragDrop();
-				}
-
-				loader.require('dragdrop','animation');
-				loader.insert();
-				
-				//////////////////////////////////////////////////////////////////////////////
-				// example app
-				//////////////////////////////////////////////////////////////////////////////
-				
 				var albums = [".implode(',',$albums)."];
 				function initDragDrop() {
-
-					initDDlist();
-					new YAHOO.util.DDTarget('albums');
-				
-					for (var i=0;i<albums.length;i=i+1) {
-						new YAHOO.example.DDList('album' + albums[i]);
-						console.log('album' + albums[i]);
-					}
-					
-					Event.addListener('reorderForm','submit',onFormSubmit);
-				
+				    $('#albums').sortable();
+					$('#reorderForm').on('submit', onFormSubmit);
 				}
-				
+
 				function onFormSubmit(e) {
-		            var items = $('albums').getElementsByTagName('li');
-		            var newOrder = [];
-		            for (i=0;i<items.length;i=i+1) {
-		            	newOrder.push(items[i].id);
-		            }
-		            newOrder = newOrder.reverse();
-		            newOrder = newOrder.join(',');
-					$('newOrder').value = newOrder;
+					var q = $('#albums').sortable('toArray');
+					$('#newOrder').val(q);
 					return true;
 				}
-				
-				//////////////////////////////////////////////////////////////////////////////
-				// custom drag and drop implementation
-				//////////////////////////////////////////////////////////////////////////////
-				
-				YAHOO.example.DDList = function(id, sGroup, config) {
-				 
-					YAHOO.example.DDList.superclass.constructor.call(this, id, sGroup, config);
-				 
-					this.logger = this.logger || YAHOO;
-					var el = this.getDragEl();
-					Dom.setStyle(el, 'opacity', 0.67); // The proxy is slightly transparent
-				 
-					this.goingUp = false;
-					this.lastY = 0;
-				};
-				
-				function initDDlist() {
-					
-					DDM = YAHOO.util.DragDropMgr;
- 
-					YAHOO.extend(YAHOO.example.DDList, YAHOO.util.DDProxy, {
-					 
-						startDrag: function(x, y) {
-							this.logger.log(this.id + ' startDrag');
-					 
-							// make the proxy look like the source element
-							var dragEl = this.getDragEl();
-							var clickEl = this.getEl();
-							Dom.setStyle(clickEl, 'visibility', 'hidden');
-					 
-							dragEl.innerHTML = clickEl.innerHTML;
-					 
-							Dom.setStyle(dragEl, 'color', Dom.getStyle(clickEl, 'color'));
-							Dom.setStyle(dragEl, 'backgroundColor', Dom.getStyle(clickEl, 'backgroundColor'));
-							Dom.setStyle(dragEl, 'border', '2px solid gray');
-						},
-					 
-						endDrag: function(e) {
-					 
-							var srcEl = this.getEl();
-							var proxy = this.getDragEl();
-					 
-							// Show the proxy element and animate it to the src element's location
-							Dom.setStyle(proxy, 'visibility', '');
-							var a = new YAHOO.util.Motion( 
-								proxy, { 
-									points: { 
-										to: Dom.getXY(srcEl)
-									}
-								}, 
-								0.2, 
-								YAHOO.util.Easing.easeOut 
-							)
-							var proxyid = proxy.id;
-							var thisid = this.id;
-					 
-							// Hide the proxy and show the source element when finished with the animation
-							a.onComplete.subscribe(function() {
-									Dom.setStyle(proxyid, 'visibility', 'hidden');
-									Dom.setStyle(thisid, 'visibility', '');
-								});
-							a.animate();
-						},
-					 
-						onDragDrop: function(e, id) {
-					 
-							// If there is one drop interaction, the li was dropped either on the list,
-							// or it was dropped on the current location of the source element.
-							if (DDM.interactionInfo.drop.length === 1) {
-					 
-								// The position of the cursor at the time of the drop (YAHOO.util.Point)
-								var pt = DDM.interactionInfo.point; 
-					 
-								// The region occupied by the source element at the time of the drop
-								var region = DDM.interactionInfo.sourceRegion; 
-					 
-								// Check to see if we are over the source element's location.  We will
-								// append to the bottom of the list once we are sure it was a drop in
-								// the negative space (the area of the list without any list items)
-								if (!region.intersect(pt)) {
-									var destEl = Dom.get(id);
-									var destDD = DDM.getDDById(id);
-									destEl.appendChild(this.getEl());
-									destDD.isEmpty = false;
-									DDM.refreshCache();
-								}
-					 
-							}
-						},
-					 
-						onDrag: function(e) {
-					 
-							// Keep track of the direction of the drag for use during onDragOver
-							var y = Event.getPageY(e);
-					 
-							if (y < this.lastY) {
-								this.goingUp = true;
-							} else if (y > this.lastY) {
-								this.goingUp = false;
-							}
-					 
-							this.lastY = y;
-						},
-					 
-						onDragOver: function(e, id) {
-						
-							var srcEl = this.getEl();
-							var destEl = Dom.get(id);
-					 
-							// We are only concerned with list items, we ignore the dragover
-							// notifications for the list.
-							if (destEl.nodeName.toLowerCase() == 'li') {
-								var orig_p = srcEl.parentNode;
-								var p = destEl.parentNode;
-					 
-								if (this.goingUp) {
-									p.insertBefore(srcEl, destEl); // insert above
-								} else {
-									p.insertBefore(srcEl, destEl.nextSibling); // insert below
-								}
-					 
-								DDM.refreshCache();
-							}
-						}
-					});
-				
-				}
-				 
-		
+				$(document).ready(initDragDrop);
+
 				//]]>
 				</script>
 		";
@@ -1165,6 +971,7 @@ class imagearchive extends comments {
 		if (!isset($_POST['newOrder'])) $this->fatalError('Invalid input');		
 		
 		$newOrder = explode(',',$_POST['newOrder']);
+		$newOrder = array_reverse($newOrder);
 		for ($i = 0; $i < count($newOrder); $i++) {
 			$pos = $i+1;
 			$albumId = intval(substr($newOrder[$i],5));
@@ -1230,20 +1037,20 @@ class imagearchive extends comments {
 			if (intval($delinfo[0] > 0)) $deluser = call_user_func($this->make_memberlink, $delinfo[0]);
 			else $deluser = "(ukjent)";
 			if (isset($delinfo[1]) && (intval($delinfo[1]) > 0)) $deldate = date("d.m.y",$delinfo[1]);
-            else $deldate = "(ukjent)";
+			else $deldate = "(ukjent)";
 
-            $containerLink = "";
-            if ($albumId != 1){
-                if (!$cd['parentdir'] == 0){
-                    $this->parentdir_details = $this->getDirInfo($cd['parentdir']);
-                    $url_parentdir = $this->generateCoolURL($this->parentdir_details['directory']);
-                    $containerLink = 'Albumet var en del av album-mappen «<a href="'.$url_parentdir.'">'.$this->parentdir_details['caption'].'</a>»';
-                }
-            }
-            $output .= $this->pageNotFound('
+			$containerLink = "";
+			if ($albumId != 1){
+				if (!$cd['parentdir'] == 0){
+					$this->parentdir_details = $this->getDirInfo($cd['parentdir']);
+					$url_parentdir = $this->generateCoolURL($this->parentdir_details['directory']);
+					$containerLink = 'Albumet var en del av album-mappen «<a href="'.$url_parentdir.'">'.$this->parentdir_details['caption'].'</a>»';
+				}
+			}
+			$output .= $this->pageNotFound('
 				Albumet «'.$cd['caption'].'» ble slettet av '.$deluser.' den '.$deldate.'.'.
-                (empty($delinfo[2]) ? '' : "<br />Årsak: ".stripslashes($delinfo[2])).'
-                <br /><br />'.$containerLink);
+				(empty($delinfo[2]) ? '' : "<br />Årsak: ".stripslashes($delinfo[2])).'
+				<br /><br />'.$containerLink);
 			return $output;
 		}
 
@@ -1678,12 +1485,12 @@ class imagearchive extends comments {
 
 		$orgimage = $this->getUrlTo($this->current_directory_details['directory'],$image_filename);
 		$orgimage_server = $this->getPathTo($this->current_directory_details['directory'],$image_filename);
- 		 		
- 		$imageDamaged = false;
- 		if (!file_exists($largethumb_server)) $imageDamaged = true;
- 		if (!file_exists($orgimage_server)) $imageDamaged = true;
+				
+		$imageDamaged = false;
+		if (!file_exists($largethumb_server)) $imageDamaged = true;
+		if (!file_exists($orgimage_server)) $imageDamaged = true;
 
- 		if (!$imageDamaged && empty($row['deletereason'])){
+		if (!$imageDamaged && empty($row['deletereason'])){
 			list($thumb_width, $thumb_height, $type, $attr) = getimagesize($largethumb_server);
 			list($image_width, $image_height, $type, $attr) = getimagesize($orgimage_server);
 		}
@@ -1764,10 +1571,10 @@ class imagearchive extends comments {
 				Bildet ble opprinnelig lastet opp av $upl.";
 			if (!empty($delinfo[2])){
 				$del_text .= "<br />Årsak for sletting: <strong>".stripslashes($delinfo[2])."</strong>";
-            }
-            $del_text .= '<br /><br />Bildet var en del av albumet «<a href="'.$this->generateCoolUrl($this->current_directory_details['directory']).'">'.
-                $this->current_directory_details['caption'].'</a>»';
-            $output .= $this->pageNotFound($del_text);
+			}
+			$del_text .= '<br /><br />Bildet var en del av albumet «<a href="'.$this->generateCoolUrl($this->current_directory_details['directory']).'">'.
+				$this->current_directory_details['caption'].'</a>»';
+			$output .= $this->pageNotFound($del_text);
 		} else {
 		
 			if ($this->useCoolUrls){
@@ -1798,7 +1605,7 @@ class imagearchive extends comments {
 						if ($this->allow_untagself && ($m->ident == $this->login_identifier)) $allow = true;
 						if ($this->allow_untagothers) $allow = true;
 					}
-					$ppl .= 'photoTagger0.addPerson('.intval($m->ident).',"'.$m->fullname.'","'.$m->url.'",'.intval($row['x']).','.intval($row['y']).','.intval($row['width']).','.intval($row['height']).");\n";
+					$ppl .= 'photoTagger0.addPerson('.intval($m->ident).', "'.$m->fullname.'", "'.$m->url.'", '.intval($row['x']).', '.intval($row['y']).', '.intval($row['width']).', '.intval($row['height']).");\n";
 					$tags[] = $row;
 				}
 			}
@@ -1817,16 +1624,13 @@ class imagearchive extends comments {
 				<script type="text/javascript">
 				//<![CDATA[
 				
-				var allMembers = ["'.implode('","',$allMembers).'"];
-				var photoTagger0 = new BG18.photoTagger(%tagging_enabled%,"%tag_url%","%untag_url%","%me_fullname%",allMembers);
+				var allMembers = ["'.implode('", "',$allMembers).'"];
+				var photoTagger0 = new PhotoTagger(%tagging_enabled%, "%tag_url%", "%untag_url%", "%me_fullname%", allMembers);
 				'.$ppl.'
 				
-				function onYuiLoaderComplete() {
+				$(document).ready(function() {
 					photoTagger0.init();
-				}
-
-				loader.require("datasource","autocomplete","json","connection");
-				loader.insert();
+				});
 			
 				//]]>
 				</script>';
@@ -1860,15 +1664,21 @@ class imagearchive extends comments {
 			if ($this->allow_tagothers) {
 				$tag_form = '
 					<form method="post" onsubmit="photoTagger0.tagMember(); return false;">
-						Hvem er dette?
-						<div id="tagged_user_container" style="width:175px;padding-bottom:1.8em;">
-							<input id="tagged_user" type="text" name="tagged_user" value="" autocomplete="off" style="border:1px solid #ccc; background:#eee; font-size:10px;" />
-							<div id="tagged_user_ac"></div>
+
+						<div>
+							Hvem er dette?
 						</div>
 
-						<input id="btn_tagme" type="button" value="Meg" style="font-size:10px; margin:1px; border:1px solid #ccc;" /> 
-						<input id="btn_tagsave" type="submit" value="Lagre" style="font-size:10px; margin:1px; border:1px solid #ccc;float:right; font-weight:bold;" />
-						<input id="btn_tagcancel" type="button" value="Avbryt" style="font-size:10px; margin:1px; border:1px solid #ccc; float:right;" /> 
+						<div class="ui-widget">
+							<input autocomplete="off" id="tagged_user" type="text" />
+						</div>
+
+						<div>
+							<input id="btn_tagme" type="button" value="Meg"  /> 
+							<input id="btn_tagsave" type="submit" value="Lagre" />
+							<input id="btn_tagcancel" type="button" value="Avbryt" /> 
+						</div>
+
 					</form>
 				';
 			} else if ($this->allow_tagself) {
@@ -2021,23 +1831,23 @@ class imagearchive extends comments {
 		global $memberdb;
 		
 		if (!$this->isLoggedIn()) {
+			header('Content-Type: application/json; charset=utf-8');
 			echo json_encode(array(
 				'people' => array(),
 				'error' => 'Du er ikke logget inn'
 			));
 			exit();		
 		}
-		
-		$params = json_decode($_POST['json']);		
+
 		$error = '0';
 		$imgtab = $this->page_id;
 		$img = $this->current_image;
 
 		$this->sendContentType();
 		$user = 0;
-		if (!isset($params->fullname)) $error = 'Ingen person angitt!';
+		if (!isset($_POST['fullname'])) $error = 'Ingen person angitt!';
 		else {
-			$pname = trim($params->fullname);
+			$pname = trim($_POST['fullname']);
 			foreach ($memberdb->getAllMembers() as $m) {
 				$mfull = $m->firstname." ".$m->middlename." ".$m->lastname;
 				$mfull = str_replace('  ',' ',$mfull);
@@ -2049,16 +1859,16 @@ class imagearchive extends comments {
 			if ($user == 0){ 
 				$error = 'Fant ikke noen person med navn "'.strip_tags($pname).'"!';
 			} else if (empty($this->login_identifier)) { 
-				$error = "Du er ikke logget inn!"; 
+				$error = 'Du er ikke logget inn!'; 
 			} else if (!$this->allow_tagothers && $user != $this->login_identifier) {
-				$error = "Beklager, du har ikke tilgang til å utføre denne operasjonen.";
+				$error = 'Beklager, du har ikke tilgang til å utføre denne operasjonen.';
 			} else if (!$this->allow_tagself) {
-				$error = "Beklager, du har ikke tilgang til å utføre denne operasjonen.";			
+				$error = 'Beklager, du har ikke tilgang til å utføre denne operasjonen.';
 			}
-			$x = $params->frame->x;
-			$y = $params->frame->y;
-			$w = $params->frame->width;
-			$h = $params->frame->height;
+			$x = $_POST['frame']['x'];
+			$y = $_POST['frame']['y'];
+			$w = $_POST['frame']['width'];
+			$h = $_POST['frame']['height'];
 			if (!is_numeric($x)) { $error = 'Ugyldig x-verdi'; }
 			if (!is_numeric($y)) { $error = 'Ugyldig y-verdi'; }
 			if (!is_numeric($w)) { $error = 'Ugyldig bredde'; }
@@ -2102,13 +1912,14 @@ class imagearchive extends comments {
 				'id' => intval($row['user']->ident),
 				'name' => $row['user']->fullname,
 				'url' => $row['user']->url,
-				'x' => intval($row['x']),
-				'y' => intval($row['y']),
+				'left' => intval($row['x']),
+				'top' => intval($row['y']),
 				'width' => intval($row['width']),
 				'height' => intval($row['height'])
 			);
 		}
 
+		header('Content-Type: application/json; charset=utf-8');
 		echo json_encode(array(
 			'people' => $ppl,
 			'error' => $error
@@ -2119,6 +1930,7 @@ class imagearchive extends comments {
 	function ajaxUntagUser() {
 
 		if (!$this->isLoggedIn()) {
+			header('Content-Type: application/json; charset=utf-8');
 			echo json_encode(array(
 				'people' => array(),
 				'error' => 'Du er ikke logget inn'
@@ -2126,20 +1938,19 @@ class imagearchive extends comments {
 			exit();		
 		}	
 
-		$params = json_decode($_POST['json']);
 		$error = '0';
 
 		$this->sendContentType();
 		global $memberdb;
-		$user = intval($params->tag_uid);
+		$user = intval($_POST['tag_uid']);
 		if (!$memberdb->isUser($user)){ 
-			$error = "Fant ikke personen!"; 
+			$error = 'Fant ikke personen!'; 
 		} else if (empty($this->login_identifier)) { 
-			$error = "Du er ikke logget inn!"; 
+			$error = 'Du er ikke logget inn!'; 
 		} else if (!$this->allow_tagothers && $user != $this->login_identifier) {
-			$error = "Beklager, du har ikke tilgang til å utføre denne operasjonen.";
+			$error = 'Beklager, du har ikke tilgang til å utføre denne operasjonen.';
 		} else if (!$this->allow_tagself) {
-			$error = "Beklager, du har ikke tilgang til å utføre denne operasjonen.";			
+			$error = 'Beklager, du har ikke tilgang til å utføre denne operasjonen.';
 		}
 		
 		$imgtab = $this->page_id;
@@ -2163,13 +1974,14 @@ class imagearchive extends comments {
 				'id' => intval($row['user']->ident),
 				'name' => $row['user']->fullname,
 				'url' => $row['user']->url,
-				'x' => intval($row['x']),
-				'y' => intval($row['y']),
+				'left' => intval($row['x']),
+				'top' => intval($row['y']),
 				'width' => intval($row['width']),
 				'height' => intval($row['height'])
 			);
 		}
 		
+		header('Content-Type: application/json; charset=utf-8');
 		echo json_encode(array(
 			'people' => $ppl,
 			'error' => $error
@@ -2184,7 +1996,7 @@ class imagearchive extends comments {
 	
 	function slideShow($dir_id) {
 		
-		$output = "";
+		$output = '';
 		
 		$orderBy = "datetime_original";
 		$res = $this->query(
@@ -2323,7 +2135,7 @@ class imagearchive extends comments {
 			
 			<script type="text/javascript">
 			//<![CDATA[
-				YAHOO.util.Event.onDOMReady(function() {
+				$(document).ready(function() {
 					Behaviour.register(myrules);
 				});
 			//]]>
@@ -2356,7 +2168,7 @@ class imagearchive extends comments {
 		$output = "";
 		if ($this->allow_editarchivesettings || $allow_delete) {
 			if ($this->use_hide) $output .= '<a href="'.$url_hideimage.'" class="icn" style="background-image:url(/images/icns/picture_empty.png);">'.$this->label_hideimage.'</a>';
-		 	$output .= ' <a href="'.$url_moveimage.'" class="icn" style="background-image:url(/images/icns/picture_go.png);">'.$this->label_moveimage.'</a>';
+			$output .= ' <a href="'.$url_moveimage.'" class="icn" style="background-image:url(/images/icns/picture_go.png);">'.$this->label_moveimage.'</a>';
 			$output .= ' <a href="'.$url_deleteimage.'" class="icn" style="background-image:url(/images/icns/picture_delete.png);">'.$this->label_deleteimage.'</a>';
 			$output .= ' <a href="'.$url_rotateleft.'" class="icn" style="background-image:url(/images/icns/arrow_rotate_anticlockwise.png);">'.$this->label_rotateleft.'</a>';			
 			$output .= ' <a href="'.$url_rotateright.'" class="icn" style="background-image:url(/images/icns/arrow_rotate_clockwise.png);">'.$this->label_rotateright.'</a>';
@@ -2527,18 +2339,10 @@ class imagearchive extends comments {
 			$jup = new JqueryUpload();
 			#$jup->jupload_dir = ROOT_DIR.$this->java_path_to_jupload;
 			$jup->actionurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL(array("action=uploadImagesDo","userid=$this->login_identifier"));
-			#$jup->completeurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL('action=processUploadedImages');
+			$jup->completeurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL('action=processUploadedImages');
 			#$jup->errorurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL('action=uploadError');		
 			$output .= $jup->printUploadForm();
 			
-			$output .= "
-				<h2>Tips</h2>
-				<ul>
-					<li style='margin-bottom: 8px;'>
-						Du velger flere filer ved å trykke på en fil og holde inne shift mens du trykker på en annen.
-					</li>
-				</ul>
-				";
 			return $output;
 	}
 
@@ -2548,11 +2352,22 @@ class imagearchive extends comments {
 	
 	function uploadImagesDo(){
 		//$this->addToErrorLog("processUploadedImages($userid)");
-		
-		$uploaderId = intval($_GET['userid']);
+
+		if (!$this->isLoggedIn()) {
+			header('Content-Type: application/json; charset=utf-8');
+			echo json_encode(array(
+				'people' => array(),
+				'error' => 'Du er ikke logget inn'
+			));
+			exit();		
+		}
+
+		$uploaderId = $this->login_identifier;
+
+		//$uploaderId = intval($_GET['userid']);
 		if ($uploaderId <= 0) return "error";
 
-		switch(php_sapi_name()){
+		/*switch(php_sapi_name()){
 			case 'cgi':
 			case 'cgi-fcgi': 
 				$sz_htstatus = 'Status: ';
@@ -2560,10 +2375,10 @@ class imagearchive extends comments {
 			default: 
 				$sz_htstatus = 'HTTP/1.0: ';
 				break;
-		}
+		}*/
 		
 		// ===== Find temp dir: =====
-			$temp_path = $this->root_path.$this->temp_dir.'/user'.$uploaderId.'/';
+			$temp_path = $this->root_path.$this->temp_dir.'user'.$uploaderId.'/';
 		
 			if (!file_exists($temp_path)){
 				if(!mkdir($temp_path,0755,true)){
@@ -2573,6 +2388,14 @@ class imagearchive extends comments {
 					exit();
 				}
 			}
+
+			$upload_handler = new UploadHandler(array(
+				'upload_dir' => $temp_path,
+			    'accept_file_types' => '/\.(jpe?g)$/i'
+				));
+
+			exit();
+
 
 		// ===== Move uploaded files to temp dir: =====
 			$i = 1;
@@ -2716,6 +2539,9 @@ class imagearchive extends comments {
 
 		$output = "";
 		$res = $this->query("SELECT id FROM $this->table_files WHERE $this->table_files_field_thumbwidth='0' AND $this->table_files_field_directory='$albumId'");
+		if (isset($_GET['force'])) {
+			$res = $this->query("SELECT id FROM $this->table_files WHERE $this->table_files_field_directory='$albumId'");
+		}
 		$imglist = array();
 		while ($row = $res->fetch_assoc()) {
 			$imglist[] = $row['id'];
@@ -2723,9 +2549,15 @@ class imagearchive extends comments {
 		if (count($imglist) == 0) {
 			$output .= "
 				<h2>Ingen behandling nødvendig</h2>
-				<p>
-					<a href=\"".$this->generateUrl("")."\">Vis bilder</a>
-				</p>			
+				<ul>
+					<li>
+						Om du vil re-generere miniatyrbildene for alle bildene i dette albumet,
+						klikk <a href=\"".$this->generateUrl(array('action=makeThumbs','force='))."\">her</a>
+					</li>
+					<li>
+						… eller <a href=\"".$this->generateUrl("")."\">vis bildene</a>
+					</li>
+				</ul>			
 			";
 			return $output;
 		} else if (count($imglist) == 1) {
@@ -2739,7 +2571,7 @@ class imagearchive extends comments {
 			<h2><span id="processtitle">Velg kilde</span></h2>
 			<div style="margin-left: 0px; text-align: center;">
 			<p>
-			    <span id="statustext" style="font-weight:bold;">
+				<span id="statustext" style="font-weight:bold;">
 						'.count($imglist).' bilde(r) ble lastet opp, 
 						men de er ikke synlige i bildearkivet enda.
 				</span><br />
@@ -2771,56 +2603,39 @@ class imagearchive extends comments {
 			<script type="text/javascript">
 			//<![CDATA[
 
-				// ============================ 1) Load YUI lib ===================================
-
-				loader.require("connection","json");
-				loader.insert();
-					
-				function onYuiLoaderComplete() {
-					$("continueBtn").disabled = "";
-				}
+				$(document).ready(function() {
+					$("#continueBtn").prop("disabled", false);
+				});
 			
 				'.$imglist_js.'
 				var currentImage = 0; // Hurray, globals!! ;)
 
 				function errorMsg(txt) {
-					$("progressbar").innerHTML = "";
-					$("processtitle").innerHTML = "Det oppstod en feil!";
-					$("imageprocessor").innerHTML = txt;
+					$("#progressbar").html("");
+					$("#processtitle").html("Det oppstod en feil!");
+					$("#imageprocessor").html(txt);
 				}
 				
 				// ============================ 1) Set imagesource ================================
 
 				function startProcessing() {		
 					var url = "'.$this->generateURL('action=ajaxSetImageSource').'";
-					var theSource = $("source").value;
+					var theSource = $("#source").val();
 
-					$("progressbar").innerHTML = "<img src=\"'.$this->image_dir.'progressbar1.gif\" alt=\"Progressbar\" width=\"100\" height=\"9\" />";
-					$("processtitle").innerHTML = "Vennligst vent mens bildene behandles...";
-					$("imageprocessor").innerHTML = "Vennligst vent...";
-					$("statustext").innerHTML = "Lagrer innstillinger...";
+					$("#progressbar").html("<img src=\"'.$this->image_dir.'progressbar1.gif\" alt=\"Progressbar\" width=\"100\" height=\"9\" />");
+					$("#processtitle").html("Vennligst vent mens bildene behandles...");
+					$("#imageprocessor").html("Vennligst vent...");
+					$("#statustext").html("Lagrer innstillinger...");
 
-					YAHOO.util.Connect.asyncRequest("POST", url, {
-						success: sourceSet,
-						failure: sourceSetFailed
-					}, "source="+theSource);					
+					$.post(url, {source: theSource}).done(sourceSet).error(sourceSetFailed);
 				}
 				
-				function sourceSet(o) {
-					try {
-						var json = YAHOO.lang.JSON.parse(o.responseText);
-						if (json.error == "0") {
-							if (bildeliste.length <= 0) {
-								$("imageprocessor").innerHTML = "";
-								ferdig();
-							} else {
-								behandleBilde();
-							}
-						} else {
-							errorMsg(json.error);
-						}
-					} catch (e) {
-						errorMsg(o.responseText);
+				function sourceSet(response) {
+					if (bildeliste.length <= 0) {
+						$("#imageprocessor").html("");
+						ferdig();
+					} else {
+						behandleBilde();
 					}
 				}
 				
@@ -2833,28 +2648,15 @@ class imagearchive extends comments {
 				function behandleBilde() {					
 					var id = bildeliste[currentImage];
 					currentImage++;
-					$("statustext").innerHTML = "Behandler bilde "+currentImage+" av "+bildeliste.length+"...";
+					$("#statustext").html("Behandler bilde "+currentImage+" av "+bildeliste.length+"...");
 					var url = "'.$this->generateURL('action=ajaxMakeThumb').'";
-					YAHOO.util.Connect.asyncRequest("POST", url, {
-						success: thumbCreated,
-						failure: thumbFailed
-					}, "image_id="+id);
+					$.post(url, {image_id: id}).done(thumbCreated).error(thumbFailed);
 				}
 
-				function thumbCreated(o) {
-					try {
-						var json = YAHOO.lang.JSON.parse(o.responseText);
-						if (json.error == "0") {
-							console.log(json);
-							$("imageprocessor").innerHTML = json.thumbnail;
-							if (currentImage < bildeliste.length) behandleBilde();
-							else finalize();
-						} else {
-							errorMsg(json.error);						
-						}
-					} catch (e) {
-						errorMsg(o.responseText);
-					}
+				function thumbCreated(response) {
+					$("#imageprocessor").html(response.thumbnail);
+					if (currentImage < bildeliste.length) behandleBilde();
+					else finalize();
 				}
 				
 				function thumbFailed(o) {
@@ -2866,24 +2668,17 @@ class imagearchive extends comments {
 				function finalize() {
 					var id = bildeliste[currentImage];
 					currentImage++;
-					$("statustext").innerHTML = "Lagrer innstillinger...";
+					$("#statustext").html("Lagrer innstillinger...");
 					var url = "'.$this->generateURL('action=ajaxThumbsCreated').'";
-					YAHOO.util.Connect.asyncRequest("POST", url, {
-						success: finalizeOk,
-						failure: finalizeError
-					}, "imgcount="+bildeliste.length+"&firstimg="+bildeliste[0]);					
+					$.post(url, {imgcount: bildeliste.length, firstimg: bildeliste[0]})
+					 .done(finalizeOk).error(finalizeError);
 				}
 				
-				function finalizeOk(o) {
-					try {
-						var json = YAHOO.lang.JSON.parse(o.responseText);
-						$("statustext").innerHTML = "Takk for ditt bidrag til bildearkivet!";						
-						$("progressbar").innerHTML = "";
-						$("processtitle").innerHTML = "Bildene er behandlet";
-						$("continuelink").style.visibility = "visible";
-					} catch (e) {
-						errorMsg(o.responseText);
-					}
+				function finalizeOk(response) {
+					$("#statustext").html("Takk for ditt bidrag til bildearkivet!");	
+					$("#progressbar").html("");
+					$("#processtitle").html("Bildene er behandlet");
+					$("#continuelink").css("visibility", "visible");
 				}
 				
 				function finalizeError(o) {
@@ -2916,6 +2711,7 @@ class imagearchive extends comments {
 			
 		}
 		
+		header("Content-Type: application/json; charset=utf-8");
 		print json_encode(array('error' => '0'));
 		exit();
 		
@@ -2923,7 +2719,11 @@ class imagearchive extends comments {
 	
 	function ajaxMakeThumb(){
 		
-		if (!is_numeric($_POST['image_id'])) { print json_encode(array('error' => 'invalid image id')); exit(); }
+		header("Content-Type: application/json; charset=utf-8");
+		if (!is_numeric($_POST['image_id'])) { 
+			header('Content-Type: application/json; charset=utf-8');
+			print json_encode(array('error' => 'invalid image id')); exit(); 
+		}
 		$img_id = intval($_POST['image_id']);
 
 		$res = $this->query("SELECT filename,directory FROM $this->table_files WHERE id=$img_id");
@@ -2942,6 +2742,7 @@ class imagearchive extends comments {
 		$small_path = $this->getPathTo($dir,$fileName,'small');
 		
 		if (!is_file($original_path)) {
+			header('Content-Type: application/json; charset=utf-8');
 			print json_encode(array('error' => "<strong>Ikke en fil</strong>: $original_path"));	
 			exit();
 		}
@@ -2958,6 +2759,7 @@ class imagearchive extends comments {
 		);
 		
 		$src = ROOT_DIR.$this->getUrlTo($dir,$fileName,'small');
+		header('Content-Type: application/json; charset=utf-8');
 		print json_encode(array('error' => '0', 'thumbnail' => '
 			<div class="alpha-shadow">
 				<div class="inner_div">
@@ -2970,6 +2772,8 @@ class imagearchive extends comments {
 	}
 
 	function ajaxThumbsCreated() {
+
+		header("Content-Type: application/json; charset=utf-8");
 		$imgcount = $_POST['imgcount'];
 		$img_id = $_POST['firstimg'];
 		if (!is_numeric($imgcount)) exit();
@@ -2990,6 +2794,7 @@ class imagearchive extends comments {
 		$this->updatePhotoCounts();
 
 		$this->addToActivityLog("la opp $imgcount bilder fra <a href=\"".$this->generateCoolUrl($dir)."\">$caption</a>",false,"major");
+		header('Content-Type: application/json; charset=utf-8');
 		print json_encode(array('error' => '0'));
 		exit();
 	}
@@ -3285,12 +3090,12 @@ class imagearchive extends comments {
 		}
 
 		$res = $this->query("SELECT uploadedby,directory FROM $this->table_files 
-            WHERE id IN (".addslashes($imgarr).") and deletereason=''");
-        if ($res->num_rows == 0) {
-		    $this->redirect($this->generateURL('action=organizeImages'),'Bildene har allerede blitt slettet (kanskje siden ble lastet to ganger?)');	
-        } else if ($res->num_rows != count($imgArray)) {
-            $this->fatalError("Bilder forespurt: ".count($imgArray).". Bilder funnet: ".$res->num_rows."! Ta kontakt med webmaster.");
-        }
+			WHERE id IN (".addslashes($imgarr).") and deletereason=''");
+		if ($res->num_rows == 0) {
+			$this->redirect($this->generateURL('action=organizeImages'),'Bildene har allerede blitt slettet (kanskje siden ble lastet to ganger?)');	
+		} else if ($res->num_rows != count($imgArray)) {
+			$this->fatalError("Bilder forespurt: ".count($imgArray).". Bilder funnet: ".$res->num_rows."! Ta kontakt med webmaster.");
+		}
 		while ($row = $res->fetch_assoc()){
 			$allow_delete = ($this->allow_deleteothersimages || 
 				($this->allow_deleteownimages && (intval($row['uploadedby']) == $this->login_identifier)));
@@ -3298,15 +3103,15 @@ class imagearchive extends comments {
 				print $this->permissionDenied();
 				exit();
 			}
-            if (intval($row['directory']) != $albumId) {
-                $this->fatalError("Image array contains images not in the current album!");
-            }
+			if (intval($row['directory']) != $albumId) {
+				$this->fatalError("Image array contains images not in the current album!");
+			}
 		}
 		$res2 = $this->query("SELECT caption,thumbnail,directory FROM $this->table_dirs WHERE id=$albumId");
 		if ($res2->num_rows != 1) $this->fatalError("[imagearchive] The album $albumId does not exist 2!");
-        $row2 = $res2->fetch_assoc();
-        $thumbnailId = intval($row2['thumbnail']);
-        $albumCaption = $row2['caption'];
+		$row2 = $res2->fetch_assoc();
+		$thumbnailId = intval($row2['thumbnail']);
+		$albumCaption = $row2['caption'];
 		if (in_array($thumbnailId,$imgArray)){
 			$this->query("UPDATE $this->table_dirs SET thumbnail=NULL WHERE id=$albumId");
 			unlink($this->getPathTo($row2['directory'],'thumbnail'));
@@ -3360,46 +3165,46 @@ class imagearchive extends comments {
 			
 			var imageList = ['.implode(',',$imagesToEdit).'];
 		
-	 		YAHOO.util.Event.onContentReady("timestampForm", handleOnAvailable); 
-	 		
-	 		function handleOnAvailable(o) {
-	 			function fnCallback(e) { alert("click"); }
-				YAHOO.util.Event.addListener("tDirection", "change", dateChanged);
-				YAHOO.util.Event.addListener("tDays", "change", dateChanged);
-				YAHOO.util.Event.addListener("tHours", "change", dateChanged);
-				YAHOO.util.Event.addListener("tMinutes", "change", dateChanged);
-				YAHOO.util.Event.addListener("tSeconds", "change", dateChanged);
+			$(document).ready(function() {
+
+				$("#tDirection").on("change", dateChanged);
+				$("#tDays").on("change", dateChanged);
+				$("#tHours").on("change", dateChanged);
+				$("#tMinutes").on("change", dateChanged);
+				$("#tSeconds").on("change", dateChanged);
 				
-	 		}
-	 		
-	 		function twoDigits(n) {
-	 			if (n < 10) return "0"+n
-	 			else return n;
-	 		}
-	 		
-	 		function dateChanged(e) {
-	 			var adjustment = parseInt($("tSeconds").value) 
-	 				+ parseInt($("tMinutes").value)*60 
-	 				+ parseInt($("tHours").value)*60*60 
-	 				+ parseInt($("tDays").value)*60*60*24;
-	 			var dir = $("tDirection").value;
-	 			if (dir == "subtract") adjustment = -adjustment;
-	 			var id,origDateTime,newDateTime,newJsDate;
-	 			for (var i = 0; i < imageList.length; i++) {
-	 				id = imageList[i];
-		 			$("adjustment"+id).value = adjustment;
-		 			origDateTime = parseInt($("origDateTime"+id).value);
-		 			newDateTime = origDateTime + adjustment;
-		 			newJsDate = new Date(newDateTime*1000);
-	 				$("newDateTime"+id).innerHTML = twoDigits(newJsDate.getDate()) + "."
-	 					+ twoDigits(newJsDate.getMonth()+1) + "."
-	 					+ (1900+newJsDate.getYear()) + ", "
-	 					+ twoDigits(newJsDate.getHours()) + ":"
-	 					+ twoDigits(newJsDate.getMinutes()) + ":"
-	 					+ twoDigits(newJsDate.getSeconds());
-	 			}
-	 		}
-	 		
+			});
+			
+			function twoDigits(n) {
+				if (n < 10) return "0"+n
+				else return n;
+			}
+			
+			function dateChanged(e) {
+				var adjustment = parseInt($("#tSeconds").val()) 
+					+ parseInt($("#tMinutes").val())*60 
+					+ parseInt($("#tHours").val())*60*60 
+					+ parseInt($("#tDays").val())*60*60*24;
+				var dir = $("#tDirection").val();
+				if (dir == "subtract") adjustment = -adjustment;
+				var id,origDateTime,newDateTime,newJsDate;
+				for (var i = 0; i < imageList.length; i++) {
+					id = imageList[i];
+					$("#adjustment"+id).val(adjustment);
+					origDateTime = parseInt($("#origDateTime"+id).val());
+					newDateTime = origDateTime + adjustment;
+					newJsDate = new Date(newDateTime*1000);
+					$("#newDateTime"+id).html(
+						twoDigits(newJsDate.getDate()) + "."
+						+ twoDigits(newJsDate.getMonth()+1) + "."
+						+ (1900+newJsDate.getYear()) + ", "
+						+ twoDigits(newJsDate.getHours()) + ":"
+						+ twoDigits(newJsDate.getMinutes()) + ":"
+						+ twoDigits(newJsDate.getSeconds())
+						);
+				}
+			}
+			
 		//]]>
 		</script>			
 			<h2>Justere dato og tid</h2>
@@ -3583,6 +3388,7 @@ class imagearchive extends comments {
 		
 		$newTitleHtml = empty($newTitle) ? "<em style='font-weight:normal; color: #888;'>Ingen tittel</em>" : $newTitle;
 
+		header('Content-Type: application/json; charset=utf-8');
 		print json_encode(array(
 			'error' => 0,
 			'title' => stripslashes($newTitle)
@@ -3778,7 +3584,7 @@ class imagearchive extends comments {
 						
 			ThumbnailService::createThumb($org_path, $thumb_path, 200, 150, 80, false);
 
-  			$updates[] = "representativt bilde";
+			$updates[] = "representativt bilde";
 		}
 
 		$this->query(
@@ -4530,8 +4336,8 @@ class imagearchive extends comments {
 		 **************************************************************************************/
 	
 	/*
-	    Function: rotatePhoto
-	    Rotates the image by 'degrees' degrees.
+		Function: rotatePhoto
+		Rotates the image by 'degrees' degrees.
 	*/
 	function rotatePhoto($degrees) {
 
@@ -4625,7 +4431,7 @@ class imagearchive extends comments {
 	
 	/*
 		Function: rotateLeft
-	    Rotates the image 90 degrees anti-clockwise
+		Rotates the image 90 degrees anti-clockwise
 	*/
 	function rotateLeft() {
 		return $this->rotatePhoto(90);
@@ -4633,7 +4439,7 @@ class imagearchive extends comments {
 
 	/*
 		Function: rotateRight
-	    Rotates the image 90 degrees clockwise
+		Rotates the image 90 degrees clockwise
 	*/
 	function rotateRight() {
 		return $this->rotatePhoto(270);
@@ -4734,11 +4540,11 @@ class imagearchive extends comments {
 
 		$this->query("UPDATE $tf SET directory='$toAlbumId' WHERE id=$photoId");	
 		$this->addToActivityLog("flyttet bildet $photoId fra $fromAlbumDir til $toAlbumDir.");
-        
-        // Update the photo count database
+		
+		// Update the photo count database
 		$this->updatePhotoCounts();
-        
-        $this->redirect($this->generateCoolURL($toAlbumDir),"Bildet ble flyttet");
+		
+		$this->redirect($this->generateCoolURL($toAlbumDir),"Bildet ble flyttet");
 	}
 
 	/*******************************************************************************************
@@ -4878,18 +4684,17 @@ class imagearchive extends comments {
 				function fetch_events() {
 					var url = "'.$events_uri.'";
 					var pars = new Array();
-					pars.push("cal_page_id="+$("cal_id").value);
+					pars.push("cal_page_id="+$("#cal_id").val());
 					pars = pars.join("&");
-					setText("span_event", "Vent litt...");
-					jQuery.ajax({
-                        url: "'.$events_uri.'",
-                        type: "POST",
-                        data: pars, 
-                        dataType: "html",
-                        success: function(responseText){ 
-                            setText("span_event",responseText);
-                        }
-                    });
+					$("#span_event").text("Vent litt...");
+					$.ajax({
+						url: "'.$events_uri.'",
+						type: "POST",
+						data: pars, 
+						dataType: "html"
+					}).done(function(responseText){ 
+						$("#span_event").html(responseText);
+					});
 				}
 								
 				function generateSlug(tittel){
@@ -4904,11 +4709,11 @@ class imagearchive extends comments {
 				}
 
 				function onSubjectChange(e) {
-					$("article_slug").value = generateSlug($("article_caption").value);
+					$("#article_slug").val(generateSlug($("#article_caption").val()));
 				}
 				
-				YAHOO.util.Event.onDOMReady(function() {
-					YAHOO.util.Event.addListener("article_caption","keyup",onSubjectChange);
+				$(document).ready(function(){
+					$("#article_caption").on("keyup", onSubjectChange);
 				});
 			
 			//]]>
@@ -4977,21 +4782,21 @@ class imagearchive extends comments {
 					
 		// ===== Check if the directory already exists: =====
 			if (file_exists($orig_path)) 
-              $this->fatalError("[imagearchive] Mappen $directory eksisterer allerede! Antakelig finnes arkivet allerede. Hvis ikke må du gå tilbake og prøve med et nytt arkivnavn.");
+			  $this->fatalError("[imagearchive] Mappen $directory eksisterer allerede! Antakelig finnes arkivet allerede. Hvis ikke må du gå tilbake og prøve med et nytt arkivnavn.");
 
-        // ===== Check if the directory exists in the database: =====
-        
-            $res = $this->query("SELECT id FROM $this->table_dirs WHERE directory=\"$directory\"");
-            $albumId = 0;
-            if ($res->num_rows == 0) {
-                $dbEntryExists = false;
-            } else if ($res->num_rows == 1) {
-              $dbEntryExists = true;
-              $row = $res->fetch_assoc();
-              $albumId = intval($row['id']);
-            } else {
-                $this->fatalError("Mer enn én kopi av albumet eksisterer i databasen!");
-            }
+		// ===== Check if the directory exists in the database: =====
+		
+			$res = $this->query("SELECT id FROM $this->table_dirs WHERE directory=\"$directory\"");
+			$albumId = 0;
+			if ($res->num_rows == 0) {
+				$dbEntryExists = false;
+			} else if ($res->num_rows == 1) {
+			  $dbEntryExists = true;
+			  $row = $res->fetch_assoc();
+			  $albumId = intval($row['id']);
+			} else {
+				$this->fatalError("Mer enn én kopi av albumet eksisterer i databasen!");
+			}
 		
 		// ===== Create directories: =====
 			foreach (array($orig_path,$mid_path,$lo_path) as $d) {
@@ -5005,27 +4810,27 @@ class imagearchive extends comments {
 		// ===== Add database entry: =====
 			$res = $this->query("SELECT MAX(position) FROM $this->table_dirs WHERE parentdir='$parentDirId'");
 			$row = $res->fetch_row();
-            $maxpos = intval($row[0] + 1);
-            if ($dbEntryExists) {
-                $this->query(
-                  "UPDATE $this->table_dirs SET
-                    caption=\"$caption\",
-                    position=$maxpos,
-                    cal_id=$cal_id,
-                    event_id=$event_id,
-                    deletereason=\"\"
-                    WHERE id=$albumId"
-                );
+			$maxpos = intval($row[0] + 1);
+			if ($dbEntryExists) {
+				$this->query(
+				  "UPDATE $this->table_dirs SET
+					caption=\"$caption\",
+					position=$maxpos,
+					cal_id=$cal_id,
+					event_id=$event_id,
+					deletereason=\"\"
+					WHERE id=$albumId"
+				);
 
-            } else {
-                $this->query(
-                  "INSERT INTO $this->table_dirs 
-                      (parentdir,directory,caption,position,cal_id,event_id) 
-                      VALUES ($parentDirId,\"$directory\",\"$caption\",$maxpos,$cal_id,$event_id)"
-                );
-			    $albumId = $this->insert_id();
-			    $this->query("UPDATE $this->table_dirs SET thumbdir=$albumId WHERE id=$albumId");
-            }
+			} else {
+				$this->query(
+				  "INSERT INTO $this->table_dirs 
+					  (parentdir,directory,caption,position,cal_id,event_id) 
+					  VALUES ($parentDirId,\"$directory\",\"$caption\",$maxpos,$cal_id,$event_id)"
+				);
+				$albumId = $this->insert_id();
+				$this->query("UPDATE $this->table_dirs SET thumbdir=$albumId WHERE id=$albumId");
+			}
 
 		// ===== Redirect: =====
 			$url = $this->generateCoolURL($directory);
@@ -5245,21 +5050,21 @@ class imagearchive extends comments {
 	/** COMMENTS **/
 	
 	function subscribeToThread($post_id = 0, $redirect = true) {
-	    $post_id = intval($post_id);
-	    if ($post_id == 0) $post_id = $this->current_image;
-	    @parent::subscribeToThread($post_id, $redirect);
+		$post_id = intval($post_id);
+		if ($post_id == 0) $post_id = $this->current_image;
+		@parent::subscribeToThread($post_id, $redirect);
 	}
 
 	function unsubscribeFromThread($post_id = 0, $redirect = true) {
-	    $post_id = intval($post_id);
-	    if ($post_id == 0) $post_id = $this->current_image;
-	    @parent::unsubscribeFromThread($post_id, $redirect);
+		$post_id = intval($post_id);
+		if ($post_id == 0) $post_id = $this->current_image;
+		@parent::unsubscribeFromThread($post_id, $redirect);
 	}
 
 	function saveComment($post_id = 0, $context = '') {
-	    $post_id = intval($post_id);
-	    if ($post_id == 0) $post_id = intval($this->current_image);
-	    if ($post_id <= 0) { $this->fatalError("incorrect input!"); }
+		$post_id = intval($post_id);
+		if ($post_id == 0) $post_id = intval($this->current_image);
+		if ($post_id <= 0) { $this->fatalError("incorrect input!"); }
 		
 		$tf = $this->table_files;
 		$td = $this->table_dirs;
@@ -5268,7 +5073,7 @@ class imagearchive extends comments {
 
 		$row = $res->fetch_assoc();
 		$context = 'et bilde i bildealbumet «'.stripslashes($row['caption']).'»';
-	    @parent::saveComment($post_id, $context);
+		@parent::saveComment($post_id, $context);
 	}
 
 }

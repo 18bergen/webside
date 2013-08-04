@@ -2,9 +2,9 @@
 /*
  * Class:       enrolments
  * Description: The enrolments class can be thought of as consisting of two parts, one 
- *				being the enrolment list that lists all enrolments and allows for the 
- *				creation of new enrolments. The other part is the interface for an 
- *				individual enrolment.
+ *              being the enrolment list that lists all enrolments and allows for the 
+ *              creation of new enrolments. The other part is the interface for an 
+ *              individual enrolment.
  *
  * Table of contents:
  *   1. Variables
@@ -41,25 +41,25 @@ class enrolments extends base {
 	private $event_obj = null;
 	private $cal_instance = null;
 
-	/* All permissions set to false by default. These are set by the CMS. */	
+	/* All permissions set to false by default. These are set by the CMS. */    
 	public $allow_addenrolment = false;
 	public $allow_enrollall = false;
 	public $allow_viewcomments = false;
-    public $allow_enroll = false;
+	public $allow_enroll = false;
 
-    /* Settings */
-    public $force_calendar = 0;
+	/* Settings */
+	public $force_calendar = 0;
 
 	/* ========================================================================================
 		2. Strings and templates
 	   ======================================================================================== */
 
 	public $errorMessages = array(
-		'incomplete'				=> 'Du må fylle inn både kalender og arrangement.',
-		'duplicate'					=> 'Det eksisterer allerede en påmelding for dette arrangementet.',
-		'no_closingdate'			=> 'Du krysset av for at påmeldingen skulle ha en påmeldingsfrist, men valgte ikke noen dato.',
-		'closingdate_inthepast' 	=> 'Påmeldingsfristen er allerede passert!',
-		'closingdate_afterstart'	=> 'Påmeldingsfristen er etter arrangementet har startet!'
+		'incomplete'                => 'Du må fylle inn både kalender og arrangement.',
+		'duplicate'                 => 'Det eksisterer allerede en påmelding for dette arrangementet.',
+		'no_closingdate'            => 'Du krysset av for at påmeldingen skulle ha en påmeldingsfrist, men valgte ikke noen dato.',
+		'closingdate_inthepast'     => 'Påmeldingsfristen er allerede passert!',
+		'closingdate_afterstart'    => 'Påmeldingsfristen er etter arrangementet har startet!'
 	);
 	private $template_newPaamelding = '
 			<h2>Opprett ny påmelding</h2>
@@ -74,25 +74,24 @@ class enrolments extends base {
 			<script type="text/javascript">
 			//<![CDATA[
 			
-				function fetch_events() {					
-					cal_id = $("cal_id").value;
+				function fetch_events() {                   
+					cal_id = $("#cal_id").val();
 					if (cal_id == "-") {
-						setText("span_event", "");					
+						setText("span_event", "");                  
 					} else {
 						var pars = new Array();
 						pars.push("cal_id="+cal_id);
 						pars.push("event_id=%events_id%");
 						pars = pars.join("&");
 						setText("span_event", "Vent litt...");
-						jQuery.ajax({
-                            url: "%events_uri%",
-                            type: "POST",
-                            data: pars, 
-                            dataType: "html",
-                            success: function(responseText){ 
-                                setText("span_event",responseText);
-                            }
-                        });
+						$.ajax({
+							url: "%events_uri%",
+							type: "POST",
+							data: pars, 
+							dataType: "html"
+						}).done(function(responseText){ 
+							setText("span_event",responseText);
+						});
 					}
 				}
 			
@@ -103,7 +102,7 @@ class enrolments extends base {
 				<tr><td style="font-weight:bold;text-align:right;padding-top:4px;padding-bottom:8px;">Kalender: </td><td valign="top"><select name="cal_id" id="cal_id" onchange="fetch_events();">%cal_opts%</select></td></tr>
 				<tr><td style="font-weight:bold;text-align:right;padding-top:4px;padding-bottom:8px;">Arrangement: </td><td valign="top"><span id="span_event"></span></td></tr>
 				<tr><td style="font-weight:bold;text-align:right;padding-top:6px;padding-bottom:8px;" valign="top">Påmeldingsfrist: </td><td valign="top">
-					<div style="padding:5px;">	
+					<div style="padding:5px;">  
 						<input type="radio" name="frist" id="frist_ja" value="ja" checked="checked" /><label for="frist_ja">Påmeldingsfrist: </label>%closing_date%<br />
 						<input type="radio" name="frist" id="frist_nei" value="nei" /><label for="frist_nei">Ingen påmeldingsfrist</label>
 					</div>
@@ -115,18 +114,13 @@ class enrolments extends base {
 				<input type="submit" value="Opprett påmelding" />
 			</form>
 			<script type="text/javascript">
-		    //<![CDATA[	
+			//<![CDATA[ 
 
-				function onYuiLoaderComplete() {
-                    console.log("YUI loaded");
-					YAHOO.util.Event.onContentReady("closingdate", function() {
-						(new BG18.datePicker("closingdate", { selectedDate: %date_date_js% } )).init();
-					});
+				$(document).ready(function() {
+					(new DatePicker("closingdate")).init();
 					fetch_events();
-				}
 
-				loader.require("button","calendar");
-				loader.insert();
+				});
 			
 			//]]>
 			</script>
@@ -161,16 +155,11 @@ class enrolments extends base {
 				</div>
 			</form>
 			<script type="text/javascript">
-		    //<![CDATA[	
+			//<![CDATA[ 
 
-				function onYuiLoaderComplete() {
-					YAHOO.util.Event.onContentReady("closingdate", function() {
-						(new BG18.datePicker("closingdate", { selectedDate: %date_date_js%, maxDate: "%maxdate_js%" } )).init();
-					});
-				}
-
-				loader.require("button","calendar");
-				loader.insert();
+				$(document).ready(function() {
+					(new DatePicker("closingdate", { maxDate: "%maxdate_js%" } )).init();
+				});
 			
 			//]]>
 			</script>
@@ -196,7 +185,7 @@ class enrolments extends base {
 				</p>
 				<p>
 					Eventuelle kommentarer til avmeldingen: <br />
-  					<textarea cols="60" rows="6" name="comment"></textarea>
+					<textarea cols="60" rows="6" name="comment"></textarea>
 				</p> 
 				<p>
 					<input type="hidden" name="registrationId" value="%registrationId%" />
@@ -220,7 +209,7 @@ class enrolments extends base {
 	
 	public function initialize(){
 
-		@parent::initialize();		
+		@parent::initialize();      
 		array_push($this->getvars,'action','registrationId','userId','cal_id','event_id');
 
 		// Determine requested action:
@@ -290,7 +279,7 @@ class enrolments extends base {
 			return 0;
 		}
 		$row = $res->fetch_assoc();
-		return intval($row['id']);	
+		return intval($row['id']);  
 	}
 	
 	public function getEnrolmentClosingDate($enrolment_id) {
@@ -319,11 +308,11 @@ class enrolments extends base {
 	}
 	
 	public function getLinkToEnrolment($id) {
-		return "/".$this->fullslug."/$id/";	
+		return "/".$this->fullslug."/$id/"; 
 	}
 	
 	public function getLinkToNewEnrolmentForm($cal_id, $event_id) {
-		return "/".$this->fullslug."?action=addEnrolment&amp;cal_id=$cal_id&amp;event_id=$event_id";		
+		return "/".$this->fullslug."?action=addEnrolment&amp;cal_id=$cal_id&amp;event_id=$event_id";        
 	}
 	
 	/* ========================================================================================
@@ -351,8 +340,8 @@ class enrolments extends base {
 			$tc.$tc_start as dt_start, $tc.$tc_end as dt_end, $tc.$tc_cap as caption,
 			COUNT($tu.id) as paameldte 
 			FROM $te LEFT JOIN $tu ON ($te.id=$tu.enrolment AND $tu.cancelledby=0), $tc
-            WHERE $te.page_id=$this->page_id 
-                AND $te.event_id=$tc.id 
+			WHERE $te.page_id=$this->page_id 
+				AND $te.event_id=$tc.id 
 				AND (
 					$te.closing_date > NOW() 
 					OR (ISNULL($te.closing_date) AND $tc.dt_end > NOW())
@@ -379,8 +368,8 @@ class enrolments extends base {
 			$tc.$tc_start as dt_start, $tc.$tc_end as dt_end, $tc.$tc_cap as caption,
 			COUNT($tu.id) as paameldte 
 			FROM $te LEFT JOIN $tu ON ($te.id=$tu.enrolment AND $tu.cancelledby=0), $tc
-            WHERE $te.page_id=$this->page_id
-                AND $te.event_id=$tc.id 
+			WHERE $te.page_id=$this->page_id
+				AND $te.event_id=$tc.id 
 				AND (
 					$te.closing_date < NOW() 
 					OR (ISNULL($te.closing_date) AND $tc.dt_end < NOW())
@@ -393,7 +382,7 @@ class enrolments extends base {
 		while ($row = $res->fetch_assoc()) {
 			$output .= $this->makeListEntry($calnames, $row);
 		}
-		$output .= "</ul>";		
+		$output .= "</ul>";     
 		
 		return $output;
 	}
@@ -480,7 +469,7 @@ class enrolments extends base {
 				if (isset($this->errorMessages[$s]))
 					$errstr.= "<li>".$this->errorMessages[$s]."</li>";
 				else
-					$errstr.= "<li>$s</li>";				
+					$errstr.= "<li>$s</li>";                
 			}
 			$errstr .= "</ul>";
 			$errstr = $this->notSoFatalError($errstr,array('logError'=>false,'customHeader'=>'Påmeldingen ble ikke opprettet fordi:'));
@@ -494,31 +483,29 @@ class enrolments extends base {
 		$cal_opts = "";
 		$cal_opts .= "<option value='-'>-- Velg fra listen --</option>\n";
 		foreach ($calendars as $id => $c) {
-            $selc = ($id == $defaultCalId) ? " selected='selected'" : "";
-            $add_cal = true;
-            if ($this->force_calendar == 0) {
-			    $cal_opts .= "<option value='".$id."'$selc>".stripslashes($c['caption'])."</option>\n";
-            } else {
-                if ($id == $this->force_calendar) {
-                    $cal_opts .= "<option value='".$id."' selected='selected'>".stripslashes($c['caption'])."</option>\n";
-                }
-            }
+			$selc = ($id == $defaultCalId) ? " selected='selected'" : "";
+			$add_cal = true;
+			if ($this->force_calendar == 0) {
+				$cal_opts .= "<option value='".$id."'$selc>".stripslashes($c['caption'])."</option>\n";
+			} else {
+				if ($id == $this->force_calendar) {
+					$cal_opts .= "<option value='".$id."' selected='selected'>".stripslashes($c['caption'])."</option>\n";
+				}
+			}
 		}
 
 		$date_code = $this->makeDateField("closingdate", 0, false);
-		$date_date_js = 0;		
 		$date_code .= ', klokken '.$this->generateTimeField('closingdate_time', $this->closingDateDefaultHour);
 
-		$r1a = array(); 				$r2a = array();
-		$r1a[] = "%errors%";			$r2a[] = $errstr;
-		$r1a[] = "%post_uri%";			$r2a[] = $this->generateUrl('action=addEnrolmentDo');
-		$r1a[] = "%cal_opts%";			$r2a[] = $cal_opts;
-		$r1a[] = "%events_uri%";		$r2a[] = $this->generateUrl('action=ajaxGetListOfEvents',true);
-		$r1a[] = "%closing_date%";		$r2a[] = $date_code;
-		$r1a[] = "%date_date_js%";		$r2a[] = $date_date_js;
-		$r1a[] = "%def_yes%";			$r2a[] = "checked='checked'";
-		$r1a[] = "%def_no%";			$r2a[] = "";
-		$r1a[] = "%events_id%";			$r2a[] = $defaultEventId;
+		$r1a = array();                 $r2a = array();
+		$r1a[] = "%errors%";            $r2a[] = $errstr;
+		$r1a[] = "%post_uri%";          $r2a[] = $this->generateUrl('action=addEnrolmentDo');
+		$r1a[] = "%cal_opts%";          $r2a[] = $cal_opts;
+		$r1a[] = "%events_uri%";        $r2a[] = $this->generateUrl('action=ajaxGetListOfEvents',true);
+		$r1a[] = "%closing_date%";      $r2a[] = $date_code;
+		$r1a[] = "%def_yes%";           $r2a[] = "checked='checked'";
+		$r1a[] = "%def_no%";            $r2a[] = "";
+		$r1a[] = "%events_id%";         $r2a[] = $defaultEventId;
 
 		return str_replace($r1a, $r2a, $this->template_newPaamelding);
 	}
@@ -535,29 +522,30 @@ class enrolments extends base {
 		} else {
 
 			$cal_id = intval($_POST['cal_id']);
-			$event_id = intval($_POST['event_id']);		
+			$event_id = intval($_POST['event_id']);     
 
-			$closingdate = addslashes(sprintf('%04d-%02d-%02d %02d:00:00',
-				intval($_POST['closingdate_year']),intval($_POST['closingdate_month']),intval($_POST['closingdate_day']),
+			$closingdate = addslashes(sprintf('%s %02d:00:00',
+				$_POST['closingdate'],
 				intval($_POST['closingdate_time_h'])
-			));	
+			)); 
 			$closingdate_unix = strtotime($closingdate);
 			if ($_POST['frist'] == 'nei') {
 				$closingdate = '0000-00-00 00:00:00';
 			} else {
-				if (intval($_POST['closingdate_year'])<=0) {
+				if (empty($_POST['closingdate'])) {
 					array_push($errors,'no_closingdate');
 				} else {
+
 					if ($closingdate_unix <= time()) {
-						array_push($errors,'closingdate_inthepast');					
+						array_push($errors,'closingdate_inthepast');                    
 					}
 					$ci = $this->cal_instance;
-                    $e = $ci->getEventDetails($event_id);
+					$e = $ci->getEventDetails($event_id);
 					if ($closingdate_unix > $e['startdate']) {
-						array_push($errors,'closingdate_afterstart');					
+						array_push($errors,'closingdate_afterstart');                   
 					}
-
 				}
+
 			}
 			
 			$guestsallowed = 0;
@@ -603,7 +591,7 @@ class enrolments extends base {
 		
 		$res = $this->query("SELECT calendar_id,event_id,closing_date,guestsallowed FROM $this->table_enrolments WHERE id=$id");
 		if ($res->num_rows != 1) $this->fatalError("invalid entry");
-		$row = $res->fetch_assoc();		
+		$row = $res->fetch_assoc();     
 
 		$closingdateSet = ($row['closing_date'] != '0000-00-00 00:00:00');
 		$closingdate = $closingdateSet ? strtotime($row['closing_date']) : 0;
@@ -612,7 +600,7 @@ class enrolments extends base {
 
 		//$date_str = $closingdateSet ? strftime('%A %e. %B %Y',$closingdate) : '<em>Ikke satt</em>';
 		$date_code = $this->makeDateField("closingdate", $closingdate, false);
-		$date_date_js = $closingdateSet ? strftime('{ day:%e, month:%m, year:%Y }',$closingdate) : '0';
+		//$date_date_js = $closingdateSet ? strftime('{ day:%e, month:%m, year:%Y }',$closingdate) : '0';
 		$max_date_js = strftime('%m/%d/%Y',$this->event_obj['startdate']);
 		
 		$closingtime = $closingdateSet ? strftime('%H',$closingdate) : $this->closingDateDefaultHour;
@@ -626,25 +614,24 @@ class enrolments extends base {
 				if (isset($this->errorMessages[$s]))
 					$errstr.= "<li>".$this->errorMessages[$s]."</li>";
 				else
-					$errstr.= "<li>$s</li>";				
+					$errstr.= "<li>$s</li>";                
 			}
 			$errstr .= "</ul>";
-			$errstr = $this->notSoFatalError($errstr,array('logError'=>false,'customHeader'=>'Påmeldingen ble ikke opprettet fordi:'));			
+			$errstr = $this->notSoFatalError($errstr,array('logError'=>false,'customHeader'=>'Påmeldingen ble ikke opprettet fordi:'));         
 			unset($_SESSION['errors']);
-			unset($_SESSION['postdata']);			
+			unset($_SESSION['postdata']);           
 		}
 
-		$r1a = array(); 				$r2a = array();
-		$r1a[] = "%errors%";			$r2a[] = $errstr;
-		$r1a[] = "%post_uri%";			$r2a[] = $this->generateUrl('action=editEnrolmentDo');
-		$r1a[] = "%title%";				$r2a[] = 'Påmeldingsside for '.$this->event_obj['caption'];		
-		$r1a[] = "%cancel_uri%";		$r2a[] = $this->generateUrl('');
-		$r1a[] = "%closing_date%";		$r2a[] = $date_code;
-		$r1a[] = "%date_date_js%";		$r2a[] = $date_date_js;
-		$r1a[] = "%maxdate_js%";		$r2a[] = $max_date_js;
-		$r1a[] = "%guestsallowed%";		$r2a[] = $guestsallowed;
-		$r1a[] = "%def_yes%";			$r2a[] = $closingdateSet ? "checked='checked'" : "";
-		$r1a[] = "%def_no%";			$r2a[] = $closingdateSet ? "" : "checked='checked'";
+		$r1a = array();                 $r2a = array();
+		$r1a[] = "%errors%";            $r2a[] = $errstr;
+		$r1a[] = "%post_uri%";          $r2a[] = $this->generateUrl('action=editEnrolmentDo');
+		$r1a[] = "%title%";             $r2a[] = 'Påmeldingsside for '.$this->event_obj['caption'];     
+		$r1a[] = "%cancel_uri%";        $r2a[] = $this->generateUrl('');
+		$r1a[] = "%closing_date%";      $r2a[] = $date_code;
+		$r1a[] = "%maxdate_js%";        $r2a[] = $max_date_js;
+		$r1a[] = "%guestsallowed%";     $r2a[] = $guestsallowed;
+		$r1a[] = "%def_yes%";           $r2a[] = $closingdateSet ? "checked='checked'" : "";
+		$r1a[] = "%def_no%";            $r2a[] = $closingdateSet ? "" : "checked='checked'";
 
 		return str_replace($r1a, $r2a, $this->template_editPaamelding);
 	}
@@ -661,24 +648,24 @@ class enrolments extends base {
 		
 		$errors = array();
 
-		$closingdate = addslashes(sprintf('%04d-%02d-%02d %02d:00:00',
-			intval($_POST['closingdate_year']),intval($_POST['closingdate_month']),intval($_POST['closingdate_day']),
+		$closingdate = addslashes(sprintf('%s %02d:00:00',
+			$_POST['closingdate'],
 			intval($_POST['closingdate_time_h'])
 		));
 		$closingdate_unix = strtotime($closingdate);
 		if ($_POST['frist'] == 'nei') {
 			$closingdate = '0000-00-00 00:00:00';
 		} else {
-			if (intval($_POST['closingdate_year'])<=0) {
+			if (empty($_POST['closingdate'])) {
 				array_push($errors,'no_closingdate');
 			} else {
 				if ($closingdate_unix <= time()) {
-					array_push($errors,'closingdate_inthepast');					
+					array_push($errors,'closingdate_inthepast');                    
 				}
 				$ci = $this->cal_instance;
 				$e = $ci->getEventDetails($event_id);
 				if ($closingdate_unix > $e['startdate']) {
-					array_push($errors,'closingdate_afterstart');					
+					array_push($errors,'closingdate_afterstart');                   
 				}
 
 			}
@@ -700,7 +687,7 @@ class enrolments extends base {
 		);
 		$this->addToActivityLog("oppdaterte <a href=\"".$this->generateCoolUrl("/$id")."\">påmeldingen</a> til ".$this->event_obj['caption'].".");
 		
-		$this->redirect($this->generateCoolUrl("/$id"),"Påmeldingen er oppdatert");		
+		$this->redirect($this->generateCoolUrl("/$id"),"Påmeldingen er oppdatert");     
 	}
 	
 	private function deleteEnrolment() {
@@ -709,12 +696,12 @@ class enrolments extends base {
 		
 		$res = $this->query("SELECT calendar_id,event_id,closing_date FROM $this->table_enrolments WHERE id=$id");
 		if ($res->num_rows != 1) $this->fatalError("invalid entry");
-		$row = $res->fetch_assoc();		
+		$row = $res->fetch_assoc();     
 
-		$r1a = array(); 				$r2a = array();
-		$r1a[] = "%post_uri%";			$r2a[] = $this->generateUrl('action=deleteEnrolmentDo');
-		$r1a[] = "%cancel_uri%";		$r2a[] = $this->generateUrl('');
-		$r1a[] = "%event_name%";		$r2a[] = $this->event_obj['caption'];
+		$r1a = array();                 $r2a = array();
+		$r1a[] = "%post_uri%";          $r2a[] = $this->generateUrl('action=deleteEnrolmentDo');
+		$r1a[] = "%cancel_uri%";        $r2a[] = $this->generateUrl('');
+		$r1a[] = "%event_name%";        $r2a[] = $this->event_obj['caption'];
 
 		return str_replace($r1a, $r2a, $this->template_deletePaamelding);
 	}
@@ -740,7 +727,7 @@ class enrolments extends base {
 	
 	private function emailForm() {
 
-		$enrolment_id = $this->enrolment_id;		
+		$enrolment_id = $this->enrolment_id;        
 		if (!is_numeric($enrolment_id)) $this->fatalError("invalid input");
 
 		$dt_start = strftime('%A %e. %B %Y',$this->event_obj['startdate']);
@@ -766,7 +753,7 @@ class enrolments extends base {
 
 		$dt_start = strftime('%A %e. %B %Y',$this->event_obj['startdate']);
 		$dt_end = strftime('%A %e. %B %Y',$this->event_obj['enddate']);
-		$dt = ($dt_start == $dt_end) ? $dt_start : "$dt_start - $dt_end";		
+		$dt = ($dt_start == $dt_end) ? $dt_start : "$dt_start - $dt_end";       
 		$_SESSION['msgcenter_infomsg'] = "Mottakere er alle påmeldte til «".$this->event_obj['caption']."» ($dt) og foresatte til påmeldte. Evt. gjester er ikke inkludert.";
 		
 		$this->redirect($this->messageUrl."?recipients=".implode(",",$people_and_parents));
@@ -774,7 +761,7 @@ class enrolments extends base {
 	
 	private function viewEnrolment() {
 		global $memberdb;
-		$id = $this->enrolment_id;		
+		$id = $this->enrolment_id;      
 		if (!is_numeric($id)) $this->fatalError("invalid input");
 	
 		$res = $this->query(
@@ -815,13 +802,13 @@ class enrolments extends base {
 
 				$str = $row['guest_name'].' ('.$row['guest_email'].') ';
 				$r = call_user_func($this->lookup_member,$row['enrolledby']);
-				$str .= ' <span style="color:#888;font-size:80%;">(påmeldt av '.$r->fullname.')</span>';				
+				$str .= ' <span style="color:#888;font-size:80%;">(påmeldt av '.$r->fullname.')</span>';                
 
 				$people_str = "<li class='annet'>$str</li>\n";
 
 				$kat = 'GU';
 			
-			} else {			
+			} else {            
 
 				$m = call_user_func($this->lookup_member, $row['person']);
 				if (empty($row['cancelledby'])){
@@ -888,7 +875,7 @@ class enrolments extends base {
 					$hours = floor($diff/3600);
 					$min = floor(($diff%3600)/60);
 					$daysleft = ($daydiff == 0) ? 'i dag' : 'i morgen';
-					$diff = "<div style='padding-top:5px;padding-bottom:5px;color:#ee2222;'><strong>Påmeldingen stenger om $hours time".(($hours == 1) ? "":"r")." og $min minutter!</strong></div>";				
+					$diff = "<div style='padding-top:5px;padding-bottom:5px;color:#ee2222;'><strong>Påmeldingen stenger om $hours time".(($hours == 1) ? "":"r")." og $min minutter!</strong></div>";               
 				} else {
 					$diff = "<span style='color:#008800;'> (om $daydiff dag".(($daydiff == 1) ? "":"er").")</span>";
 				}
@@ -899,7 +886,7 @@ class enrolments extends base {
 				} else if ($daydiff == -1) {
 					$diff = "<span style='color:#ff0000;'> (i går)</span>";
 				} else {
-					$diff = "<span style='color:#ff0000;'> (for ".(-$daydiff)." dager siden)</span>";				
+					$diff = "<span style='color:#ff0000;'> (for ".(-$daydiff)." dager siden)</span>";               
 				}
 			}
 			$str .= "
@@ -978,8 +965,8 @@ class enrolments extends base {
 							Dersom du ikke har en brukerkonto på nettsiden vår er du velkommen
 							til å <a href="/registrering" class="icn" style="background-image:url('.$this->image_dir.'icns/arrow_right.png);">registrere deg her</a>. 
 						</p>
-					</div>				
-				</div>			
+					</div>              
+				</div>          
 			';
 		
 		}
@@ -1006,7 +993,7 @@ class enrolments extends base {
 		$output .= '
 			<script type="text/javascript">
 			//<![CDATA[
-				YAHOO.util.Event.onDOMReady(function() {
+				$(document).ready(function() {
 					Nifty("div.whiteInfoBox");
 				});
 			//]]>
@@ -1087,7 +1074,7 @@ class enrolments extends base {
 			'<a href="'.$this->generateCoolUrl("/$enrolment_id","action=viewRegistration&registrationId=$id").'">'.$m->fullname.'</a>'
 		);
 		
-		return $output;		
+		return $output;     
 	}
 
 	private function register() {
@@ -1099,7 +1086,7 @@ class enrolments extends base {
 		if (!$this->allow_enroll) return $this->permissionDenied(); 
 		if (!isset($this->login_identifier)) return $this->permissionDenied(); 
 		if (!is_numeric($this->login_identifier)) return $this->permissionDenied();
-		if (!is_numeric($id)) $this->fatalError("invalid input");		
+		if (!is_numeric($id)) $this->fatalError("invalid input");       
 		if ($userId > 0 && !$this->allowEnrollPerson($userId)) return $this->permissionDenied(); 
 		
 		$res = $this->query("SELECT calendar_id,event_id,closing_date FROM $this->table_enrolments WHERE id=$id");
@@ -1176,7 +1163,7 @@ class enrolments extends base {
 		';
 		
 		return $output;
-	}	
+	}   
 	private function registerDo() {
 		global $memberdb;
 		if (!$this->allow_enroll) return $this->permissionDenied(); 
@@ -1216,7 +1203,7 @@ class enrolments extends base {
 			$row = $res->fetch_assoc();
 			$eid = $row['id'];
 			if ($row['cancelledby'] == 0) {
-				$this->redirect($this->generateCoolUrl("/$enrolment_id"),"Personen er allerede påmeldt dette arrangementet!");		
+				$this->redirect($this->generateCoolUrl("/$enrolment_id"),"Personen er allerede påmeldt dette arrangementet!");      
 			}
 			$this->query("UPDATE $this->table_enrolments_user
 				SET cancelledby=0,
@@ -1233,9 +1220,9 @@ class enrolments extends base {
 				$this->addToActivityLog("meldte seg på <a href=\"".$this->generateCoolUrl("/$enrolment_id")."\">$calCaption</a>");
 				$this->redirect($this->generateCoolUrl("/$enrolment_id"),"Du er nå påmeldt dette arrangementet!");
 			} else {
-				$this->addToActivityLog("meldte ".call_user_func($this->make_memberlink,$person)." på <a href=\"".$this->generateCoolUrl("/$enrolment_id")."\">$calCaption</a>");		
+				$this->addToActivityLog("meldte ".call_user_func($this->make_memberlink,$person)." på <a href=\"".$this->generateCoolUrl("/$enrolment_id")."\">$calCaption</a>");       
 				$this->redirect($this->generateCoolUrl("/$enrolment_id"),$memberdb->getMemberById($person)->fullname." er nå påmeldt dette arrangementet!");
-			}			
+			}           
 		}
 		
 		$this->query("INSERT INTO $this->table_enrolments_user 
@@ -1250,13 +1237,13 @@ class enrolments extends base {
 			$this->addToActivityLog("meldte seg på <a href=\"".$this->generateCoolUrl("/$enrolment_id")."\">$calCaption</a>");
 			$this->redirect($this->generateCoolUrl("/$enrolment_id"),"Du er nå påmeldt dette arrangementet!");
 		} else {
-			$this->addToActivityLog("meldte ".call_user_func($this->make_memberlink,$person)." på <a href=\"".$this->generateCoolUrl("/$enrolment_id")."\">$calCaption</a>");		
+			$this->addToActivityLog("meldte ".call_user_func($this->make_memberlink,$person)." på <a href=\"".$this->generateCoolUrl("/$enrolment_id")."\">$calCaption</a>");       
 			$this->redirect($this->generateCoolUrl("/$enrolment_id"),$memberdb->getMemberById($person)->fullname." er nå påmeldt dette arrangementet!");
 		}
 
 	}
 	
-	private function cancel() {		
+	private function cancel() {     
 		if (!$this->allow_enroll) return $this->permissionDenied(); 
 		$registrationId = intval($_GET['registrationId']);
 		if ($registrationId <= 0) $this->fatalError("invalid input");
@@ -1287,18 +1274,18 @@ class enrolments extends base {
 		if (!$this->allowEnrollPerson($personId)) return $this->permissionDenied(); 
 		$u = call_user_func($this->lookup_member,$personId);
 	
-		$r1a = array(); 				$r2a = array();
-		$r1a[] = "%post_uri%";			$r2a[] = $this->generateUrl('action=cancelDo');
-		$r1a[] = "%fullname%";			$r2a[] = $u->fullname;
-		$r1a[] = "%eventname%";			$r2a[] = $this->event_obj['caption'];
-		$r1a[] = "%cancel_uri%";		$r2a[] = $this->generateUrl('');
-		$r1a[] = "%registrationId%";	$r2a[] = $registrationId;
+		$r1a = array();                 $r2a = array();
+		$r1a[] = "%post_uri%";          $r2a[] = $this->generateUrl('action=cancelDo');
+		$r1a[] = "%fullname%";          $r2a[] = $u->fullname;
+		$r1a[] = "%eventname%";         $r2a[] = $this->event_obj['caption'];
+		$r1a[] = "%cancel_uri%";        $r2a[] = $this->generateUrl('');
+		$r1a[] = "%registrationId%";    $r2a[] = $registrationId;
 
 		return str_replace($r1a, $r2a, $this->template_cancelEnrolment);
 	}
 	
 	private function cancelDo() {
-		global $memberdb;	
+		global $memberdb;   
 		if (!$this->isLoggedIn()) return $this->permissionDenied(); 
 		if (!$this->allow_enroll) return $this->permissionDenied(); 
 		$registrationId = intval($_POST['registrationId']);
@@ -1349,13 +1336,13 @@ class enrolments extends base {
 			$this->addToActivityLog("meldte seg av <a href=\"".$this->generateUrl('')."\">$calCaption</a>");
 			$this->redirect($this->generateUrl(''),"Du er nå avmeldt dette arrangementet!");
 		} else {
-			$this->addToActivityLog("meldte ".call_user_func($this->make_memberlink,$person)." av <a href=\"".$this->generateUrl('')."\">$calCaption</a>");		
+			$this->addToActivityLog("meldte ".call_user_func($this->make_memberlink,$person)." av <a href=\"".$this->generateUrl('')."\">$calCaption</a>");     
 			$this->redirect($this->generateUrl(''),$memberdb->getMemberById($person)->fullname." er nå avmeldt dette arrangementet!");
 		}
 	
 	}
 	
-	private function reRegister() {		
+	private function reRegister() {     
 		if (!$this->allow_enroll) return $this->permissionDenied();
 
 		$registrationId = intval($_GET['registrationId']);
@@ -1425,10 +1412,10 @@ class enrolments extends base {
 			$this->addToActivityLog("meldte seg på <a href=\"".$this->generateCoolUrl("/$enrolment_id")."\">$calCaption</a>");
 			$this->redirect($this->generateCoolUrl("/$enrolment_id"),"Du er nå påmeldt dette arrangementet!");
 		} else {
-			$this->addToActivityLog("meldte ".call_user_func($this->make_memberlink,$person)." på <a href=\"".$this->generateCoolUrl("/$enrolment_id")."\">$calCaption</a>");		
+			$this->addToActivityLog("meldte ".call_user_func($this->make_memberlink,$person)." på <a href=\"".$this->generateCoolUrl("/$enrolment_id")."\">$calCaption</a>");       
 			$this->redirect($this->generateCoolUrl("/$enrolment_id"),$memberdb->getMemberById($person)->fullname." er nå påmeldt dette arrangementet!");
-		}	
-	}	
+		}   
+	}   
 	
 	
 	/*
@@ -1492,7 +1479,7 @@ class enrolments extends base {
 			"DELETE FROM $this->table_enrolments_user WHERE id='$guest_id' AND enrolledby='$me'"
 		);
 		
-		$this->ajaxListGuests();		
+		$this->ajaxListGuests();        
 	}
 
 	private function ajaxListGuests() {
@@ -1572,7 +1559,7 @@ class enrolments extends base {
 		$responsible = $this->login_identifier;
 		if ($person != $responsible) {
 			if (!$this->allow_enrollall) {
-				$me = call_user_func($this->lookup_member,$responsible);				
+				$me = call_user_func($this->lookup_member,$responsible);                
 				$allowEnroll = false;
 				foreach ($me->guarded_by as $gu) {
 					$pp = call_user_func($this->lookup_member,$gu);
@@ -1681,7 +1668,7 @@ class enrolments extends base {
 		if ($res->num_rows != 1) $this->fatalError("invalid entry");
 		$row = $res->fetch_assoc();
 		$id = $row['id'];
-		$deltaker = call_user_func($this->lookup_member,$row['person']);		
+		$deltaker = call_user_func($this->lookup_member,$row['person']);        
 		
 		$caption = $this->event_obj['caption'];
 		$dt_start = date("j.n.y",$this->event_obj['startdate']);
@@ -1731,7 +1718,7 @@ $this->site_name
 $server/
 ";
 
-			// Send mail		
+			// Send mail        
 			$mail = new htmlMimeMail5();
 			$mail->setFrom("$from_name <$from_addr>");
 			$mail->setReturnPath($from_addr);
@@ -1739,7 +1726,7 @@ $server/
 			$mail->setText($plainBody);
 			//$mail->setHTML($htmlBody);
 			$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-			$mail->send($recipients,$type = 'smtp');		
+			$mail->send($recipients,$type = 'smtp');        
 		}
 	}
 	
@@ -1764,7 +1751,7 @@ $server/
 		if ($res->num_rows != 1) $this->fatalError("invalid entry");
 		$row = $res->fetch_assoc();
 		$id = $row['id'];
-		$deltaker = call_user_func($this->lookup_member,$row['person']);		
+		$deltaker = call_user_func($this->lookup_member,$row['person']);        
 		
 		$caption = $this->event_obj['caption'];
 		$dt_start = date("j.n.y",$this->event_obj['startdate']);
@@ -1816,7 +1803,7 @@ $this->site_name
 $server/
 ";
 
-			// Send mail		
+			// Send mail        
 			$mail = new htmlMimeMail5();
 			$mail->setFrom("$from_name <$from_addr>");
 			$mail->setReturnPath($from_addr);
@@ -1824,7 +1811,7 @@ $server/
 			$mail->setText($plainBody);
 			//$mail->setHTML($htmlBody);
 			$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-			$mail->send($recipients,$type = 'smtp');				
+			$mail->send($recipients,$type = 'smtp');                
 		}
 	}
 	

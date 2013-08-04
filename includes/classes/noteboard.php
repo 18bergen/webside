@@ -636,8 +636,8 @@ class noteboard extends comments {
 				var pathToUserFiles = "'.$pathToUserFiles.'";
 				var pathToThumbs = "'.$pathToThumbs100.'";
 				var f = pathToThumbs + fileUrl.substr(pathToUserFiles.length);
-				$("lead_image").value = f;				
-				$("ingressbildespan").innerHTML = "<img src=\'" + f + "\' alt=\'Velg bilde\' border=\'0\' style=\'margin:5px;\' />"
+				$("#lead_image").val(f);				
+				$("#ingressbildespan").html("<img src=\'" + f + "\' alt=\'Velg bilde\' border=\'0\' style=\'margin:5px;\' />");
 			}
 
 		//]]>
@@ -667,7 +667,6 @@ class noteboard extends comments {
 				<script type="text/javascript">
 				//<![CDATA[
 
-				
 					function FCKeditor_OnComplete( editorInstance ) {
 						// Editor loaded			
 					}
@@ -693,7 +692,7 @@ class noteboard extends comments {
 					}
 
 					var useFckEditor = true;
-					YAHOO.util.Event.onDOMReady(initCKeditor);
+					$(document).ready(initCKeditor);
 	
 				//]]>
 				</script>

@@ -2,8 +2,8 @@
 
 class menu extends base {
 
-	var $getvars = array('addmenuitem', 'addseparator', 'editmenuitem','savemenuitem','deletemenuitem','dodeletemenuitem','savemenuorder');
-		
+	var $getvars = array('addmenuitem', 'addseparator', 'editmenuitem','savemenuitem','deletemenuitem','dodeletemenuitem','savemenuorder', 'editmenuorder');
+
 	var $table_labels = "menu_labels";
 	var $table_items = "menu_items";
 	var $table_languages = "languages";
@@ -53,6 +53,9 @@ class menu extends base {
 			$this->action = 'savemenuitem';
 		else if (isset($_GET['savemenuorder']))
 			$this->action = 'savemenuorder';	
+		else if (isset($_GET['editmenuorder']))
+			$this->action = 'editmenuorder';
+
 	}
 
 	function run(){
@@ -78,6 +81,9 @@ class menu extends base {
 			case 'savemenuorder':
 				return $this->saveMenuOrder();
 				break;
+			case 'editmenuorder':
+				return $this->editMenuOrder();
+				break;
 			default:
 				return $this->printOutMenu();
 				break;
@@ -89,11 +95,16 @@ class menu extends base {
 	function outputMenu() {
 		return $this->printMenuItems($this->root_itemid, false, 0);
 	}
+
+	function editMenuOrder() {
+		return $this->printOutMenu(true);	
+	}
 	
-	function printOutMenu() {
+	function printOutMenu($draggable = false) {
 		$url_add = $this->generateURL(array("noprint=true","addmenuitem"));
 		$url_addsep = $this->generateURL(array("noprint=true","addseparator"));
 		$url_post = $this->generateURL(array("noprint=true","savemenuorder"));
+		$url_reorder = $this->generateURL(array("editmenuorder"));
 		$img_add  = $this->image_dir."add3.gif";
 		
 		$output = "";
@@ -101,10 +112,12 @@ class menu extends base {
 						
 			<p>
 				<a href="'.$url_add.'"><img src="'.$img_add.'" style="border:none;" /> Legg til menyobjekt</a> &nbsp;
-				<a href="'.$url_addsep.'"><img src="'.$img_add.'" style="border:none;" /> Legg til overskrift</a>
+				<a href="'.$url_addsep.'"><img src="'.$img_add.'" style="border:none;" /> Legg til overskrift</a> &nbsp;
+				<a href="'.$url_reorder.'"><img src="'.$img_add.'" style="border:none;" /> Endre rekkefølge</a>
 			</p>
 			
 		';
+
 		if ($this->item_to_edit == -1 && $this->item_to_delete == -1) {
 			$output .= '
 				<form method="post" action="'.$url_post.'" onsubmit="populateHiddenVars();">
@@ -115,26 +128,27 @@ class menu extends base {
 				</form>
 			';
 		}
-		$output .= $this->printMenuItems($this->root_itemid, true, 0, true);
+		$output .= '<div' . ($draggable ? ' class="dd"':'') . '>';
+		$output .= $this->printMenuItems($this->root_itemid, true, 0, true, $draggable);
+		$output .= '</div>';
 		
 		if ($this->item_to_edit == -1 && $this->item_to_delete == -1) {
 			$output .= '
 			
 			<script type="text/javascript">
-		    //<![CDATA[
-		    
+
 		    var menuModified = false;
 
-    		Sortable.create("sortablemenu", {
-    			tree:true,
-    			scroll:window,
-				onUpdate: function() {
-					menuModified = true;
-				}
-    		});
-    		
+		    $(document).ready(function() {
+		    	$(".dd").nestable()
+		    	.on("change", function() {
+		    		menuModified = true;
+				});
+		    });
+
 			function populateHiddenVars() {
-				$("menuOrder").value = Sortable.serialize("sortablemenu");
+				var s = JSON.stringify($(".dd").nestable("serialize"));
+				$("#menuOrder").val(s);
 				menuModified = false;
 				return true;
 			}
@@ -147,7 +161,6 @@ class menu extends base {
 			
 			window.onbeforeunload = confirmBrowseAway;
 			
-    		//]]>
     		</script>
 			
 			';
@@ -155,7 +168,7 @@ class menu extends base {
 		return $output;
 	}
 	
-	function printMenuItems($parent, $editable, $level, $expandAll = false) {
+	function printMenuItems($parent, $editable, $level, $expandAll = false, $draggable = false) {
 		$output = "";
 		$current_page = implode("/", $this->coolUrlSplitted);
 		
@@ -189,19 +202,19 @@ class menu extends base {
 			$output .= "	";
 
 		$editableclass = "";
-		if ($this->item_to_edit == -1 && $this->item_to_delete == -1) $editableclass = " class='editable'";
-		if ($editable)
-			if ($parent == $this->root_itemid) 
-				$output .= "<ul id='sortablemenu' $editableclass>\n";
-			else
-				$output .= "<ul class='edit_list'>\n";
-		else
-			if ($parent == $this->root_itemid) 
-				$output .= "<ul id='mainmenu' class='menu'>\n";
-			else
-				$output .= "<ul>\n";		
+		if ($this->item_to_edit == -1 && $this->item_to_delete == -1) $editableclass = "editable";
+		
+
+		$classes = array();
+		if ($draggable) $classes[] = 'dd-list';
+		if ($editable && ($parent == $this->root_itemid)) {
+			$classes[] = $editableclass; 
+		}
+		if (!$draggable && !$editable) $classes[] = "menu";
+		$classes = (count($classes) > 0) ? ' class="'.implode(" ",$classes).'"' : '';
 		
 		if ($res->num_rows > 0) {
+			$output .= "<ol$classes>\n";
 			while ($row = $res->fetch_assoc()) {
 				$id = $row['id'];	
 				$fullslug = explode("/", $row['fullslug']);
@@ -227,8 +240,10 @@ class menu extends base {
 							$url_edit = $this->generateURL("editmenuitem=$id").'#editform';
 							$url_delete = $this->generateURL("deletemenuitem=$id").'#deleteform';
 							$lock = ($row["onlyforloggedin"] == "1") ? '&nbsp;<img src="'.$this->image_dir.'lock-1.gif" alt="Vis kun for innloggede brukere" title="Vis kun for innloggede brukere" />' : '';
-							$item = $item.' '.$lock.' &nbsp;<a href="'.$url_edit.'" class="icn" style="background-image:url(/images/icns/bullet_wrench.png);" alt="Rediger" title="Rediger dette menyobjektet">&nbsp;</a> 
-								<a href="'.$url_delete.'" class="icn" style="background-image:url(/images/icns/bullet_delete.png);" alt="Slett" title="Slett dette menyobjektet">&nbsp;</a>';
+							if (!$draggable) {
+								$item = $item.' '.$lock.' &nbsp;<a href="'.$url_edit.'" class="icn" style="background-image:url(/images/icns/bullet_wrench.png);" alt="Rediger" title="Rediger dette menyobjektet">&nbsp;</a> 
+									<a href="'.$url_delete.'" class="icn" style="background-image:url(/images/icns/bullet_delete.png);" alt="Slett" title="Slett dette menyobjektet">&nbsp;</a>';							
+							}
 						} else if ($row['is_header']) {
 							
 						} else {
@@ -245,27 +260,29 @@ class menu extends base {
 					for ($i = 0; $i < (4 + $level*2); $i++) $output .= "	";
 
 					$classes = array();
+					if ($draggable) $classes[] = 'dd-item'; 
 					if ($row['is_header']) $classes[] = 'header'; 
 					if ($selected) $classes[] = 'selected';
 					$classes = (count($classes) > 0) ? ' class="'.implode(" ",$classes).'"' : '';
-					$liId = $editable ? ' id="menuid_'.$id.'"' : '';
+					$liId = $editable ? ' data-id="'.$id.'"' : '';
 					$output .= '<li'.$classes.$liId.'>';
 					$output .= "\n";
 					for ($i = 0; $i < (5 + $level*2); $i++)
 						$output .= "	";
-					if ($selected) $item = '<div class="selected">'.$item.'</div>';
+					if ($selected) $item = '<div class="' . ($draggable ? 'dd-handle ':'') . 'selected">'.$item.'</div>';
+					else $item = '<div' . ($draggable ? ' class="dd-handle"':'') . '>'.$item.'</div>';
 					$output .= $item;
 					$output .= "\n";
-					if (!$row['is_header'] && ($selected || $expandAll)) $output .= $this->printMenuItems($id, $editable, $level + 1, $expandAll);
+					if (!$row['is_header'] && ($selected || $expandAll)) $output .= $this->printMenuItems($id, $editable, $level + 1, $expandAll, $draggable);
 					for ($i = 0; $i < (4 + $level*2); $i++)
 						$output .= "	";
 					$output .= "</li>\n";
 				}
 			}
+			for ($i = 0; $i < (3 + $level*2); $i++)
+				$output .= "	";
+			$output .= "</ol>\n";
 		}
-		for ($i = 0; $i < (3 + $level*2); $i++)
-			$output .= "	";
-		$output .= "</ul>\n";
 		return $output;
 	}
 
@@ -481,57 +498,18 @@ class menu extends base {
 	
 	// Example: [menuOrder] => sortablemenu[0]=1&sortablemenu[0][0]=2&sortablemenu[0][1]=3&sortablemenu[1]=4&sortablemenu[2]=5
 	
-	function getOrderArray($input) {
-		$input = explode("&",$input);
-		$list = array();
+	function makeFlatOrder($input, &$output, $parent) {
+		$n = 0;
 		foreach ($input as $item) {
-			list($value,$menu_id) = explode("=",$item);		
-			$position = array();
-			$offset = 0;
-			$i = 0;
-			while ($i++ < 100) {
-				$s = strpos($value,"[",$offset);
-				if ($s === false) break;
-				$s++;
-				$e = strpos($value,"]",$s);
-				if ($e === false) break;
-				$val = substr($value,$s,$e-$s);
-				if (is_numeric($val)) $position[] = $val;
-				$offset = $e;
-			}
-			$list[] = array(
-				'menu_id' => $menu_id,
-				'position' => $position
+			$output[] = array(
+				'menu_id' => $item->id,
+				'position' => $n++,
+				'parent' => $parent
 			);
-		}
-		return $list;
-	}
-	
-	function makeFlatOrder($input) {
-		$output = array();
-		$level = -1;
-		while ($level++ < 100) {
-			$itemFound = false;
-			foreach ($input as $item) {
-				if (count($item['position']) == $level+1) {
-					$parent = $this->root_itemid;
-					for ($i = 0; $i < $level; $i++) {
-						foreach ($output as $o) {
-							if ($o['parent'] == $parent && $o['position'] == $item['position'][$i]) {
-								$parent = $o['menu_id']; 
-								break; 
-							}
-						}
-					}
-					$item['parent'] = $parent;
-					$item['position'] = $item['position'][count($item['position'])-1];
-					$output[] = $item;
-					$itemFound = true;
-				}
+			if (isset($item->children)) {
+				$this->makeFlatOrder($item->children, $output, $item->id);
 			}
-			if (!$itemFound) break;
 		}
-		return $output;
 	}
 	
 	function saveMenuOrder() {
@@ -539,11 +517,12 @@ class menu extends base {
 		
 		$menuOrder = $_POST['menuOrder'];
 		if ($menuOrder == 'javascript_disabled') return $this->javascriptRequired();
+
+		$menuOrder = json_decode($menuOrder);
 		
-		$order = $this->getOrderArray($menuOrder);
-		
-		$order = $this->makeFlatOrder($order);
-						
+		$order = array();
+		$this->makeFlatOrder($menuOrder, $order, 0);
+				
 		foreach ($order as $o) {
 			$position = $o['position'];
 			$parent = $o['parent'];

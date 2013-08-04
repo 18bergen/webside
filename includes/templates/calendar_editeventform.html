@@ -10,9 +10,8 @@
 								<th class="label">
 									<div%error_subject%>Hva?</div>
 								</th><td class="data">
-                                    <div id="cal_subject_container" class="ac_container">
+									<div class="ui-widget">
                                         <input autocomplete="off" id="cal_subject" name="cal_subject" type="text" value="%subject%" class="inp" />
-                                        <div id="cal_subject_ac"></div>
                                     </div>
 									
 								</td>
@@ -143,93 +142,85 @@
 			<script type="text/javascript">
 		    //<![CDATA[	
 
-			// ============================ (1) Load YUI lib ===================================
+			var startTimeButton, endTimeButton,
+				startDatePicker, endDatePicker;
 
-			var startTimeButton, endTimeButton;
-			var startDatePicker, endDatePicker;
-			
-			function onYuiLoaderComplete() {
-				YAHOO.util.Event.onContentReady("startdate", function() {
-					startDatePicker = new BG18.datePicker("startdate", { selectedDate: %startdate_js% } );
-					startDatePicker.onSelectDate = function(nDay,nMonth,nYear) {
-						endDatePicker.setDate(nDay,nMonth,nYear);
-					}
-					startDatePicker.init();
-				});
-				YAHOO.util.Event.onContentReady("enddate", function() {
-					endDatePicker = new BG18.datePicker("enddate", { selectedDate: %enddate_js% } );
-					endDatePicker.init();
-				});
+			$(document).ready(function() {
+
+				var startDatePicker = new DatePicker("startdate", { 
+					onSelect: function(dt) {
+						$('#enddate').val(dt);
+					}});
+				startDatePicker.init();
+				
+				var endDatePicker = new DatePicker("enddate");
+				endDatePicker.init();
+
 				initTogglers();
-				initAutoComplete();				
-				new YAHOO.widget.Button("lagreKnapp");
-			}
-			
-			YAHOO.example.BasicRemote = function(field, url) {
-                var oDS = new YAHOO.util.XHRDataSource(url, {
-                    responseType: YAHOO.util.XHRDataSource.TYPE_TEXT,
-                    responseSchema: {
-                        recordDelim: "\n",
-                        fieldDelim: "\t"
-                    },
-                    maxCacheEntries: 5
-                });                
-                var oAC = new YAHOO.widget.AutoComplete(field, field+"_ac", oDS);
-                oAC.generateRequest = function(sQuery) {
-                    return "&" + field +"=" + sQuery;
-                };
-                oAC.animSpeed = 0.2;
-                return {
-                    oDS: oDS,
-                    oAC: oAC
-                };
-            }
-                
-            //define your itemSelect handler function:
-            var subjectSelectHandler = function(sType, aArgs) {
-                //console.log(sType); // this is a string representing the event;
-                                  // e.g., "itemSelectEvent"
-                var oMyAcInstance = aArgs[0]; // your AutoComplete instance
-                var elListItem = aArgs[1]; // the <li> element selected in the suggestion
-                                           // container
-                var oData = aArgs[2]; // object literal of data for the result
-                console.log(oData[0]);
-                switch (oData[0].split(" ")[0]) {
-                    case 'Patruljemøte':
-                    case 'Troppsmøte':
-                    case 'Småspeidermøte':
-                        if ($('startdate_time').selectedIndex == 0) $('startdate_time').selectedIndex = 25;
-                        if ($('enddate_time').selectedIndex == 0) $('enddate_time').selectedIndex = 29;
-                        if ($('cal_location').value == '') $('cal_location').value = 'Speiderlokalet';
-                        break;
-                }                
-                onSubjectChange();
-            };
+				initAutoComplete();
+				initCKeditor();
+				$("#cal_subject").on("change", onSubjectChange);
+
+			});
+
+			// ============================ (1) Autocomplete ===================================
             
 			function initAutoComplete() {
-                ac1 = YAHOO.example.BasicRemote("cal_subject", "%url_autocomplete_subject%");
-                ac2 = YAHOO.example.BasicRemote("cal_location", "%url_autocomplete_location%");
-                ac1.oAC.itemSelectEvent.subscribe(subjectSelectHandler);
+                
+                $("#cal_subject").autocomplete({
+				  source: "%url_autocomplete_subject%",
+				  minLength: 2,
+				  select: function( event, ui ) {
+					if (ui.item) {
+						$("#cal_subject").val(ui.item.value);
+						
+						//@TODO: subjectSelectHandler
+						
+						switch (ui.item.value.split(" ")[0]) {
+							case 'Patruljemøte':
+							case 'Troppsmøte':
+							case 'Småspeidermøte':
+								if ($('#startdate_time').prop("selectedIndex") == 0) $('#startdate_time').val("18:00");
+								if ($('#enddate_time').prop("selectedIndex") == 0) $('#enddate_time').val("19:30");
+								if ($('#cal_location').val() == '') $('#cal_location').val('Speiderlokalet');
+								break;
+						}                
+						onSubjectChange();
+					}
+				  }
+				});
+
+                $("#cal_location").autocomplete({
+				  source: "%url_autocomplete_location%",
+				  minLength: 2,
+				  select: function( event, ui ) {
+					if (ui.item) {
+						$("#cal_location").val(ui.item.value);
+					}
+				  }
+				});
+
+
+                //ac1.oAC.itemSelectEvent.subscribe(subjectSelectHandler);
             }
 
-			loader.require("button","menu","calendar","connection","json","autocomplete");
-			loader.insert();
+// 			loader.require("button","menu","calendar","connection","json","autocomplete");
+// 			loader.insert();
 			
 			// ============================ (2) INIT PANELS ====================================
 			
 			function initTogglers() {
-				var handles = YAHOO.util.Dom.getElementsByClassName('handle','h2','main_col');
-				for (i = 0; i < handles.length; i++) {
-					YAHOO.util.Event.addListener(handles[i],'click',clickHandle);
-				}
-			}	
-
+				$('#main_col h2.handle').each(function(key, el) {
+					$(el).on('click', clickHandle);
+				});
+			}
+			
 			function clickHandle(e) {
-				var el = YAHOO.util.Event.getTarget(e).parentNode; 
-				if (YAHOO.util.Dom.hasClass(el,'closed')) {
-					YAHOO.util.Dom.removeClass(el,'closed');
+				var $el = $(e.target).parent();
+				if ($el.hasClass('closed')) {
+					$el.removeClass('closed');
 				} else {
-					YAHOO.util.Dom.addClass(el,'closed');
+					$el.addClass('closed');
 				}
 			}
 						
@@ -240,13 +231,7 @@
 			// =========================== (3) INIT CKEDITOR ===================================
 				
 			var editor;
-			
-			YAHOO.util.Event.onDOMReady(initCKeditor);				
-
-			YAHOO.util.Event.onDOMReady(function() {
-				YAHOO.util.Event.addListener("cal_subject","change",onSubjectChange);
-			});
-					
+								
 			/* http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.html#instanceReady */
 			function initCKeditor() {
 
@@ -284,10 +269,10 @@
 			}
 			
 			function checkPrivate() {
-				if ($("cal_private").checked) {
-					YAHOO.util.Dom.setStyle("cal_private_info","display","block");
+				if ($("#cal_private").is(':checked')) {
+					$("#cal_private_info").show();
 				} else {
-					YAHOO.util.Dom.setStyle("cal_private_info","display","none");						
+					$("#cal_private_info").hide();
 				}
 			}
 
@@ -300,7 +285,7 @@
 			cal1.onDateChanged.subscribe(onStartDateChanged); 
 			*/
 			function onSubjectChange(e) {
-				$("cal_slug").value = generateSlug($("cal_subject").value);
+				$("#cal_slug").val(generateSlug($("#cal_subject").val()));
 			}
 			
 			// ===================== (5) EDITABLE AUTHOR LIST =============================
@@ -315,34 +300,34 @@
 			}
 			
 			function getAuthors() {
-				var authors = jQuery("#authors").val();
+				var authors = $("#authors").val();
 				if (authors == "") return [];
 				else return authors.split(",");
 			}
 
 			function setAuthors(authors) {
-				return $("authors").value = authors.join(",");
+				return $("#authors").val(authors.join(","));
 			}
 			
 			function addAuthorForm() {
-				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","none");
-				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","block");
+				$("#addAuthorBtnPanel").hide();
+				$("#addAuthorFieldPanel").show();
 			}
 
 			function cancelAuthorForm() {
-				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
-				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");
+				$("#addAuthorBtnPanel").show();
+				$("#addAuthorFieldPanel").hide();
 			}
 			
 			function addAuthor(){					
 				var authors = getAuthors();
-				var newAuthorId = $("addAuthorSelect").options[$("addAuthorSelect").selectedIndex].id;
+				var newAuthorId = $("#addAuthorSelect").val();
 				if (authors.length == 0) {
 					authors = [newAuthorId];
 				} else {
 					if (authors.in_array(newAuthorId)) {
-						YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");					
-						YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
+						$("#addAuthorFieldPanel").hide();					
+						$("#addAuthorBtnPanel").show();
 						return;
 					}
 					authors.push(newAuthorId);
@@ -359,35 +344,32 @@
 				}
 				setAuthors(newAuthors);					
 				if (newAuthors.length == 0) {
-					setText("authorlist","<input type=\"hidden\" name=\"authors\" id=\"authors\" value=\"\" /><em style=\"color:red\">Noen må ta ansvar… Du må legge til minst én ansvarlig person.</em>");
+					$("#authorlist").html("<input type=\"hidden\" name=\"authors\" id=\"authors\" value=\"\" /><em style=\"color:red\">Noen må ta ansvar… Du må legge til minst én ansvarlig person.</em>");
 				} else {
 					updateAuthorList();
 				}
 			}
 			
 			function updateAuthorList() {
-				var pars = new Array();
-				pars.push("authors="+escape(jQuery("#authors").val()));
-				pars = pars.join("&");
-				YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","none");
-				YAHOO.util.Dom.setStyle("addAuthorFieldPanel","display","none");
-				YAHOO.util.Dom.setStyle("addAuthorProgress","display","block");
+				var pars = {
+					authors: $("#authors").val()
+				};
+				$("#addAuthorBtnPanel").hide();
+				$("#addAuthorFieldPanel").hide();
+				$("#addAuthorProgress").show();
 				
-				jQuery.ajax({
+				$.ajax({
                     url: "%updateAuthorListUrl%",
                     type: "POST",
-                    data: pars, 
-                    dataType: "html",
-                    success: function(responseText){ 
-                        YAHOO.util.Dom.setStyle("addAuthorProgress","display","none");					
-                        YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");
-                        setText("authorlist",responseText);
-                    },
-                    error: function() {
-                        YAHOO.util.Dom.setStyle("addAuthorProgress","display","none");					
-                        YAHOO.util.Dom.setStyle("addAuthorBtnPanel","display","block");					
-                        setText("authorlist","Å nei, det oppstod en feil.");
-                    }
+                    data: pars
+                }).done(function(responseText){ 
+					$("#addAuthorProgress").hide();					
+					$("#addAuthorBtnPanel").show();
+					$("#authorlist").html(responseText);
+                }).error(function() {
+					$("#addAuthorProgress").hide();					
+					$("#addAuthorBtnPanel").show();					
+					$("#authorlist").html("Å nei, det oppstod en feil.");
                 });
 			}
 

@@ -449,7 +449,7 @@ class guestbook extends base {
 			
 			<script type=\"text/javascript\">
 			//<![CDATA[
-				YAHOO.util.Event.onDOMReady(function() {
+				$(document).ready(function() {
 					Nifty('div.gbentry');					
 				});
 			//]]>

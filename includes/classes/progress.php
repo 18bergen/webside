@@ -89,10 +89,8 @@ class progress extends base {
 		$row = $res->fetch_assoc();
 		$soFar = intval($row['tot']);
 		
-		$t = 490;
-		$p = floor($soFar/$goal*$t);
-		if ($p>$t) $p = $t;
-				
+		$p = floor($soFar/$goal*100);
+
 		$output .= "
 			<div style='padding: 10px 0px 10px 0px'>$desc</div>
 			
@@ -104,26 +102,13 @@ class progress extends base {
 			
 			<script type=\"text/javascript\">
 			//<![CDATA[
-			
-				loader.require('progressbar');
-				loader.insert();
-				
-				function onYuiLoaderComplete() {
-			
-					var pb = new YAHOO.widget.ProgressBar({
-						value: 0,
-						minValue: 0,
-						maxValue: $goal,
-						width: 490,
-						height: 24,
-						anim: true
-					});
-					pb.render('pbar');
-					pb.get('anim').method = YAHOO.util.Easing['easeOut'];
-					pb.set('value',$soFar);
-					
-				}
-							
+
+				$(document).ready(function() {
+					$( '#pbar' ).progressbar({
+				      value: $p
+				    });
+				});
+		
 			//]]>			
 			</script>
 			
@@ -216,7 +201,7 @@ class progress extends base {
 				
 				}
 				
-				YAHOO.util.Event.onDOMReady(initializeFCK);
+				$(document).ready(initializeFCK);
 			
 			//]]>
 			</script>
@@ -318,8 +303,9 @@ class progress extends base {
 					var pathToUserFiles = "'.$pathToUserFiles.'";
 					var pathToThumbs = "'.$pathToThumbs100.'";
 					var f = pathToThumbs + fileUrl.substr(pathToUserFiles.length);
-					$("lead_image").value = f;				
-					$("ingressbildespan").innerHTML = "<img src=\'" + f + "\' alt=\'Velg bilde\' border=\'0\' style=\'margin:5px;\' />"
+					//console.log(f);
+					$("#lead_image").val(f);
+					$("#ingressbildespan").html("<img src=\'" + f + "\' alt=\'Velg bilde\' border=\'0\' style=\'margin:5px;\' />");
 				}
 	
 			//]]>

@@ -27,18 +27,14 @@ class images extends base {
 	var $full_path;
 	
 	var $current_image = array();
-
-	/**** FUNCTION LIST ***
 	
-		images ($dbLink, $table_dirs, $table_images);
-		getFullPathToDir($id);
-		getRelativePathToDir($id);
-		findImageID($dirID, $caption, true);
-		uploadImage($dirName, $varName);
+	// images ($dbLink, $table_dirs, $table_images);
+	// getFullPathToDir($id);
+	// getRelativePathToDir($id);
+	// findImageID($dirID, $caption, true);
+	// uploadImage($dirName, $varName);
 				
 				
-	*********************** */
-
 	function images($dblink, $table_dirs, $table_images, $pathToImages, $login_identifier, $temp_dir, $root_dir = ""){
 		$this->login_identifier = $login_identifier;
 		$this->table_dirs = DBPREFIX.$this->table_dirs;
@@ -234,12 +230,12 @@ class images extends base {
 		return $tempname;
 	}
 	
-	/****************************************************************************************************
-		CREATE THUMBNAIL
-		**************************************************************************************************/
+	// ***************************************************************************************************
+	// 	CREATE THUMBNAIL
+	// 	**************************************************************************************************/
 
 
-	/* $img can be either the image id or a filename */
+	// $img can be either the image id or a filename
 	function createThumbnail($img, $keepProportions, $newWidth, $newHeight = 0, $filename_addition = "_thumb") {
 		
 		if (is_numeric($img)) {
@@ -283,11 +279,11 @@ class images extends base {
 			copy($filename,$thumb_filename);
 				
 			// Sett permissions
-			/*
-			$old = umask(0);
-			chmod($thumb_filename, 0666);
-			umask($old);
-			*/
+			
+			// $old = umask(0);
+			// chmod($thumb_filename, 0666);
+			// umask($old);
+			
 		}
 		
 		if ($newWidth < $oldWidth || $newHeight < $oldHeight) {
@@ -328,9 +324,9 @@ class images extends base {
 		
 	}
 
-	/****************************************************************************************************
-		CROP IMAGE
-		**************************************************************************************************/
+	// **************************************************************************************************
+	// CROP IMAGE
+	// **************************************************************************************************
 		
 	function cropImage($filename, $x, $y, $newWidth, $newHeight) {
 	
@@ -430,25 +426,19 @@ class images extends base {
 			<script type="text/javascript">
 		    //<![CDATA[				
 				
-				/************************************************************************************************************
-				(C) www.dhtmlgoodies.com, April 2006
+				// (C) www.dhtmlgoodies.com, April 2006
 				
-				This is a script from www.dhtmlgoodies.com. You will find this and a lot of other scripts at our website.	
+				// This is a script from www.dhtmlgoodies.com. You will find this and a lot of other scripts at our website.	
 				
-				Terms of use:
-				You are free to use this script as long as the copyright message is kept intact. However, you may not
-				redistribute, sell or repost it without our permission.
+				// Terms of use:
+				// You are free to use this script as long as the copyright message is kept intact. However, you may not
+				// redistribute, sell or repost it without our permission.
 				
-				Thank you!
+				// Thank you!
 				
-				www.dhtmlgoodies.com
-				Alf Magne Kalleland
-				
-				************************************************************************************************************/	
-			
-				
-				/* Variables you could modify */
-				
+				// www.dhtmlgoodies.com
+				// Alf Magne Kalleland
+					
 				var small_square_gif = "/images/image-crop/small_square.gif";
 				var transparent_gif = "/images/image-crop/transparent.gif";
 				
@@ -482,7 +472,6 @@ class images extends base {
 				var crop_script_fixedRatio = '.$ideeltForhold.';	 // Fixed aspect ratio(example of value: 1.5). Width of cropping area relative to height(1.5 means that the width is 150% of the height)
 										 // Set this variable to false if you don\'t want a fixed aspect ratio
 				').'
-				/* End of variables you could modify */
 				
     		//]]>
 			</script>
@@ -538,27 +527,27 @@ class images extends base {
 	
 	
 
-/*
+
 
 		// Resize
-		$bpath = $u1->directory.$u1->filename.$u1->file_extension;
-		$iedit = new imageeditor();
-		if ($iedit->gd){
-			list($width, $height, $type, $attr) = getimagesize($bpath);
-			if (($width > $w) || ($h != 0)) {
-				$iedit->load($bpath);
-				if ($h == 0){
-					$forhold = $w/$width;
-					$h = $height*$forhold;
-				}
-				$iedit->createthumb($w,$h);
-				$iedit->save($bpath);
-			}
-		}
-		$this->createthumb($bpath,$u1->directory.$u1->filename."_thumb".$u1->file_extension,100,100,true);
-		return $u1->file_extension;
+		// $bpath = $u1->directory.$u1->filename.$u1->file_extension;
+		// $iedit = new imageeditor();
+		// if ($iedit->gd){
+		// 	list($width, $height, $type, $attr) = getimagesize($bpath);
+		// 	if (($width > $w) || ($h != 0)) {
+		// 		$iedit->load($bpath);
+		// 		if ($h == 0){
+		// 			$forhold = $w/$width;
+		// 			$h = $height*$forhold;
+		// 		}
+		// 		$iedit->createthumb($w,$h);
+		// 		$iedit->save($bpath);
+		// 	}
+		// }
+		// $this->createthumb($bpath,$u1->directory.$u1->filename."_thumb".$u1->file_extension,100,100,true);
+		// return $u1->file_extension;
 
-*/
+
 
 	function file_extension($f){
 		$t = explode(".",$f);
@@ -749,9 +738,9 @@ class images extends base {
 		}
 	}
 	
-	/****************************************************************************************************
-		EDIT IMAGE TITLE
-		**************************************************************************************************/
+	//  *************************************************************************************************
+	//	EDIT IMAGE TITLE
+	//	*************************************************************************************************
 
 	function printImageTitleForm($id){
 		$output = "<h2>Endre bildetittel</h2>";
@@ -791,9 +780,9 @@ class images extends base {
 		$this->query("UPDATE $this->table_images SET caption='$bildenavn' WHERE id='$id'");
 	}
 
-	/****************************************************************************************************
-		REPLACE IMAGE
-		**************************************************************************************************/
+	// *************************************************************************************************
+	// REPLACE IMAGE
+	// *************************************************************************************************
 
 	function printReplaceImageForm($id){
 
@@ -837,9 +826,9 @@ class images extends base {
 		';
 	}
 
-	/****************************************************************************************************
-		DELETE IMAGE
-		**************************************************************************************************/
+	// *************************************************************************************************
+	// DELETE IMAGE
+	// *************************************************************************************************
 
 	function printDeleteImageForm($id){
 		$res = $this->query("SELECT id,parent,caption,uploader,width,height,extension FROM $this->table_images WHERE id='$id'");
@@ -893,9 +882,9 @@ class images extends base {
 		$this->query("DELETE FROM $this->table_images WHERE id='$id'");
 	}
 	
-	/****************************************************************************************************
-		AJAX IMAGE SELECTOR
-		**************************************************************************************************/
+	// *************************************************************************************************
+	// AJAX IMAGE SELECTOR
+	// *************************************************************************************************
 
 	
 	function listImagesIntro($dir, $identifier) {
@@ -1020,407 +1009,10 @@ class images extends base {
 		return $theList;
 		
 	}
-	/* DEPRECATED
-	function makeAjaxImageListing($dir, $default = -1, $identifier = 'selected_image', $imagesPerPage = 12) {
-		
-		$res = $this->query(
-			"SELECT COUNT(id) as imagecount FROM $this->table_images WHERE parent='$dir'"
-		);
-		$row = $res->fetch_assoc();
-		$imageCount = $row['imagecount'];
-
-		if ($default != -1) {
-			$res = $this->query(
-				"SELECT COUNT(id) as imagecount FROM $this->table_images WHERE parent='$dir' AND id > $default"
-			);
-			$row = $res->fetch_assoc();
-			$firstImage = floor($row['imagecount']/$imagesPerPage)*$imagesPerPage;
-		} else {
-			$firstImage = 0;
-		}
-				
-		return '
-			
-			<!-- BEGIN makeAjaxImageListing -->
-			
-			<input type="hidden" name="'.$identifier.'" id="selected_image" value="'.$default.'" />
-				
-			<div id="ajaximagelist">
-				'.$this->listImages($dir, $default, $identifier, $firstImage, $imagesPerPage).'
-			</div>
-			<script type="text/javascript">
-		    //<![CDATA[
-
-				var first_image = '.$firstImage.';
-				var default_image = '.$default.';
-				var image_count = '.$imageCount.';
-				
-				//selectImage(default_image);
-				// 
-// 				function moreImages() {
-// 					//alert("more images BEGIN");
-// 					first_image += '.$imagesPerPage.';
-// 					if (first_image >= image_count) first_image = 0;
-// 					var pars = new Array();
-// 					pars.push("first_image="+first_image);
-// 					pars.push("default_image="+default_image);
-// 					pars = pars.join("&");
-// 					setText("imagelistmoreimages", "<img src=\"'.$this->image_dir.'progressbar1.gif\" style=\"width:100px; height:9px\" />");
-// 					jQuery.ajax({
-//                         url: "'.$this->generateURL(array("noprint=true","list_images"),true).'",
-//                         type: "POST",
-//                         data: pars, 
-//                         dataType: "html",
-//                         success: function(responseText){ 
-//                             setText("ajaximagelist",responseText);
-//                             selectImage(default_image);
-//                         }
-//                     });
-// 					//alert("more images END");
-// 				}
-// 
-// 				function selectImage(id) {
-// 					//alert("select image: "+id+" BEGIN");
-// 					$("selected_image").value = id;
-// 					default_image = id;
-// 					var listedImages = jQuery("#current_images").val().split(",");
-// 					
-// 					var foundInArray = false;
-// 					for (var i = 0; i < listedImages.length; i++)
-// 						if (listedImages[i] == id) foundInArray = true;
-// 					if (!foundInArray)
-// 						return;
-// 						
-// 					for (var i = 0; i < listedImages.length; i++) {
-// 						var s = getStyleObject("listedimage"+listedImages[i]);
-// 						s.border = "2px solid #EDF0ED";
-// 					}
-// 					var s = getStyleObject("listedimage"+id);
-// 					s.border = "2px solid red";					
-// 					//alert("select image: "+id+" END");
-// 				}
-
-    		//]]>
-			</script>
-			
-			<!-- END makeAjaxImageListing -->
-			
-		';
-	}
 	
-	function ajaxImageAction($dir, $images_per_page, $identifier = 'selected_image') {
-		switch ($_GET['ajax_image_action']) {
-			
-			case 'lookup_image':
-				print $this->ajaxLookupImage(intval($_GET['ajax_image_id']),true);
-				exit();
-				
-			case 'list_images':
-				print $this->listImages(
-					$dir,
-					$_POST['default_image'],
-					$identifier,
-					$_POST['first_image'],
-					$images_per_page,
-					true
-				);
-				exit();
-				
-			case 'init_image_list':
-				print $this->listImagesIntro(
-					$dir,
-					$identifier
-				);
-				exit();
-			
-			case 'upload_image_form':
-				header("Content-Type: text/html; charset=utf-8"); 
-				print $this->uploadImageForm();
-				exit();			
-
-			case 'upload_image':
-				if (isset($_FILES['bildefil']) && ($_FILES['bildefil']['error'] == '0')) {
-									
-					if (call_user_func($this->is_allowed,"w",$dir)){ 
-						
-						$tittel = $_POST['bildenavn'];
-						if (empty($tittel)) $tittel = "Uten tittel";
-						
-						$img_id = $this->uploadImage('bildefil',$dir,$tittel);
-						$this->createThumbnail($img_id,true,100,100,"_thumb140");
-						$this->createThumbnail($img_id,true,500,-1,"_thumb490");
-												
-						print '
-							<script type="text/javascript">
-							//<[CDATA[
-								window.parent.imageUploaded('.$img_id.');
-							//]]>
-							</script>
-						';
-						exit();						
-	
-					} else {
-						print '
-							<script type="text/javascript">
-							//<[CDATA[
-								alert("Beklager, du har ikke tilgang til å laste opp filer til denne mappen.");
-							//]]>
-							</script>
-						';
-						exit();					
-					}
-							
-				}
-				print '
-					<script type="text/javascript">
-					//<[CDATA[
-						alert("Bildet ble ikke lastet opp pga. en ukjent feil.");
-					//]]>
-					</script>
-				';
-				exit();
-			
-		}
-	}
-	
-	
-	function ajaxLookupImage($id,$includeRoot = false) {
-		$_SESSION['ajax_imageselector_defaultimage'] = $id;
-		$prefix = $includeRoot ? ROOT_DIR : '';
-		if ($id > 0) {
-			return '<img src="'.$prefix.$this->getRelativePathToImage($id,true).'" title="Velg nytt bilde" style="border: none; width:100px; height:80px;">';
-		} else {
-			return 'Velg bilde';
-		}
-	}
-	
-	function makeAjaxImageSelector($dir, $identifier = 'selected_image') {
-		
-		$default = $_SESSION['ajax_imageselector_defaultimage'];
-		$imagesPerPage = $_SESSION['ajax_imageselector_imagesperpage'];
-
-		$res = $this->query(
-			"SELECT COUNT(id) as imagecount FROM $this->table_images WHERE parent='$dir'"
-		);
-		$row = $res->fetch_assoc();
-		$imageCount = $row['imagecount'];
-
-		if ($default != -1 && $default != 0) {
-			$res = $this->query(
-				"SELECT COUNT(id) as imagecount FROM $this->table_images WHERE parent='$dir' AND id > $default"
-			);
-			$row = $res->fetch_assoc();
-			$firstImage = floor($row['imagecount']/$imagesPerPage)*$imagesPerPage;
-		} else {
-			$firstImage = 0;
-		}
-		$_SESSION['ajax_imageselector_firstimage'] = $firstImage;
-	
-		$onSelectFunction = "closeAjaxImagePopup(id);";
-		
-		return array('
-			<script type="text/javascript">
-			//<![CDATA[
-			
-				var selected_image = 0;
-
-				// Define various event handlers for Dialog
-				var handleSubmit = function() {
-					if (selected_image > 0) {
-						closeAjaxImagePopup(selected_image);
-					}
-					this.hide();
-				};
-				var handleCancel = function() {
-					this.cancel();
-				};
-				var handleSuccess = function(o) {
-					var response = o.responseText;
-					response = response.split("<!")[0];
-					document.getElementById("resp").innerHTML = response;
-				};
-				var handleFailure = function(o) {
-					alert("Submission failed: " + o.status);
-				};
-				function openImageSelector(e) {
-					YAHOO.util.Event.stopEvent(e);
-					imageSelectorDialog.show();		
-				}
-				
-				function initImageSelector() {
-					imageSelectorDialog = new YAHOO.widget.Dialog("dialog1", { 
-						width : "850px",
-						fixedcenter : true,
-						visible : false, 
-						modal: true,
-						constraintoviewport : true,
-						buttons : [ { text:"Ok", handler:handleSubmit, isDefault:true },
-									{ text:"Avbryt", handler:handleCancel } ]
-					} );				
-					imageSelectorDialog.render();
-					YAHOO.util.Event.addListener("ingressbildeLink","click",openImageSelector);
-				}
-				
-				YAHOO.util.Event.onDOMReady(initImageSelector); 
-
-
-				function closeAjaxImagePopup(new_selection) {
-					//console.info("Update span:\'ingressbildespan\' with new image: "+new_selection);
-					new Ajax.Updater("ingressbildespan","'.$this->generateURL(array("noprint=true","ajax_image_action=lookup_image","ajax_image_id"),true).'="+new_selection);
-				}
-
-				var first_image = '.$firstImage.';
-				var default_image = '.$default.';
-				var image_count = '.$imageCount.';
-				
-				function uploadNewForm() {
-					var pars = new Array();
-					pars.push("first_image="+first_image);
-					pars.push("default_image="+default_image);
-					pars = pars.join("&");
-					//console.info("Load upload form...");
-					var success = function(t){ 
-						setText("ajaximagelist",t.responseText);
-						//console.info("Upload form loaded");
-						//selectImage(default_image);
-					}
-					setText("imagelistmoreimages", "<img src=\"'.$this->image_dir.'progressbar1.gif\" style=\"width:100px; height:9px\" />");
-					jQuery.ajax({
-                        url: "'.$this->generateURL(array("noprint=true","ajax_image_action=upload_image_form"),true).'",
-                        type: "POST",
-                        data: pars, 
-                        dataType: "html",
-                        success: function(responseText){ 
-						setText("ajaximagelist",responseText);
-    						//console.info("Upload form loaded");
-	    					//selectImage(default_image);
-		    			}
-                    });
-				}
-				
-				function showImageList() {
-					var url = "'.$this->generateURL(array("noprint=true","ajax_image_action=init_image_list"),true).'";				
-					var pars = new Array();
-					pars.push("first_image="+first_image);
-					pars.push("default_image="+default_image);
-					pars = pars.join("&");
-					//console.info("Load upload form...");
-					var success = function(t){ 
-						setText("ajaximagelist",t.responseText);
-						//console.info("Upload form loaded");
-						//selectImage(default_image);
-					}
-					setText("imagelistmoreimages", "<img src=\"'.$this->image_dir.'progressbar1.gif\" style=\"width:100px; height:9px\" />");
-					var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});
-				}
-
-								
-				function prevImages() {
-					first_image -= '.$imagesPerPage.';
-					if (first_image < 0) first_image = (Math.floor(image_count/'.$imagesPerPage.'))*'.$imagesPerPage.';
-					loadImages();
-				}
-				
-				function nextImages() {
-					first_image += '.$imagesPerPage.';
-					if (first_image >= image_count) first_image = 0;
-					loadImages();
-				}
-				
-				function newestImages() {
-					first_image = 0;
-					loadImages();
-				}
-				
-				function loadImages() {
-					//console.group("Load thumbs from "+first_image);
-					var url = "'.$this->generateURL(array("noprint=true","ajax_image_action=list_images"),true).'";				
-					var pars = new Array();
-					pars.push("first_image="+first_image);
-					pars.push("default_image="+default_image);
-					pars = pars.join("&");
-					var success = function(t){ 
-						setText("ajaximagelist",t.responseText);
-						selectImage(default_image);
-						//console.groupEnd();
-					}
-					setText("imagelistmoreimages", "<img src=\"'.$this->image_dir.'progressbar1.gif\" style=\"width:100px; height:9px\" />");
-					var myAjax = new Ajax.Request(url, {method: "post", parameters: pars, onSuccess:success});				
-				}
-
-				function selectImage(id) {
-					//console.group("Select image "+id);
-					selected_image = id;
-					
-					var listedImages = jQuery("#current_images").val().split(",");
-					
-					var foundInArray = false;
-					for (var i = 0; i < listedImages.length; i++)
-						if (listedImages[i] == id) foundInArray = true;
-					if (!foundInArray) {
-						//console.info("Image not found in the currently visible thumbs");
-						//console.groupEnd();
-						return;
-					}
-					for (var i = 0; i < listedImages.length; i++) {
-						var s = getStyleObject("listedimage"+listedImages[i]);
-						s.border = "2px solid #EDF0ED";
-					}
-					var s = getStyleObject("listedimage"+id);
-					s.border = "2px solid red";
-
-					if (default_image == id) {
-						//console.info("Image already selected. No reload needed");
-						//console.groupEnd();
-						return;
-					}
-					$("selected_image").value = id;
-					default_image = id;
-					
-					//console.groupEnd();
-					
-				}
-				
-				function imageUploaded(id) {
-					//console.group("New image uploaded: "+id);
-						
-					$("selected_image").value = id;
-					default_image = id;
-					closeAjaxImagePopup(id);
-					
-					//console.groupEnd();
-					
-					newestImages();		
-					//selectImage(id);
-				}
-
-
-    		//]]>
-			</script>
-			<div id="dialog1" style="visibility:hidden;">
-				<div class="hd">Velg bilde</div>
-				<div class="bd">
-					
-						'.$this->listImagesIntro($dir,$identifier).'
-
-
-				</div>
-			</div>
-			','
-			
-			<input type="hidden" name="'.$identifier.'" id="selected_image" value="'.$default.'" />
-			<a href="javascript:alert(\'feil\');" id="ingressbildeLink">
-				<span id="ingressbildespan">
-				'.$this->ajaxLookupImage($default).'
-				</span>
-			</a>
-		');
-	}
-	*/
-	
-	/****************************************************************************************************
-		UPLOAD NEW IMAGE
-		**************************************************************************************************/
+	// **************************************************************************************************
+	// UPLOAD NEW IMAGE
+	// **************************************************************************************************
 	
 	function uploadImageForm($useIFrame = true){
 	

@@ -30,6 +30,12 @@ $dp0->checkIfSpecialUrl();
 
 function myErrorHandler($errno, $errstr, $errfile, $errline){
 	 global $login;
+
+	 if (!(error_reporting() & $errno)) {
+        // This error code is not included in error_reporting
+        return;
+    }
+    
 	 $errType = "E_UNKNOWN";
 	 switch ($errno) {
 		case E_USER_ERROR:

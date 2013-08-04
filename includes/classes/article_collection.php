@@ -128,7 +128,7 @@ class article_collection extends comments {
 
 			}
 
-			YAHOO.util.Event.onDOMReady(initCKeditor);
+			$(document).ready(initCKeditor);
 		
 		//--></script>
 	';
@@ -529,11 +529,11 @@ class article_collection extends comments {
 				}
 
 				function onSubjectChange(e) {
-					$("article_slug").value = generateSlug($("article_topic").value);
+					$("#article_slug").val(generateSlug($("#article_topic").val()));
 				}
 				
-				YAHOO.util.Event.onDOMReady(function() {
-					YAHOO.util.Event.addListener("article_topic","keyup",onSubjectChange);
+				$(document).ready(function() {
+					$("#article_topic").on("keyup",onSubjectChange);
 				});
 				
 			</script>

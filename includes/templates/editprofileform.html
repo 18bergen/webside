@@ -53,7 +53,7 @@
 						</td>
 					</tr>					
 				</table>
-				<a href="#" onclick="$('pForeign').style.display='block'; this.style.display='none'; return false;" style="display:%disp_norway%;padding-bottom:10px;">I utlandet?</a>
+				<a href="#" onclick="$('#pForeign').show(); $(this).hide(); return false;" style="display:%disp_norway%;padding-bottom:10px;">I utlandet?</a>
 				<div id='pForeign' style='display:%disp_foreign%;'>
 				<table class='skjema'>
 					<tr>
@@ -195,24 +195,13 @@
 
 	<script type="text/javascript">
 	//<![CDATA[
-				
-		function onYuiLoaderComplete() {
-
-
-			YAHOO.util.Event.onDOMReady(function() {
-				(new BG18.datePicker("birthday", { selectedDate: %born_date_js%, maxDate: "%$max_date_js%" } )).init();
-			});
-
-		}
-		loader.require("json","connection","button","calendar");
-		loader.insert();
 
 		function clickHandle(e) {
-			var el = YAHOO.util.Event.getTarget(e).parentNode; 
-			if (YAHOO.util.Dom.hasClass(el,'closed')) {
-				YAHOO.util.Dom.removeClass(el,'closed');
+			var $el = $(e.target).parent();
+			if ($el.hasClass('closed')) {
+				$el.removeClass('closed');
 			} else {
-				YAHOO.util.Dom.addClass(el,'closed');
+				$el.addClass('closed');
 			}
 		}
 		
@@ -220,13 +209,14 @@
 			
 			initCKeditor();
 			
-			var handles = YAHOO.util.Dom.getElementsByClassName('handle','h2','main_col');
-			for (i = 0; i < handles.length; i++) {
-				YAHOO.util.Event.addListener(handles[i],'click',clickHandle);
-			}
+			$('#main_col h2.handle').each(function(key, el) {
+				$(el).on('click', clickHandle);
+			});
+
+			(new DatePicker("birthday", { maxDate: "%$max_date_js%" } )).init();
 			
 		}
-		YAHOO.util.Event.onDOMReady(initDocument);
+		$(document).ready(initDocument);
 
 		/* ======== CKEditor ======= */
 
@@ -265,8 +255,8 @@
 			var pathToUserFiles = "%userFilesDir%";
 			var pathToThumbs = "%smallThumbsDir%";
 			var f = pathToThumbs + fileUrl.substr(pathToUserFiles.length);
-			$("profile_image").value = fileUrl;
-			$("profilbildespan").innerHTML = "<img src=\"" + f + "\" alt=\"Velg bilde\" border=\"0\" style=\"margin:5px;\" />"
+			$("#profile_image").val(fileUrl);
+			$("#profilbildespan").html("<img src=\"" + f + "\" alt=\"Velg bilde\" border=\"0\" style=\"margin:5px;\" />");
 		}
 		
 		// Render CKFinder in a popup page:
@@ -285,11 +275,9 @@
 			var pathToUserFiles = "%userFilesDir%";
 			var pathToThumbs = "%smallThumbsDir%";
 			var f = pathToThumbs + fileUrl.substr(pathToUserFiles.length);
-			$("forum_image").value = fileUrl;
-			$("forumbildespan").innerHTML = "<img src=\"" + f + "\" alt=\"Velg bilde\" border=\"0\" style=\"margin:5px;\" />"
+			$("#forum_image").val(fileUrl);
+			$("#forumbildespan").html("<img src=\"" + f + "\" alt=\"Velg bilde\" border=\"0\" style=\"margin:5px;\" />");
 		}
-
-
 
 	//]]>
 	</script>

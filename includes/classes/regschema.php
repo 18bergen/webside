@@ -211,45 +211,7 @@ class regschema extends base {
 		GATHER MEMBER-DETAILS
 		**************************************************************************************************/
 
-	function makeDateField($identifier, $value, $showWeekday = true){
-		if (empty($value)) {
-			$currentMonth = 0;
-			$currentDay = 0; 
-			$currentYear = 0; 
-			$currentDateJs = '0';
-		} else {
-			$currentMonth = strftime('%m',$value); 
-			$currentDay = strftime('%d',$value); 
-			$currentYear = strftime('%Y',$value); 
-			$currentDateJs = '{ day: '.$currentDay.', month: '.$currentMonth.', year: '.$currentYear.' }';
-		}
-		$months = '';
-		for ($i = 1; $i < 12; $i++) {
-			$n = $i; if ($n < 10) $n = '0'.$n;
-			$sel = ($n == $currentMonth) ? " selected='selected'" : "";
-			$months .= "<option value='$n'$sel>$n</option>\n";
-		}
-		$days = '';
-		for ($i = 1; $i < 31; $i++) {
-			$n = $i; if ($n < 10) $n = '0'.$n;
-			$sel = ($n == $currentDay) ? " selected='selected'" : "";
-			$days .= "<option value='$n'$sel>$n</option>\n";
-		}
-		$year = strftime('%Y',$value);
-		return '
-			<span class="field" id="'.$identifier.'" style="display:inline-block;vertical-align:middle;">
-				<select id="'.$identifier.'_month" name="'.$identifier.'_month">
-					'.$months.'
-				</select>	
-				<select id="'.$identifier.'_day" name="'.$identifier.'_day">
-					'.$days.'
-				</select>
-				<input type="text" id="'.$identifier.'_year" name="'.$identifier.'_year" value="'.$currentYear.'" style="width:50px;">
-			</span>
-			
-		';
-		
-	}	
+	
 	
 	function fetchAdrList() {
 
@@ -323,18 +285,13 @@ class regschema extends base {
 		$born_date_js = $born_date ? strftime('{ day:%e, month:%m, year:%Y }',$born_date) : 0;
 		$field_born .= '<script type="text/javascript">
 		    //<![CDATA[	
-				
-				function onYuiLoaderComplete() {
-					YAHOO.util.Event.onContentReady("bursdag", function() {
-						(new BG18.datePicker("bursdag", { selectedDate: '.$born_date_js.', maxDate: "'.$max_date_js.'" } )).init();
-					});
-				}
 
-				loader.require("button","calendar");
-				loader.insert();
-			
+				$(document).ready(function() {
+					(new DatePicker("bursdag", { maxDate: "'.$max_date_js.'" } )).init();
+				});				
+
 			//]]>
-			</script> Tips: trykk på årstallet for å skrive inn et annet år.';
+			</script>';
 		/*
 		$field_born = "<a href=\"nojs.html\" onclick=\"cal3.showCalendar('anchor3',getObject('bursdag').value); return false;\" 
 							name=\"anchor3\" id=\"anchor3\">
@@ -385,10 +342,10 @@ class regschema extends base {
 		$cellular = addslashes(htmlspecialchars($_POST['cellular']));
 		$email = addslashes(htmlspecialchars($_POST['email']));
 
-		if (intval($_POST['bursdag_year']) < 1900) {
+		if (empty($_POST['bursdag'])) {
 			$birthday = '0000-00-00';
 		} else { 
-			$birthday = $_POST['bursdag_year'].'-'.$_POST['bursdag_month'].'-'.$_POST['bursdag_day'];
+			$birthday = $_POST['bursdag'];
 			if (strlen($birthday) != 10) $birthday = '0000-00-00';
 		}		
 		$birthday = addslashes(htmlspecialchars($birthday));

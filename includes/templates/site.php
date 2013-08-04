@@ -14,81 +14,41 @@
   <link rel="stylesheet" type="text/css" href="/stylesheets/image-crop.css" />
   <link rel="stylesheet" type="text/css" href="/libs/NiftyCube/niftyCorners.css" />
   <link rel="stylesheet" type="text/css" href="/stylesheets/slideshow.css" media="screen" />
-  <link rel="stylesheet" type="text/css" href="/stylesheets/lightbox.css" />
-  <!--[if gte ie 5.5000]>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/ie.css" />
-  <![endif]-->
-    
-    <!--[if lt IE 7]>
-    <![endif]-->
+  <!-- <link rel="stylesheet" type="text/css" href="/libs/bootstrap/css/bootstrap.min.css" /> -->
 
+  <!-- jQuery UI theme -->
+  <link rel="stylesheet" href="/stylesheets/Aristo/Aristo.css" id="theme">
+
+  <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+  <link rel="stylesheet" href="/libs/jquery-file-upload-8.6.0/css/jquery.fileupload-ui.css" />
   
   <!-- RSS -->
   %our_rss_feed%
 
-
   <!-- JAVASCRIPT: -->
   <script type="text/javascript"> var site_rootdir = ""; </script>
-  <script type="text/javascript" src="/jscript/firebug/firebug.js"></script>
   <script type="text/javascript" src="/libs/NiftyCube/niftycube.js"></script>
-
   <script type="text/javascript" src="/libs/jquery/jquery-1.10.2.min.js"></script>
-  <!-- jQuery UI core + widget only -->
-<!--
-  <script type="text/javascript" src="/libs/jquery-ui-1.10.3.custom/js/jquery-ui-1.10.3.custom.min.js"></script>
--->
-  <script type="text/javascript" src="/libs/jquery-file-upload-8.6.0/js/vendor/jquery.ui.widget.js"></script>
-  <script type="text/javascript" src="/libs/jquery-file-upload-8.6.0/js/jquery.iframe-transport.js"></script>
-  <script type="text/javascript" src="/libs/jquery-file-upload-8.6.0/js/jquery.fileupload.js"></script>
-  <!--
-    <script type="text/javascript" src="/libs/bootstrap/bootstrap.min.js"></script>
-  -->
-  <script> jQuery.noConflict(); </script>
+  <script type="text/javascript" src="/libs/jquery/jquery.nestable.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <script src="/libs/jquery.ui.datepicker-no.js"></script>
 
-  <!--
-  <script type="text/javascript" src="/jscript/scriptaculous-js-1.8.2/lib/prototype.js"></script>
-  <script type="text/javascript" src="/jscript/scriptaculous-js-1.8.2/src/scriptaculous.js?load=effects,dragdrop,controls"></script>  
-  -->
-  <!-- /yui/   or   /yui/  -->  
-  <!-- 
-  	Unfortunately, using YUILoader 2.8 for loading everything does not work very well.
-  	http://yuilibrary.com/forum/viewtopic.php?p=3199
-  -->
-  <script type="text/javascript" src="%yui_uri%build/yuiloader-dom-event/yuiloader-dom-event.js"></script>
-  <script type="text/javascript" src="%yui_uri%build/container/container-min.js"></script>
-  <link rel="stylesheet" type="text/css" href="%yui_uri%build/container/assets/skins/sam/container.css" />
-  <script>
-   // Temporary solution while migrating to jQuery. The old dollar syntax of prototype is not the same as jQuery's!
-   $ = YAHOO.util.Dom.get
-  </script>
-  <!--
-  <script type="text/javascript" src="/yui/build/animation/animation-min.js"></script>
-  <script type="text/javascript" src="/yui/build/connection/connection-min.js"></script>
-  <script type="text/javascript" src="/yui/build/dragdrop/dragdrop-min.js"></script>
-  <script type="text/javascript" src="/yui/build/element/element-min.js"></script>
-  <script type="text/javascript" src="/yui/build/container/container-min.js"></script>
-  <script type="text/javascript" src="/yui/build/button/button-min.js"></script>
-  <script type="text/javascript" src="/yui/build/calendar/calendar-min.js"></script>
-  <script type="text/javascript" src="/yui/build/json/json-min.js"></script>
-  <script type="text/javascript" src="/yui/build/datasource/datasource-min.js"></script>
-  <script type="text/javascript" src="/yui/build/autocomplete/autocomplete-min.js"></script>
-  
-  --> 
+  <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
+  <script src="http://blueimp.github.io/JavaScript-Load-Image/js/load-image.min.js"></script>
+  <!-- The Canvas to Blob plugin is included for image resizing functionality -->
+  <script src="http://blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
+  <script type="text/javascript" src="/libs/jquery-file-upload-8.6.0/js/jquery.fileupload.js"></script>
+  <script type="text/javascript" src="/libs/jquery-file-upload-8.6.0/js/jquery.fileupload-process.js"></script>
+  <script type="text/javascript" src="/libs/jquery-file-upload-8.6.0/js/jquery.fileupload-image.js"></script>
+
+  <!-- <script type="text/javascript" src="/libs/bootstrap/js/bootstrap.min.js"></script> -->
 
   <script type="text/javascript" src="/jscript/bergenvs.js"></script>
-  <script type="text/javascript" src="/jscript/org.18bergen/base.js"></script>
     
-  <!-- WE SHOULD ACTUALLY LOAD THESE ONLY IF LOGGED-IN -->
-	  <script type="text/javascript" src="%ckeditor_uri%ckeditor.js"></script>
-	  <script type="text/javascript" src="%ckfinder_uri%ckfinder.js"></script>
-	  <script type="text/javascript" src="/jscript/tabcontent.js">
-	   /***********************************************
-		* Tab Content script- © Dynamic Drive DHTML code library (www.dynamicdrive.com)
-		* This notice MUST stay intact for legal use
-		* Visit Dynamic Drive at http://www.dynamicdrive.com/ for full source code
-		***********************************************/
-	  </script>
-
+  <!-- WE SHOULD REALLY LOAD THESE ONLY IF LOGGED-IN -->
+  <script type="text/javascript" src="%ckeditor_uri%ckeditor.js"></script>
+  <script type="text/javascript" src="%ckfinder_uri%ckfinder.js"></script>
+  <script type="text/javascript" src="/jscript/tabcontent.js"></script>
   
   %additional_scripts%
   
@@ -96,21 +56,6 @@
 
 </head>
 <body class="yui-skin-sam">
-
- <script type="text/javascript">
-    var loader = new YAHOO.util.YUILoader({
-		base: "%yui_uri%build/",
-		loadOptional: true,
-		onSuccess: function(o) { onYuiLoaderComplete(); },
-		onFailure: function(o) {
-			console.warn("YUI LOADER FAILED: "+o.msg);
-		}
-	});
- </script>
-
- <!-- Ikke slett denne! Brukes av calendarpopup -->
- <div id="testdiv1" style="position:absolute;visibility:hidden;background-color:white;background-color:white;"></div>
-
 
  <div id='header'>
 	<div style="position:absolute;left:31px;top:8px;"><a href="/"><img src="/images/logo2.png" border="0" /></a></div>
@@ -126,10 +71,12 @@
 	<img src="/_design/header/header8_01.png" width="940" height="117" border="0" alt="" usemap="#map1" style="float:left;" />
 	<img src="/_design/header/header8_02.png" width="292" height="54" border="0" alt="" style="float:left;" usemap="#map2" />
 
-	<div style="position:absolute;left:700px;top:118px;z-index:1;">
+	<!--
+  <div style="position:absolute;left:700px;top:118px;z-index:1;">
 	  <a href="/tropp/konkurranser/patruljekonkurranse-2012"><img src="/_design/banners/patruljekonk2012.png" alt="Patruljekonk!" style="border:none;" /></a>
 	</div>
-	<!--
+	-->
+  <!--
 	<div style="position:absolute;left:780px;top:85px;z-index:2;">
       <a href="http://www.speiding.no/nyheter/?liste=arkiv;dato=200400;id=2233"><img src="/_design/banners/jubileumsmerket_2011.png" alt="" style="border:none;" /></a>
     </div>
@@ -187,25 +134,6 @@
   </div>
   </div>
   -->
-  
- 
-  <!--[if lt IE 7]>
-  <div style='border: 1px solid #F7941D; background: #FEEFDA; text-align: center; clear: both; height: 75px; position: relative;width:700px;margin:20px auto 5px auto;'>
-    <div style='position: absolute; right: 3px; top: 3px; font-family: courier new; font-weight: bold;'><a href='#' onclick='javascript:this.parentNode.parentNode.style.display="none"; return false;'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-cornerx.jpg' style='border: none;' alt='Close this notice'/></a></div>
-    <div style='width: 640px; margin: 0 auto; text-align: left; padding: 0; overflow: hidden; color: black;'>
-      <div style='width: 75px; float: left;'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-warning.jpg' alt='Warning!'/></div>
-      <div style='width: 275px; float: left; font-family: Arial, sans-serif;'>
-        <div style='font-size: 14px; font-weight: bold; margin-top: 12px;'>Du benytter en foreldet nettleser</div>
-        <div style='font-size: 12px; margin-top: 6px; line-height: 12px;'>For en bedre opplevelse av denne nettsiden, oppgrader til en moderne nettleser.</div>
-      </div>
-      <div style='width: 75px; float: left;'><a href='http://www.firefox.com' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-firefox.jpg' style='border: none;' alt='Get Firefox 3.5'/></a></div>
-      <div style='width: 75px; float: left;'><a href='http://www.browserforthebetter.com/download.html' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-ie8.jpg' style='border: none;' alt='Get Internet Explorer 8'/></a></div>
-      <div style='width: 73px; float: left;'><a href='http://www.apple.com/safari/download/' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-safari.jpg' style='border: none;' alt='Get Safari 4'/></a></div>
-      <div style='float: left;'><a href='http://www.google.com/chrome' target='_blank'><img src='http://www.ie6nomore.com/files/theme/ie6nomore-chrome.jpg' style='border: none;' alt='Get Google Chrome'/></a></div>
-    </div>
-  </div>
-  <![endif]-->
-
 
  <div id="container1">
 	<div id="container2">

@@ -139,21 +139,21 @@ class forum extends base {
 		<script type="text/javascript">
 		//<![CDATA[
 			
-			YAHOO.util.Event.onDOMReady(function() {
+			$(document).ready(function() {
 				Nifty("div.whiteInfoBox");
 			});
 			
 			function toggleSmileys() {
-				if (YAHOO.util.Dom.getStyle("kosmotarSmileys","display") != "block") {
-					YAHOO.util.Dom.setStyle("kosmotarSmileys","display","block");
+				if ($("#kosmotarSmileys").is(":visible")) {
+					$("#kosmotarSmileys").hide();
 				} else {
-					YAHOO.util.Dom.setStyle("kosmotarSmileys","display","none");
+					$("#kosmotarSmileys").show();
 				}
 			}
 
 			function insertCommentSmiley(addSmilie) {
-				$("body").value = $("body").value + " " + addSmilie ; 
-				$("body").focus();
+				$("#body").val($("#body").val() + " " + addSmilie); 
+				$("#body").focus();
 				return false;
 			}
 			
@@ -189,7 +189,7 @@ class forum extends base {
 		</div>
 		<script type="text/javascript">
 		//<![CDATA[
-			YAHOO.util.Event.onDOMReady(function() {
+			$(document).ready(function() {
 				Nifty("div.whiteInfoBox");
 			});
 		//]]>
@@ -218,7 +218,7 @@ class forum extends base {
 		</div>
 		<script type="text/javascript">
 		//<![CDATA[
-			YAHOO.util.Event.onDOMReady(function() {
+			$(document).ready(function() {
 				Nifty("div.whiteInfoBox");
 			});
 		//]]>

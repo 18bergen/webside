@@ -92,7 +92,7 @@ class messagecenter extends base {
 		%header%
 		
 		%infomsg% 
-		<form enctype="multipart/form-data" method="post" action="%posturl%" onsubmit=\'$("nsubtn").value="Meldingen sendes..."; $("nsubtn").disabled=true; return true;\'>
+		<form enctype="multipart/form-data" method="post" action="%posturl%" onsubmit=\'$("#nsubtn").val("Meldingen sendes..."); $("#nsubtn").prop("disabled",true); return true;\'>
 			<input type="hidden" name="replyto" value="%replyto%" />
 			%errors%
 			

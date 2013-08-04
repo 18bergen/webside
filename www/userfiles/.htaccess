@@ -1,5 +1,16 @@
 Options -Indexes
 
+# The ForceType directive "application/octet-stream" enforces Apache to serve all files with an attachment header to force a download dialog. More importantly, it prevents Apache to run any of the uploaded files through an interpreter like PHP, even if the file extension is ".php".
+
+
+ForceType application/octet-stream
+Header set Content-Disposition attachment
+<FilesMatch "(?i)\.(gif|jpe?g|png)$">
+  ForceType none
+  Header unset Content-Disposition
+</FilesMatch>
+Header set X-Content-Type-Options nosniff
+
 RewriteEngine on
 RewriteCond %{HTTP_REFERER} !^$
 RewriteCond %{HTTP_REFERER} !^http://(www\.)?18bergen.org/.*$ [NC]
@@ -13,3 +24,4 @@ RewriteRule \.(gif|jpg|js|css)$ - [F]
 <IfModule mod_php4.c>
   php_value engine off
 </IfModule>
+

@@ -387,52 +387,50 @@ class wordbox extends base {
 		return '
 		
 			<script type="text/javascript">
-		    //<![CDATA[	
 			
 				function snikksnakk_post(event) {
 				    event.preventDefault();
 				
 					var pars = new Array();
-					pars.push(jQuery("#snikksnakkform_text").serialize());
+					pars.push($("#snikksnakkform_text").serialize());
 					pars.push("show_pagenavigation='.$this->show_pagenavigation.'");
 					pars.push("messages_per_page='.$this->messages_per_page.'");
 					pars.push("javascript_enabled=true");
 					pars.push("snikksnakkform_gid='.time().'");
 					pars = pars.join("&");
 
-					jQuery("#wb_indicator").css("visibility","visible");
-					jQuery("#snikksnakkform_text").attr("disabled",true);
-					jQuery("#snikksnakkform_submitbtn").attr("disabled",true);
-					jQuery("#snikksnakkform_text").val("Lagrer...");
+					$("#wb_indicator").css("visibility","visible");
+					$("#snikksnakkform_text").prop("disabled",true);
+					$("#snikksnakkform_submitbtn").prop("disabled",true);
+					$("#snikksnakkform_text").val("Lagrer...");
 					var form = "form_'.$this->identifier.'";
-					jQuery.ajax({
+					$.ajax({
 					    url: "'.$url_post_js.'",
 					    data: pars,
 					    dataType: "html",
 					    type: "POST",
 					    success: function(responseText){  
-                            jQuery("#'.$this->identifier.'").html(responseText);
-					        jQuery("#wb_indicator").css("visibility","hidden");
-                            jQuery("#snikksnakkform_text").attr("disabled",false);
-                            jQuery("#snikksnakkform_submitbtn").attr("disabled",false);
-        					jQuery("#snikksnakkform_text").val("");
+                            $("#'.$this->identifier.'").html(responseText);
+					        $("#wb_indicator").css("visibility","hidden");
+                            $("#snikksnakkform_text").prop("disabled",false);
+                            $("#snikksnakkform_submitbtn").prop("disabled",false);
+        					$("#snikksnakkform_text").val("");
                         },
                         error: function() {
                             alert("Det oppsto en feil under lagring :(")
-					        jQuery("#wb_indicator").css("visibility","hidden");
-                            jQuery("#snikksnakkform_text").attr("disabled",false);
-                            jQuery("#snikksnakkform_submitbtn").attr("disabled",false);
-        					jQuery("#snikksnakkform_text").val("");                        
+					        $("#wb_indicator").css("visibility","hidden");
+                            $("#snikksnakkform_text").prop("disabled",false);
+                            $("#snikksnakkform_submitbtn").prop("disabled",false);
+        					$("#snikksnakkform_text").val("");                        
                         }
                     });
                     return false;
                 }
                     
-                jQuery(document).ready(function(){
-                    jQuery("#form_'.$this->identifier.'").submit(snikksnakk_post);
+                $(document).ready(function(){
+                    $("#form_'.$this->identifier.'").submit(snikksnakk_post);
                 });
                 
-			//]]>
 			</script>
 		
 		

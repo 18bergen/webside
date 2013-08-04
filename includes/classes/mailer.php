@@ -76,7 +76,7 @@ class mailer extends base {
             errorsOccured = 0;
             mailDelivered = 0;
             function sendMail() {
-                 jQuery.ajax({
+                 $.ajax({
                     url: \"$ajaxUrl\",
                     dataType: 'json',
                     error: function(xhr_data) {
@@ -118,7 +118,7 @@ class mailer extends base {
                   });
              }
              
-             jQuery(document).ready(function(){
+             $(document).ready(function(){
                  jQuery('#mail_progressbar').html('Vennligst vent, sender epost…<br /><img src=\"/images/progressbar1.gif\" />');
                  sendMail();              
              });

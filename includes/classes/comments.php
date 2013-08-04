@@ -86,16 +86,16 @@ class Comments extends base {
 			<script type=\"text/javascript\">
 			
 			function toggleSmileys() {
-				if (YAHOO.util.Dom.getStyle('kosmotarSmileys','display') != 'block') {
-					YAHOO.util.Dom.setStyle('kosmotarSmileys','display','block');
+				if ($('#kosmotarSmileys').is(':visible')) {
+					$('#kosmotarSmileys').hide();
 				} else {
-					YAHOO.util.Dom.setStyle('kosmotarSmileys','display','none');
+					$('#kosmotarSmileys').show();
 				}
 			}
 
 			function insertCommentSmiley(addSmilie) {
-				$('kosmotarFjelt').value = $('kosmotarFjelt').value + ' ' + addSmilie ; 
-				$('kosmotarFjelt').focus();
+				$('#kosmotarFjelt').val($('#kosmotarFjelt').val() + ' ' + addSmilie); 
+				$('#kosmotarFjelt').focus();
 				return false;
 			}
 
@@ -104,7 +104,7 @@ class Comments extends base {
 	";
 	var $commentfields0_template = "
 			%errors%
-			<p style='color:#666;font-size:10px;text-align:center;'>Tips: <a href='#' onclick='$(\"brukernavn\").focus();return false;'>Logg inn</a>, så slipper du å fyll inn navn, epost og sikkerhetskode.</p>
+			<p style='color:#666;font-size:10px;text-align:center;'>Tips: <a href='#' onclick='$(\"#brukernavn\").focus();return false;'>Logg inn</a>, så slipper du å fyll inn navn, epost og sikkerhetskode.</p>
 			<table width='100%'>
 				<tr>
 					<td valign='top' align='right'>%label_name%: </td>

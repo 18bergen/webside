@@ -177,40 +177,16 @@ class base {
 
 	function makeDateField($identifier, $value, $showWeekday = true){
 		if (empty($value)) {
-			$currentMonth = 0;
-			$currentDay = 0; 
-			$currentYear = 0; 
-			$currentDateJs = '0';
+			$val = '';
 		} else {
 			$currentMonth = strftime('%m',$value); 
 			$currentDay = strftime('%d',$value); 
 			$currentYear = strftime('%Y',$value); 
 			$currentDateJs = '{ day: '.$currentDay.', month: '.$currentMonth.', year: '.$currentYear.' }';
+			$val = $currentYear . '-' . $currentMonth . '-' . $currentDay;
 		}
-		$months = '';
-		for ($i = 1; $i <= 12; $i++) {
-			$n = $i; if ($n < 10) $n = '0'.$n;
-			$sel = ($n == $currentMonth) ? " selected='selected'" : "";
-			$months .= "<option value='$n'$sel>$n</option>\n";
-		}
-		$days = '';
-		for ($i = 1; $i <= 31; $i++) {
-			$n = $i; if ($n < 10) $n = '0'.$n;
-			$sel = ($n == $currentDay) ? " selected='selected'" : "";
-			$days .= "<option value='$n'$sel>$n</option>\n";
-		}
-		$year = strftime('%Y',$value);
 		return '
-			<span class="field" id="'.$identifier.'" style="display:inline-block;vertical-align:middle;">
-				<select id="'.$identifier.'_month" name="'.$identifier.'_month">
-					'.$months.'
-				</select>	
-				<select id="'.$identifier.'_day" name="'.$identifier.'_day">
-					'.$days.'
-				</select>
-				<input type="text" id="'.$identifier.'_year" name="'.$identifier.'_year" value="'.$currentYear.'" style="width:50px;">
-			</span>
-			
+			<input type="text" id="'.$identifier.'" name="'.$identifier.'" value="' . $val . '" size="9" />			
 		';
 	}
 	
@@ -662,15 +638,15 @@ class base {
 	function make_editlink($url, $title) {
 		$l = '
 			<script type="text/javascript">
-			//<![CDATA[
-			$("edit_page_div").innerHTML = "<div style=\"width: 95px; text-align: right;\">" 
+
+			$("#edit_page_div").html("<div style=\"width: 95px; text-align: right;\">" 
 				+ "<a href=\"'.$url.'\" title=\"Rediger denne siden\" style=\"text-decoration:none;\""
-				+ " onmouseover=\"$(\'edit_this_page\').style.visibility=\'visible\'\" onmouseout=\"$(\'edit_this_page\').style.visibility=\'hidden\'\">"
+				+ " onmouseover=\"$(\'#edit_this_page\').css(\'visibility\', \'visible\');\" onmouseout=\"$(\'#edit_this_page\').css(\'visibility\', \'hidden\');\">"
 				+ "<span id=\"edit_this_page\" style=\"font-size:10px; visibility:hidden;\">'.$title.'</span>"
 				+ "<img src=\"'.$this->image_dir.'edit.gif\" alt=\"Rediger denne siden\" style=\"vertical-align:top; border: none;\" />"
 				+ "</a>"
-				+ "</div>";
-			//]]>
+				+ "</div>");
+
 			</script>
 		';
 		return $l;

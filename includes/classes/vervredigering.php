@@ -576,14 +576,9 @@ class vervredigering extends base {
 		$js_code = '<script type="text/javascript">
 		    //<![CDATA[	
 
-				function onYuiLoaderComplete() {
-					YAHOO.util.Event.onContentReady("startdate", function() {
-						(new BG18.datePicker("startdate", { selectedDate: '.$startdate_js.', maxDate: "'.$maxdate_js.'" } )).init();
-					});
-				}
-
-				loader.require("button","calendar");
-				loader.insert();
+				$(document).ready(function() {
+					(new DatePicker("startdate", { maxDate: "'.$maxdate_js.'" } )).init();
+				});
 			
 			//]]>
 			</script> Tips: trykk på årstallet for å skrive inn et annet år.';
@@ -609,17 +604,10 @@ class vervredigering extends base {
 			$js_code = '<script type="text/javascript">
 		    //<![CDATA[	
 
-				function onYuiLoaderComplete() {
-					YAHOO.util.Event.onContentReady("startdate", function() {
-						(new BG18.datePicker("startdate", { selectedDate: '.$startdate_js.', maxDate: "'.$maxdate_js.'" } )).init();
-					});
-					YAHOO.util.Event.onContentReady("enddate", function() {
-						(new BG18.datePicker("enddate", { selectedDate: '.$enddate_js.', maxDate: "'.$maxdate_js.'" } )).init();
-					});
-				}
-
-				loader.require("button","calendar");
-				loader.insert();
+				$(document).ready(function() {
+					(new DatePicker("startdate", { maxDate: "'.$maxdate_js.'" } )).init();
+					(new DatePicker("enddate", { maxDate: "'.$maxdate_js.'" } )).init();
+				});
 						
 			//]]>
 			</script> Tips: trykk på årstallet for å skrive inn et annet år.';
@@ -681,7 +669,7 @@ class vervredigering extends base {
 
 		if ($_POST['lagre'] == "innmelding"){
 
-			$fra = addslashes($_POST['startdate_year'].'-'.$_POST['startdate_month'].'-'.$_POST['startdate_day']);
+			$fra = addslashes($_POST['startdate']);
 			$fra_unix = strtotime($fra);
 			
 			if ($fra_unix > time()) $this->fatalError("Vervet kan ikke slutte i fremtiden.");
@@ -689,9 +677,9 @@ class vervredigering extends base {
 
 		} else if ($_POST['lagre'] == "innutmelding"){
 
-			$fra = addslashes($_POST['startdate_year'].'-'.$_POST['startdate_month'].'-'.$_POST['startdate_day']);
+			$fra = addslashes($_POST['startdate']);
 			$fra_unix = strtotime($fra);
-			$til = addslashes($_POST['enddate_year'].'-'.$_POST['enddate_month'].'-'.$_POST['enddate_day']);
+			$til = addslashes($_POST['enddate']);
 			$til_unix = strtotime($til);
 			
 			if ($til_unix > time()) $this->fatalError("Vervet kan ikke slutte i fremtid!");

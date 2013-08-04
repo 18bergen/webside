@@ -847,34 +847,34 @@ class memberlist_actions extends memberlist {
 			function expandAll() {
 				for (var n = 0; n < allGroups.length; n++) {
 					var id = allGroups[n];
-    			    if (jQuery('#gruppe'+id).is(':hidden')) {
-    			        jQuery('#gruppe'+id).show();
-    					jQuery('#indicator_c'+id).hide();
-						jQuery('#indicator_o'+id).show();
+    			    if ($('#gruppe'+id).is(':hidden')) {
+    			        $('#gruppe'+id).show();
+    					$('#indicator_c'+id).hide();
+						$('#indicator_o'+id).show();
 					}
 				}
 			}
 			function collapseAll() {
 				for (var n = 0; n < allGroups.length; n++) {
 					var id = allGroups[n];
-    			    if (jQuery('#gruppe'+id).is(':visible')) {
-    			        jQuery('#gruppe'+id).hide();
-    					jQuery('#indicator_c'+id).show();
-						jQuery('#indicator_o'+id).hide();
+    			    if ($('#gruppe'+id).is(':visible')) {
+    			        $('#gruppe'+id).hide();
+    					$('#indicator_c'+id).show();
+						$('#indicator_o'+id).hide();
 					}
 				}				
 			}
 		
 			function toggleGroup(id) {
-			    if (jQuery('#gruppe'+id).is(':hidden')) {
-			        jQuery('#gruppe'+id).slideDown(300, function(){
-    					jQuery('#indicator_c'+id).hide();
-						jQuery('#indicator_o'+id).show();
+			    if ($('#gruppe'+id).is(':hidden')) {
+			        $('#gruppe'+id).slideDown(300, function(){
+    					$('#indicator_c'+id).hide();
+						$('#indicator_o'+id).show();
 					});
 				} else {
-			        jQuery('#gruppe'+id).slideUp(300, function(){
-					    jQuery('#indicator_o'+id).hide();
-						jQuery('#indicator_c'+id).show();
+			        $('#gruppe'+id).slideUp(300, function(){
+					    $('#indicator_o'+id).hide();
+						$('#indicator_c'+id).show();
 					});				
 				}
 			}
@@ -1974,7 +1974,7 @@ class memberlist_actions extends memberlist {
 		$born_code = $this->makeDateField("birthday", $birthday, false);
 		$born_date_js = $this->validDate($birthday) ? strftime('{ day:%e, month:%m, year:%Y }',$birthday) : '0';
 		$max_date_js = strftime('%m/%d/%Y',time()-5*365*24*3600);
-		$born_code .= 'Tips: trykk på årstallet for å skrive inn et annet år.';
+		$born_code .= '';
 			
 		$beholdchecked = ($profile->profilbilde != "") ? " checked='checked'" : "";
 		$nyttchecked = ($profile->profilbilde != "") ? "" : " checked='checked'";
@@ -2115,10 +2115,10 @@ class memberlist_actions extends memberlist {
 			}
 		}
 		
-		if (intval($_POST['birthday_year']) < 1900) {
+		if (empty($_POST['birthday'])) {
 			$birthday = '0000-00-00';
 		} else { 
-			$birthday = $_POST['birthday_year'].'-'.$_POST['birthday_month'].'-'.$_POST['birthday_day'];
+			$birthday = $_POST['birthday'];
 			if (strlen($birthday) != 10) $birthday = '0000-00-00';
 		}
 		$_POST['birthday'] = $birthday;
@@ -4307,7 +4307,7 @@ class memberlist_actions extends memberlist {
 					}
 				}
 				window.onload = makeTimeline;
-				//YAHOO.util.Event.onDOMReady(makeTimeline); 
+				//$(document).ready(makeTimeline); 
 				
     		//]]>
 			</script>	
@@ -5035,7 +5035,7 @@ class memberlist_actions extends memberlist {
 			$add = true;
 			if (($current) && (in_array($grp->id,$this->members[$member]->memberof))) $add = false;
 			if ($add) {
-				$grpList .= "<option value='".$grp->id."' />$grp->caption</option>\n";
+				$grpList .= "<option value='".$grp->id."'>$grp->caption</option>\n";
 			}
 		}
 		$grpList .= "</select>\n";
@@ -5129,18 +5129,16 @@ class memberlist_actions extends memberlist {
 		$details = $this->fetchMembershipDetails($id);
 		$current = empty($details['membershipend']);
 		
-		$dmy = array($_POST['innmeldingsdato_day'],$_POST['innmeldingsdato_month'],$_POST['innmeldingsdato_year']);
-		$fra = $dmy[2].'-'.$dmy[1].'-'.$dmy[0];
+		$fra = $_POST['innmeldingsdato'];
 		$fra_unix = strtotime($fra);
 		if ($fra_unix >= time()){
 			$this->fatalError("Medlemskapet kan ikke begynne i fremtid!");
 		}
 		
-		if (isset($_POST['utmeldingsdato_day'])) {
+		if (isset($_POST['utmeldingsdato'])) {
 
-			$dmy = array($_POST['utmeldingsdato_day'],$_POST['utmeldingsdato_month'],$_POST['utmeldingsdato_year']);
 
-			$til = $dmy[2].'-'.$dmy[1].'-'.$dmy[0];
+			$til = $_POST['utmeldingsdato'];
 			$til_unix = strtotime($til);
 			if ($til_unix >= time()){
 				$this->fatalError("Medlemskapet kan ikke slutte i fremtid!");
@@ -5326,7 +5324,7 @@ class memberlist_actions extends memberlist {
 					$this->fatalError("Ukjent handling");
 			}
 		}
-		header("Content-Type: text/html; charset=utf-8"); 
+		header("Content-Type: application/json; charset=utf-8"); 
 		print json_encode($this->makeMembershipsList($a, $id));
 		exit();
 	}
@@ -5485,71 +5483,98 @@ class memberlist_actions extends memberlist {
 				}
 				
 				function json_membershiplist_update(pars) {
-					$("ajaxIndicator").style.visibility = "visible";
+					$("#ajaxIndicator").css("visibility", "visible");
 					var url = "'.$url.'";
-					YAHOO.util.Connect.asyncRequest("POST",url, { success: function(o){	
-						try {
-							$("ajaxIndicator").style.visibility = "hidden";
-							var json = YAHOO.lang.JSON.parse(o.responseText);
-							console.log(json);
-							$("membership_list").innerHTML = json.htmlcode;
-							
-							if (json.innmelding) {
-								(new BG18.datePicker("innmeldingsdato", { selectedDate: json.innmelding, maxDate: "'.$max_date_js.'" })).init();
-							}
-							if (json.utmelding) {
-								(new BG18.datePicker("utmeldingsdato", { selectedDate: json.utmelding, maxDate: "'.$max_date_js.'" })).init();
-							}
-							
-						} catch (x) {
-							alert("JSON Parse failed!");
-							$("membership_list").innerHTML = o.responseText;
+					$.post(url, pars)
+					.done(function(response) {
+						$("#ajaxIndicator").css("visibility", "hidden");
+						//console.log(response);
+						$("#membership_list").html(response.htmlcode);
+						
+						if (response.innmelding) {
+							(new DatePicker("innmeldingsdato", { maxDate: "'.$max_date_js.'" })).init();
 						}
-					}}, pars);
+						if (response.utmelding) {
+							(new DatePicker("utmeldingsdato", { maxDate: "'.$max_date_js.'" })).init();
+						}
+					});
+
 				}
 				
 				function avbryt_endringer(current) {
-					json_membershiplist_update("");
+					json_membershiplist_update({});
 				}
 				
 				function endre_medlemsskap_query(medlemsskap, current) {
-					json_membershiplist_update("m_action=endre_medlemsskap_query&medlemsskap="+medlemsskap);
+					json_membershiplist_update({
+						m_action:"endre_medlemsskap_query", 
+						medlemsskap: medlemsskap
+					});
 				}
 
 				function endre_medlemsskap(medlemsskap, current) {
-					var pars = "m_action=endre_medlemsskap&medlemsskap="+medlemsskap;					
-					pars += "&innmeldingsdato_day="+$("innmeldingsdato_day").value+"&innmeldingsdato_month="+$("innmeldingsdato_month").value+"&innmeldingsdato_year="+$("innmeldingsdato_year").value;
-					if (!current) pars += pars += "&utmeldingsdato_day="+$("utmeldingsdato_day").value+"&utmeldingsdato_month="+$("utmeldingsdato_month").value+"&utmeldingsdato_year="+$("utmeldingsdato_year").value;
+					var pars = {
+						m_action:"endre_medlemsskap", 
+						medlemsskap: medlemsskap,
+					 	innmeldingsdato: $("#innmeldingsdato").val()
+					};
+					if (!current) {
+						pars.utmeldingsdato = $("#utmeldingsdato").val();
+					}
 					json_membershiplist_update(pars);
 				}
 				
 				function stopp_medlemsskap_query(medlemsskap, current) {
-					json_membershiplist_update("m_action=stopp_medlemsskap_query&medlemsskap="+medlemsskap);
+					json_membershiplist_update({
+						m_action: "stopp_medlemsskap_query",
+						medlemsskap: medlemsskap
+					});
 				}
 
 				function stopp_medlemsskap(medlemsskap, current) {
-					json_membershiplist_update("m_action=stopp_medlemsskap&medlemsskap="+medlemsskap);
+					json_membershiplist_update({
+						m_action: "stopp_medlemsskap",
+						medlemsskap: medlemsskap
+					});
 				}
 				
 				function slett_medlemsskap_query(medlemsskap, current) {
-					json_membershiplist_update("m_action=slett_medlemsskap_query&medlemsskap="+medlemsskap);
+					json_membershiplist_update({
+						m_action: "slett_medlemsskap_query",
+						medlemsskap: medlemsskap
+					});
 				}
 				function slett_medlemsskap(medlemsskap, current) {
-					json_membershiplist_update("m_action=slett_medlemsskap&medlemsskap="+medlemsskap);
+					json_membershiplist_update({
+						m_action: "slett_medlemsskap",
+						medlemsskap: medlemsskap
+					});
 				}
 				
 				function nytt_medlemsskap_query(current) {
-					if (current) 
-						json_membershiplist_update("m_action=nytt_medlemsskap_query");
-					else
-						json_membershiplist_update("m_action=nyttgammelt_medlemsskap_query");
+					if (current) {
+						json_membershiplist_update({
+							m_action: "nytt_medlemsskap_query"
+						});						
+					} else {
+						json_membershiplist_update({
+							m_action: "nyttgammelt_medlemsskap_query"
+						});
+					}
 				}
 								
 				function nytt_medlemsskap(current) {
-					if (current) 
-						json_membershiplist_update("m_action=nytt_medlemsskap&"+jQuery("#ny_gruppe").serialize());
-					else
-						json_membershiplist_update("m_action=nyttgammelt_medlemsskap&"+jQuery("#ny_gruppe").serialize());
+					if (current) {
+						json_membershiplist_update({
+							m_action: "nytt_medlemsskap",
+							ny_gruppe: $("#ny_gruppe").val()
+						});
+					} else {
+						json_membershiplist_update({
+							m_action: "nyttgammelt_medlemsskap",
+							ny_gruppe: $("#ny_gruppe").val()
+						});
+					}
 				}
 				
 			//]]>

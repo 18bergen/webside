@@ -180,7 +180,7 @@ class newsletters extends base {
 				har reservert seg mot å motta det.
 			</p>
 			
-			<form method="post" action="'.$this->generateURL(array('previewletter')).'" style="margin-top:10px;" onsubmit="$(\'nsubtn\').value=\'Vennligst vent...\'; $(\'nsubtn\').disabled=true; return true;">
+			<form method="post" action="'.$this->generateURL(array('previewletter')).'" style="margin-top:10px;" onsubmit="$(\'#nsubtn\').val(\'Vennligst vent...\'); $(\'#nsubtn\').prop(\'disabled\', true); return true;">
 				<table class="skjema">
 					<tr>
 						<td valign="top"><strong>Mottakere: </strong></td>

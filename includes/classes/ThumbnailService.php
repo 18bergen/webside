@@ -34,6 +34,15 @@ class ThumbnailService {
             return false;
         }
 
+        $path_parts = pathinfo($targetFile);
+        $targetDir = $path_parts['dirname'];
+        if (!file_exists($targetDir)) {
+            mkdir($targetDir, 0755, true);
+            if (!file_exists($targetDir)) {
+                die("Could not create thumb target dir " . $targetDir);
+            }
+        }
+
         $iFinalWidth = $maxWidth == 0 ? $sourceImageWidth : $maxWidth;
         $iFinalHeight = $maxHeight == 0 ? $sourceImageHeight : $maxHeight;
 

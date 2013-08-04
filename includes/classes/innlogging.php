@@ -673,7 +673,7 @@ class innlogging extends base {
 				</div></div>
 				<script type="text/javascript">
 				//<![CDATA[
-					YAHOO.util.Event.onDOMReady(function() {
+					$(document).ready(function() {
 						Nifty("div.errorBox");
 					});
 				//]]>
@@ -706,7 +706,7 @@ class innlogging extends base {
 				</div>
 				<script type="text/javascript">
 				//<![CDATA[
-					YAHOO.util.Event.onDOMReady(function() {
+					$(document).ready(function() {
 						Nifty("div.whiteInfoBox");
 					});
 				//]]>
@@ -767,15 +767,15 @@ class innlogging extends base {
 				</form>
 				<script type="text/javascript">
 			    //<![CDATA[	
-			    	YAHOO.util.Event.onContentReady("huskmeglabel", function() {
-						var tt1 = new YAHOO.widget.Tooltip("tt1", { 
-							context:"huskmeglabel",
-                            showdelay: 0,
-                            zIndex: 10,
-							autodismissdelay: 20000,
-							text:"Krysser du av her forblir du innlogget i 30 dager<br /> med mindre du logger ut. Du bør derfor ikke krysse<br /> av her hvis denne maskinen også brukes av andre." 
-						});
-					});
+			    	$(document).ready(function() {
+						// var tt1 = new YAHOO.widget.Tooltip("tt1", { 
+						// 	context:"huskmeglabel",
+      //                       showdelay: 0,
+      //                       zIndex: 10,
+						// 	autodismissdelay: 20000,
+						// 	text:"Krysser du av her forblir du innlogget i 30 dager<br /> med mindre du logger ut. Du bør derfor ikke krysse<br /> av her hvis denne maskinen også brukes av andre." 
+						// });
+			    	});
 				//]]>
 				</script>
 				

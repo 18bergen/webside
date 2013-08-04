@@ -1,6 +1,7 @@
 <?
 
 date_default_timezone_set('Europe/Oslo');
+mb_internal_encoding('utf-8');
 
 define('ROOT_DIR','');
 
@@ -10,7 +11,6 @@ define('BG_LIB_PATH',dirname(dirname(__FILE__)).'/www/libs/');
 
 define('LIB_CKFINDER_URI', '/libs/ckfinder-2.3.1/');
 define('LIB_CKEDITOR_URI', '/libs/ckeditor-4.1.2/');
-define('LIB_YUI_URI', 'http://yui.yahooapis.com/2.9.0/');
 
 /*
  if (($_SERVER['REMOTE_ADDR'] == "::1") || ($_SERVER['REMOTE_ADDR'] == "192.168.2.144") || ($_SERVER['REMOTE_ADDR'] == "192.168.2.194") || ($_SERVER['REMOTE_ADDR'] == "10.24.124.195") || ($_SERVER['REMOTE_ADDR'] == "193.157.195.156") || ($_SERVER['REMOTE_ADDR'] == "84.48.18.118")){
