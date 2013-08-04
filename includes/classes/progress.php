@@ -105,8 +105,8 @@ class progress extends base {
 
 				$(document).ready(function() {
 					$( '#pbar' ).progressbar({
-				      value: $p
-				    });
+					  value: $p
+					});
 				});
 		
 			//]]>			
@@ -176,7 +176,7 @@ class progress extends base {
 			<form method="post" action="'.$this->generateCoolUrl('/savepage','noprint=true').'">
 				
 				Mål: <input type="text" name="goal" value="'.$goal.'" /> 
-				     <input type="text" name="goalUnit" value="'.$goalUnit.'" />
+					 <input type="text" name="goalUnit" value="'.$goalUnit.'" />
 				<p>
 					<textarea id="editor_body" name="editor_body" style="width:'.$this->FCKeditorWidth.'px; height:400px;">'.$desc.'</textarea>
 				</p>
@@ -289,7 +289,7 @@ class progress extends base {
 				function BrowseServer() {
 					var finder = new CKFinder() ;
 					finder.basePath = "'.LIB_CKFINDER_URI.'" ;	// The path for the installation of CKFinder.
-					finder.selectFunction = SetFileField ;
+					finder.selectActionFunction = SetFileField ;
 					finder.startupPath = "Bilder:/Diverse/Sponsorstafett" ;
 					finder.rememberLastFolder = false ;
 					finder.startupFolderExpanded = true ;
@@ -303,8 +303,7 @@ class progress extends base {
 					var pathToUserFiles = "'.$pathToUserFiles.'";
 					var pathToThumbs = "'.$pathToThumbs100.'";
 					var f = pathToThumbs + fileUrl.substr(pathToUserFiles.length);
-					//console.log(f);
-					$("#lead_image").val(f);
+					$("#lead_image").val(f);				
 					$("#ingressbildespan").html("<img src=\'" + f + "\' alt=\'Velg bilde\' border=\'0\' style=\'margin:5px;\' />");
 				}
 	

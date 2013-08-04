@@ -4285,6 +4285,10 @@ class imagearchive extends comments {
 		
 		$delete_reason2 = (empty($delete_reason1) ? "" : ". Årsak: $delete_reason1");
 		$this->addToActivityLog("slettet albumet <a href=\"".$this->generateURL("")."\">$archivecaption</a>$delete_reason2");
+
+		// Update the photo count database
+		$this->updatePhotoCounts();
+
 		$this->redirect($this->generateCoolURL($parentdir),"Albumet ble slettet");
 	}
 
