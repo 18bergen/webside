@@ -86,14 +86,14 @@ function AutoBackup(backup_url) {
 		for (var i = 0; i < request['data'].length; i++) {
 			if (request['data'][i].changed) {
 				dataChanged = true;
-				console.info('Edition "'+request['data'][i].lang+'" changed');
+				//console.info('Edition "'+request['data'][i].lang+'" changed');
 			}
 		}
 		_prevData = request['data'];
 		if (dataChanged) {
 			$('#' + _elStatusText).html(_standardInfoText) + '<br />' + 
 				'<em>Status:</em> Lagrer sikkerhetskopi…';
-			console.info('Saving backup...');
+			//console.info('Saving backup...');
 			$.post(backup_url, request).done(_backupDone).error(_backupFailed);
 		} else {
 			that.start();
@@ -101,7 +101,7 @@ function AutoBackup(backup_url) {
 	};
 
 	function _backupDone(response) {
-		console.info(response);
+		//console.info(response);
 		var success = false;
 		for (var i = 0; i < _editors.length; i++) {
 			success = false;

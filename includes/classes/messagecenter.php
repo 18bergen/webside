@@ -616,7 +616,7 @@ class messagecenter extends base {
 			event.preventDefault();
 			item = event.delegateTarget.id;
 			var no = item.substr(item.indexOf("_")+1);
-			console.info("Adding rcpt "+no);
+			//console.info("Adding rcpt "+no);
 		
 			var pars = new Array();
 			pars.push("no="+no);
@@ -640,7 +640,7 @@ class messagecenter extends base {
 			event.preventDefault();
 			item = event.delegateTarget.id;
 			var no = item.substr(item.indexOf("_")+1);
-			console.info("Removing rcpt "+no);
+			//console.info("Removing rcpt "+no);
 
 			var pars = new Array();
 			pars.push("no="+no);
@@ -665,7 +665,7 @@ class messagecenter extends base {
 		    event.preventDefault();
 			attachments = attachments + 1;
 			no = attachments
-			console.info("Adding attachment no. "+no);
+			//console.info("Adding attachment no. "+no);
 			
 			var newDiv = "<div id=\"att"+no+"\" style=\"border: 1px solid #ddd; padding: 4px;\"> \
 			  <input type=\"file\" name=\"vedlegg"+no+"\" /> \
@@ -682,7 +682,7 @@ class messagecenter extends base {
 			event.preventDefault();
 			item = event.delegateTarget.id;
 			var no = item.substr(item.indexOf("_")+1);
-			console.info("Removing attachment with id: "+no);
+			//console.info("Removing attachment with id: "+no);
 			jQuery("#att"+no).remove();
 		}
 		
@@ -2139,7 +2139,7 @@ class messagecenter extends base {
 			        threadId = tmp;
 			        attId = 1;
 			    }
-			    console.info("Adding att. "+attId+" to thread "+threadId);
+			    // console.info("Adding att. "+attId+" to thread "+threadId);
                 
                 var newDiv = "<div id=\"att_"+threadId+"_"+attId+"\" style=\"border: 1px solid #ddd; padding: 4px;\"> \
                   <input type=\"file\" name=\"vedlegg"+attId+"\" /> \
@@ -2164,7 +2164,7 @@ class messagecenter extends base {
 			        threadId = tmp;
 			        attId = 1;
 			    }
-			    console.info("Removing att. "+attId+" from thread "+threadId);
+			    // console.info("Removing att. "+attId+" from thread "+threadId);
 			    jQuery("#att_"+threadId+"_"+attId).remove();
             }
             
