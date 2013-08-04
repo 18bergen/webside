@@ -15,7 +15,8 @@
             <![endif]-->
 
             <p>
-                Tips: Hold inne shift-tasten for å velge flere filer samtidig
+                Tips: Hold inne shift-tasten for å velge flere filer samtidig.
+                Maks filstørrelse per fil er %upload_max_filesize%.
             </p>
 
             <div>
@@ -130,7 +131,8 @@
 
                 if (file.preview) {
                     row.find('td:nth-child(1)').html(file.preview);
-                    row.find('td:nth-child(2)').append('<br />' + _formatFileSize(file.size));
+                    row.find('td:nth-child(2)').append('<br />' + _formatFileSize(file.size)
+                        + ' : <span class="status" style="font-weight: bold;"></span>');
                 }
                 if (file.error) {
                     node
@@ -147,24 +149,33 @@
                         .wrap(link);
                 });
             })
+            .on('fileuploadprogress', function (e, data) {
+                var row = $(data.context);
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+                row.find('.status').html(progress + ' %');
+            })
             .on('fileuploadprogressall', function (e, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);
-                //console.info(progress + ' %');
                 $('#progress .bar').css('width', progress + '%');
             })
             .on('fileuploaddone', function(e, data) {
                 //console.info('upload done');
                 var row = data.context;
-                row.find('td:nth-child(2)').append(' : <strong>lastet opp</strong>');
+                var err = data.jqXHR.responseJSON.files[0].error;
+                if (err) {
+                    row.find('.status').html(err);                    
+                } else {
+                    row.find('.status').html('lastet opp');
+                }
                 if (--uploadsPending <= 0) {
                     //console.info('all done');
-                    window.location = '%completeurl%';
+                    //window.location = '%completeurl%';
                 }
             })
             .on('fileuploadfail', function(e, data) {
                 //console.info('upload done');
                 var row = data.context;
-                row.find('td:nth-child(2)').append(' : <strong>Det oppsto en feil!</strong>');
+                row.find('.status').html('Det oppsto en feil!');
                 // if (--uploadsPending <= 0) {
                 //     console.info('all done');
                 //     //window.location = '%completeurl%';
