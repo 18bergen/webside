@@ -1865,14 +1865,15 @@ class imagearchive extends comments {
 			} else if (!$this->allow_tagself) {
 				$error = 'Beklager, du har ikke tilgang til å utføre denne operasjonen.';
 			}
-			$x = $_POST['frame']['x'];
-			$y = $_POST['frame']['y'];
-			$w = $_POST['frame']['width'];
-			$h = $_POST['frame']['height'];
+
+			$x = $_POST['x'];
+			$y = $_POST['y'];
+			$w = $_POST['width'];
+			$h = $_POST['height'];
 			if (!is_numeric($x)) { $error = 'Ugyldig x-verdi'; }
 			if (!is_numeric($y)) { $error = 'Ugyldig y-verdi'; }
 			if (!is_numeric($w)) { $error = 'Ugyldig bredde'; }
-			if (!is_numeric($h)) { $error = 'Ugyldig høyde '. $h; }
+			if (!is_numeric($h)) { $error = 'Ugyldig høyde'; }
 		}
 
 		if ($error == '0') {

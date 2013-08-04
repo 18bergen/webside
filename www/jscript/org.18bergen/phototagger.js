@@ -421,8 +421,9 @@ function PhotoTagger(enabled, tag_url, untag_url, my_name, everybody) {
 	function tagMember() {
 		$(_elCross).hide();
 		$(_elForm).hide();	
-		var pName = $(_elFormUser).val();
-		$.post(tag_url, { fullname: pName, frame: _frame })
+		var data = _frame;
+		data.fullname = $(_elFormUser).val();
+		$.post(tag_url, data)
 		 .done(ajaxSuccess)
 		 .error(ajaxFailure);
 	}
@@ -439,9 +440,7 @@ function PhotoTagger(enabled, tag_url, untag_url, my_name, everybody) {
 		$(_elText).innerHTML = 'Med på bildet: ';
 		redrawText();
 		if (ajax.error != '0') {
-			$(_elText).append('<div>' + ajax.error + '</div>');
-			$(d).css('color','#f00');
-			$(d).css('padding','5px');
+			$(_elText).append('<div style="color:#f00;padding:5px;">' + ajax.error + '</div>');
 		}
 		if (_areaMouseOver) {
 			showAllFrames();	
