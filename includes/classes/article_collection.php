@@ -122,7 +122,7 @@ class article_collection extends comments {
 				/*
 				CKFinder.SetupCKEditor( editor, {
 					basePath: "%ckfinder_uri%",
-					startupPath : "Bilder:/speidertips"
+					startupPath : "Bilder:/Speidertips/"
 				}, "Bilder");
 				*/
 

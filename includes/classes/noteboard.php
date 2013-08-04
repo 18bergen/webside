@@ -623,7 +623,7 @@ class noteboard extends comments {
 				var finder = new CKFinder() ;
 				finder.basePath = "'.LIB_CKFINDER_URI.'" ;	// The path for the installation of CKFinder.
 				finder.selectActionFunction = SetFileField ;
-				finder.startupPath = "Bilder:/Ingressbilder" ;
+				finder.startupPath = "Bilder:/Ingressbilder/" ;
 				finder.rememberLastFolder = false ;
 				finder.startupFolderExpanded = true ;
 				finder.disableThumbnailSelection = true ;

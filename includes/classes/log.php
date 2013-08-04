@@ -874,7 +874,7 @@ class log extends comments {
 		$r1a[] = "%imagearchive_itemcount%";	$r2a[] = $images_count;
 		$r1a[] = "%ingressbilde%";				$r2a[] = $ingressbilde;
 		$r1a[] = "%image_dir%";					$r2a[] = $this->image_dir;
-		$r1a[] = "%imagestartuppath%";			$r2a[] = rtrim($this->imagestartuppath,'/');
+		$r1a[] = "%imagestartuppath%";			$r2a[] = $this->imagestartuppath;
 		$r1a[] = "%ckfinder_uri%";				$r2a[]  = LIB_CKFINDER_URI;
 		$r1a[] = "%ckeditor_uri%";				$r2a[]  = LIB_CKEDITOR_URI;
 		$r1a[] = "%urlGetAlbumId%";				$r2a[]  = $this->generateURL('action=ajaxGetPhotoAlbumForEventId');

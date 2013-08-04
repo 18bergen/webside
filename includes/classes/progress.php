@@ -290,7 +290,7 @@ class progress extends base {
 					var finder = new CKFinder() ;
 					finder.basePath = "'.LIB_CKFINDER_URI.'" ;	// The path for the installation of CKFinder.
 					finder.selectActionFunction = SetFileField ;
-					finder.startupPath = "Bilder:/Diverse/Sponsorstafett" ;
+					finder.startupPath = "Bilder:/Diverse/Sponsorstafett/" ;
 					finder.rememberLastFolder = false ;
 					finder.startupFolderExpanded = true ;
 					finder.disableThumbnailSelection = true ;
