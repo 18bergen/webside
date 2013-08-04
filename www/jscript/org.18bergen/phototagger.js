@@ -257,7 +257,6 @@ function PhotoTagger(enabled, tag_url, untag_url, my_name, everybody) {
 
 		if (target !== $(_elArea).get(0)) return;
 
-		*/
 		/* NOTE: relatedTarget may be undefined or null */
 		if (rel) {
 		

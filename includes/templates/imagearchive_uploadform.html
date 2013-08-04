@@ -4,6 +4,16 @@
             <!-- Browsers with JavaScript disabled -->
             <noscript>Denne siden krever at JavaScript er påskrudd.</noscript>
 
+            <!--[if LT IE  10]>
+
+            <p class="warning">
+                Du bruker en for gammel versjon av Internet Explorer.
+                For å kunne bruke opplastingsfunksjonen må du oppgradere
+                til minst Internet Explorer 10.
+            </p>
+
+            <![endif]-->
+
             <p>
                 Tips: Hold inne shift-tasten for å velge flere filer samtidig
             </p>
@@ -37,16 +47,6 @@
         </form>
 
         <script type="text/javascript">
-        /*
-         * jQuery File Upload Plugin JS Example 8.3.0
-         * https://github.com/blueimp/jQuery-File-Upload
-         *
-         * Copyright 2010, Sebastian Tschan
-         * https://blueimp.net
-         *
-         * Licensed under the MIT license:
-         * http://www.opensource.org/licenses/MIT
-         */
 
         $(function () {
             'use strict';
@@ -68,6 +68,19 @@
 
             });
 
+            function _formatFileSize (bytes) {
+                if (typeof bytes !== 'number') {
+                    return '';
+                }
+                if (bytes >= 1000000000) {
+                    return (bytes / 1000000000).toFixed(2) + ' GB';
+                }
+                if (bytes >= 1000000) {
+                    return (bytes / 1000000).toFixed(2) + ' MB';
+                }
+                return (bytes / 1000).toFixed(2) + ' KB';
+            };
+
             // Initialize the jQuery File Upload widget:
             $('#fileupload')
             .fileupload({
@@ -75,8 +88,8 @@
                 //xhrFields: {withCredentials: true}
 
                 dataType: 'json',
-
                 autoUpload: false,
+                singleFileUploads: true,
 
                 disableImageResize: /Android(?!.*Chrome)|Opera/
                     .test(window.navigator.userAgent),
@@ -89,6 +102,12 @@
                 // The add callback is invoked as soon as files are added to the fileupload
                 // widget (via file input selection, drag & drop or add API call).
 
+                var uploadFile = data.files[0];
+                if (!(/\.(jpg|jpeg)$/i).test(uploadFile.name)) {
+                    alert("Kun jpg-filer blir spist");
+                    return;
+                }
+
                 //console.log(data);
                 queue.push(data);
 
@@ -98,8 +117,6 @@
                 $.each(data.files, function (index, file) {
                     var cell = $('<td/>').text(file.name);
                     $('<td/>').appendTo(data.context);
-                    cell.appendTo(data.context);
-                    cell = $('<td/>').append('<b />').append('...');
                     cell.appendTo(data.context);
                 });
             })
@@ -112,6 +129,7 @@
 
                 if (file.preview) {
                     row.find('td:nth-child(1)').html(file.preview);
+                    row.find('td:nth-child(2)').append('<br />' + _formatFileSize(file.size));
                 }
                 if (file.error) {
                     node
@@ -135,37 +153,28 @@
             })
             .on('fileuploaddone', function(e, data) {
                 //console.info('upload done');
+                var row = data.context;
+                row.find('td:nth-child(2)').append(' : <strong>lastet opp</strong>');
                 if (--uploadsPending <= 0) {
                     //console.info('all done');
                     window.location = '%completeurl%';
                 }
+            })
+            .on('fileuploadfail', function(e, data) {
+                //console.info('upload done');
+                var row = data.context;
+                row.find('td:nth-child(2)').append(' : <strong>Det oppsto en feil!</strong>');
+                // if (--uploadsPending <= 0) {
+                //     console.info('all done');
+                //     //window.location = '%completeurl%';
+                // }
             });
 
-            // Enable iframe cross-domain access via redirect option:
-            // $('#fileupload').fileupload(
-            //     'option',
-            //     'redirect',
-            //     window.location.href.replace(
-            //         /\/[^\/]*$/,
-            //         '/cors/result.html?%s'
-            //     )
-            // );
-            
-            // Load existing files:
-            /*
-            $('#fileupload').addClass('fileupload-processing');
-            $.ajax({
-                // Uncomment the following to send cross-domain cookies:
-                //xhrFields: {withCredentials: true},
-                url: $('#fileupload').fileupload('option', 'url'),
-                dataType: 'json',
-                context: $('#fileupload')[0]
-            }).always(function () {
-                $(this).removeClass('fileupload-processing');
-            }).done(function (result) {
-                $(this).fileupload('option', 'done')
-                    .call(this, null, {result: result});
-            });*/
 
         });
         </script>
+        <!--[if LT IE  10]>
+            <script type="text/javascript">
+            $('.fileinput-button, button.start').button({disabled:true});
+            </script>
+        <![endif]-->
