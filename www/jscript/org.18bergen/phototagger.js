@@ -439,9 +439,7 @@ function PhotoTagger(enabled, tag_url, untag_url, my_name, everybody) {
 		$(_elText).innerHTML = 'Med på bildet: ';
 		redrawText();
 		if (ajax.error != '0') {
-			var d = document.createElement('div');
-			d.innerHTML = ajax.error;
-			$(_elText).appendChild(d);
+			$(_elText).append('<div>' + ajax.error + '</div>');
 			$(d).css('color','#f00');
 			$(d).css('padding','5px');
 		}

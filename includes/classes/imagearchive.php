@@ -1872,7 +1872,7 @@ class imagearchive extends comments {
 			if (!is_numeric($x)) { $error = 'Ugyldig x-verdi'; }
 			if (!is_numeric($y)) { $error = 'Ugyldig y-verdi'; }
 			if (!is_numeric($w)) { $error = 'Ugyldig bredde'; }
-			if (!is_numeric($h)) { $error = 'Ugyldig høyde'; }
+			if (!is_numeric($h)) { $error = 'Ugyldig høyde '. $h; }
 		}
 
 		if ($error == '0') {
