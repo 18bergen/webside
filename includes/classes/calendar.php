@@ -507,7 +507,7 @@ class calendar extends calendar_basic {
 
 		$namesArray = "";
 		foreach ($this->getActiveMembersList(array('SortBy' => 'FullName')) as $user_id => $u) {
-			$namesArray .= "<option id=\"$user_id\">".$u['FullName']."</option>\n";
+			$namesArray .= "<option value=\"$user_id\">".$u['FullName']."</option>\n";
 		}
 		$r1a[] = "%author_list%";				$r2a[] = $this->makeEditableAuthorList(explode(",",$this->responsible_default));
 		$r1a[] = "%namesArray%";				$r2a[] = $namesArray;
