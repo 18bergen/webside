@@ -34,12 +34,12 @@
   <script src="/libs/jquery.ui.datepicker-no.js"></script>
 
   <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
-  <script src="http://blueimp.github.io/JavaScript-Load-Image/js/load-image.min.js"></script>
+  <script src="/bower_components/blueimp-load-image/js/load-image.js"></script>
   <!-- The Canvas to Blob plugin is included for image resizing functionality -->
-  <script src="http://blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
-  <script type="text/javascript" src="/libs/jquery-file-upload-8.6.0/js/jquery.fileupload.js"></script>
-  <script type="text/javascript" src="/libs/jquery-file-upload-8.6.0/js/jquery.fileupload-process.js"></script>
-  <script type="text/javascript" src="/libs/jquery-file-upload-8.6.0/js/jquery.fileupload-image.js"></script>
+  <script src="/bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.js"></script>
+  <script type="text/javascript" src="/bower_components/blueimp-file-upload/js/jquery.fileupload.js"></script>
+  <script type="text/javascript" src="/bower_components/blueimp-file-upload/js/jquery.fileupload-process.js"></script>
+  <script type="text/javascript" src="/bower_components/blueimp-file-upload/js/jquery.fileupload-image.js"></script>
 
   <!-- <script type="text/javascript" src="/libs/bootstrap/js/bootstrap.min.js"></script> -->
 

@@ -16,3 +16,4 @@ _backup
 squirrelmail
 includes/config.php
 www/uimages
+bower_components
