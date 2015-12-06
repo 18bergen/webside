@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="/stylesheets/Aristo/Aristo.css" id="theme">
 
   <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
-  <link rel="stylesheet" href="/libs/jquery-file-upload-8.6.0/css/jquery.fileupload-ui.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.7/css/jquery.fileupload-ui.css" />
   
   <!-- RSS -->
   %our_rss_feed%
@@ -34,9 +34,9 @@
   <script src="/libs/jquery.ui.datepicker-no.js"></script>
 
   <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
-  <!--<script src="/bower_components/blueimp-load-image/js/load-image.js"></script>-->
+  <script src="/libs/JavaScript-Load-Image-1.14.0/js/load-image.all.min.js"></script>
   <!-- The Canvas to Blob plugin is included for image resizing functionality -->
-<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/2.2.0/js/canvas-to-blob.min.js"></script>-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/2.2.0/js/canvas-to-blob.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.7/jquery.fileupload.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.7/jquery.fileupload-process.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.7/jquery.fileupload-image.min.js"></script>
