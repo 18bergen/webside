@@ -811,6 +811,7 @@ class messagecenter extends base {
 		$r1a[] = "%melding%";						$r2a[] = $melding;
 		$r1a[] = "%errors%";						$r2a[] = $erroutp;
 		$r1a[] = "%replyto%";						$r2a[] = $replyToMsgId;
+		$r1a[] = "%vis_nyhetsbrev%";				$r2a[] = "display:none;";
 		$r1a[] = "%maxfilesize%";					$r2a[] = $this->attachment_maxsize;
 		$r1a[] = "%maxfilesize_kb%";				$r2a[] = round($this->attachment_maxsize/1024);
 		$r1a[] = "%cancelbtn%";						$r2a[] = '<input type="button" value="     Avbryt     " onclick="cancelReply('.$replyTo.');" />';
