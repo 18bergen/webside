@@ -34,12 +34,12 @@
   <script src="/libs/jquery.ui.datepicker-no.js"></script>
 
   <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
-  <script src="/bower_components/blueimp-load-image/js/load-image.js"></script>
+  <!--<script src="/bower_components/blueimp-load-image/js/load-image.js"></script>-->
   <!-- The Canvas to Blob plugin is included for image resizing functionality -->
-  <script src="/bower_components/blueimp-canvas-to-blob/js/canvas-to-blob.js"></script>
-  <script type="text/javascript" src="/bower_components/blueimp-file-upload/js/jquery.fileupload.js"></script>
-  <script type="text/javascript" src="/bower_components/blueimp-file-upload/js/jquery.fileupload-process.js"></script>
-  <script type="text/javascript" src="/bower_components/blueimp-file-upload/js/jquery.fileupload-image.js"></script>
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/2.2.0/js/canvas-to-blob.min.js"></script>-->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.7/jquery.fileupload.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.7/jquery.fileupload-process.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.5.7/jquery.fileupload-image.min.js"></script>
 
   <!-- <script type="text/javascript" src="/libs/bootstrap/js/bootstrap.min.js"></script> -->
 
