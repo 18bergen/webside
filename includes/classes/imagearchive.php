@@ -2255,7 +2255,7 @@ class imagearchive extends comments {
 		}
 	}
 
-	function dirlist($dirName) { 
+	function dirlist($dirName) {
 		$d = dir($dirName);
 		$files = array();
 		while($entry = $d->read()) { 
@@ -2263,7 +2263,7 @@ class imagearchive extends comments {
 				if (!is_dir($dirName.$entry)) { 
 					$fileInfo = pathinfo($dirName.$entry);
 					$fileext = strtolower($fileInfo["extension"]);
-					if (in_array($fileext,array("jpg","png","gif"))){
+					if (in_array($fileext,array("jpg","jpeg","png","gif"))){
 						array_push($files,$entry);
 					}
 				} 
