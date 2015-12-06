@@ -21,6 +21,7 @@
 
             <div>
 
+                <!-- The fileinput-button span is used to style the file input field as button -->
                 <span class="fileinput-button">
                     <span>Legg til filer...</span>
                     <!-- The file input field used as target for the file upload widget -->
@@ -85,21 +86,16 @@
             // Initialize the jQuery File Upload widget:
             $('#fileupload')
             .fileupload({
-                // Uncomment the following to send cross-domain cookies:
-                //xhrFields: {withCredentials: true}
-
                 dataType: 'json',
                 autoUpload: false,
                 singleFileUploads: true,
                 limitConcurrentUploads: 3,
                 imageMaxWidth: 3264,
                 imageMaxHeight: 3264,
-                disableImageResize: /Android(?!.*Chrome)|Opera/
-                    .test(window.navigator.userAgent),
+                disableImageResize: /Android(?!.*Chrome)|Opera/.test(window.navigator.userAgent),
                 previewMaxWidth: 80,
                 previewMaxHeight: 60,
                 previewCrop: true,
-
             })
             .on('fileuploadadd', function (e, data) {
                 // The add callback is invoked as soon as files are added to the fileupload
