@@ -1,4 +1,4 @@
-<?
+<?php
 function strip_bbcode($str,$bildegruppe = "general", $patrulje = ""){
 
 	// Lenke

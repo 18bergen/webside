@@ -1,5 +1,4 @@
-<?
-
+<?php
 class noteboard extends comments {
 
 	/* General options */

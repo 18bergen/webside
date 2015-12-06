@@ -1,5 +1,4 @@
-<?
-
+<?php
 class newsletters extends base {
 
 	var $getvars = array('writenew','previewletter','sendletter','newsletterarchive_page',

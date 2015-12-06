@@ -1,5 +1,4 @@
-<?
-
+<?php
 class wordbox extends base {
 
 	var $getvars = array("save_shout","wb_page","delete_shout","recover_shout","noprint");

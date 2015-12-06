@@ -1,4 +1,4 @@
-<?
+<?php
 class sms extends base {
 
 	var $getvars = array('sms_action', 'sms_id');

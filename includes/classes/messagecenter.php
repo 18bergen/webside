@@ -1,5 +1,4 @@
-<?
-
+<?php
 class messagecenter extends base {
 
 	var $getvars = array('check_all','recipients','confirm_delete','page');

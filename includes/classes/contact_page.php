@@ -1,5 +1,4 @@
-<?
-
+<?php
 class contact_page extends base {
 
 	var $table_vervhistorie = "vervhistorie";

@@ -1,4 +1,4 @@
-<?
+<?php
 class webmail extends base {
 
 	function run() {

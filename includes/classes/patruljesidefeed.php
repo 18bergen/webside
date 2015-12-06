@@ -1,5 +1,4 @@
-<?
-
+<?php
 class patruljesidefeed {
 
 	function inttonicestr($i){

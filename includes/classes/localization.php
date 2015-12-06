@@ -1,5 +1,4 @@
-<?
-
+<?php
 class localization extends base {
 	
 	var $page_title;

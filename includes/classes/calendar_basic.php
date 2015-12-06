@@ -1,5 +1,4 @@
-<?
-
+<?php
 require_once('comments.php');
 
 class calendar_basic extends comments {

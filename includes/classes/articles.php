@@ -1,4 +1,4 @@
-<?
+<?php
 /* DEPRECATED :
 class articles extends base {
 

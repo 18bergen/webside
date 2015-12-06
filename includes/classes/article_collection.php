@@ -1,5 +1,4 @@
-<?
-
+<?php
 class article_collection extends comments {
 
 	var $allow_viewleads = false;

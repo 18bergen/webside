@@ -1,5 +1,4 @@
-<?
-
+<?php
 class debug extends base {
 
 	var $getvars = array("setfixed");

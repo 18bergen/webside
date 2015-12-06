@@ -1,5 +1,4 @@
-<?
-
+<?php
 class birthdays extends base {
 
 	function ouputNextBirthdays($count = 5){

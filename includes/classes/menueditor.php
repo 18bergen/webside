@@ -1,5 +1,4 @@
-<?
-
+<?php
 class menu extends base {
 
 	var $getvars = array('addmenuitem', 'addseparator', 'editmenuitem','savemenuitem','deletemenuitem','dodeletemenuitem','savemenuorder', 'editmenuorder');

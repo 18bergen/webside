@@ -1,5 +1,4 @@
-<?
-
+<?php
 class commonfunctions {
 
 	function printConfirmationForm($text, $page, $extraInformation = ""){

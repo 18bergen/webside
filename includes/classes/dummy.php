@@ -1,4 +1,4 @@
-<?
+<?php
 class dummy extends base {
 
 	function run() {

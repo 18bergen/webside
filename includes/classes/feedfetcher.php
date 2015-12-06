@@ -1,5 +1,4 @@
-<?
-
+<?php
 require_once(BG_LIB_PATH.'simplepie/autoloader.php');
 
 class FeedFetcher {

@@ -1,5 +1,4 @@
-<?
-
+<?php
 class JqueryUpload {
     
     var $actionurl;

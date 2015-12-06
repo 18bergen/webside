@@ -1,4 +1,4 @@
-<?
+<?php
 class progress extends base {
 
 	var $getvars = array("editpage");

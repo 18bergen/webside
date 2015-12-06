@@ -1,5 +1,4 @@
-<?
-
+<?php
 class poll extends base {
 
 	var $getvars = array("poll_id","new_poll","save_poll");

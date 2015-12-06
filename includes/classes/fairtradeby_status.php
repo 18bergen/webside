@@ -1,5 +1,4 @@
-﻿<?
-
+﻿<?php
 class fairtradeby_status extends base {
 
 	var $getvars = array();

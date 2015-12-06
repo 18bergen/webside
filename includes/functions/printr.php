@@ -1,4 +1,4 @@
-<?
+<?php
 function printr ( $object , $name = '' ) {
 	print "<div style='margin: 10px; padding: 5px; border: 1px dashed #888888;'>
 		<strong style='display: block; padding: 5px; background: #FFFF88'>$name</strong>

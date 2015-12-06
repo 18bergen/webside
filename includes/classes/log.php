@@ -1,5 +1,4 @@
-<?
-
+<?php
 class log extends comments {
 
 	// Useful variable

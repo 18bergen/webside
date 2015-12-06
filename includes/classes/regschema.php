@@ -1,5 +1,4 @@
-<?
-
+<?php
 class regschema extends base {
 
 	var $getvars = array("regconfirm","regview","reg","regid","reglist","regprocess","regdoprocess","regdelete");

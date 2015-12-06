@@ -1,4 +1,4 @@
-<?
+<?php
 class Comments extends base {
 
 	var $enable_comments = true;

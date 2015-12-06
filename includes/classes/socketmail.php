@@ -1,5 +1,4 @@
-<?
-
+<?php
 class socketmail {
 
 	var $debug = false;

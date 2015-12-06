@@ -1,5 +1,5 @@
 #!/usr/local/php5/bin/php -q
-<?
+<?php
 //print "   # make_sitemap.php executed";
 $memberlist_class = 9;
 $memberlist_page = 85;

@@ -1,5 +1,4 @@
-<?
-
+<?php
 class images extends base {
 
 	var $getvars = array("showimagedetails","cms_saveimagetitle","cms_editimagetitle","cms_replaceimage","cms_doreplaceimage",

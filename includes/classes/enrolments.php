@@ -1,4 +1,4 @@
-<?
+<?php
 /*
  * Class:       enrolments
  * Description: The enrolments class can be thought of as consisting of two parts, one 

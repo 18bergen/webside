@@ -1,4 +1,4 @@
-<?
+<?php
 class rent extends base {
 
 	var $getvars = array();

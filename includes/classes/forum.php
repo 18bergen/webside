@@ -1,5 +1,4 @@
-<?
-
+<?php
 class forum extends base {
 
 	var $threads;

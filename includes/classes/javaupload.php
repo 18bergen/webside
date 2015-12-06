@@ -1,4 +1,4 @@
-<?
+<?php
 class javaupload {
 	
 	var $jupload_dir = "jupload.jar";

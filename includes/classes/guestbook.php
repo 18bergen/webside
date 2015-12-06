@@ -1,5 +1,4 @@
-<?
-
+<?php
 class guestbook extends base {
 
 	var $getvars = array("gb_delete","gb_save","gb_saved","p","delconf");

@@ -1,4 +1,4 @@
-<?
+<?php
 class ckFinderPlugin extends base {
 	
 	function ckFinderPlugin() {

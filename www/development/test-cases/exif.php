@@ -1,4 +1,4 @@
-<?
+<?php
 date_default_timezone_set('Europe/Oslo');
 
 $f = '../userfiles/images/Bildearkiv/tropp/2009/epler-og-sitroner/i03581.jpg';

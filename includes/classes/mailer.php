@@ -1,4 +1,4 @@
-<?
+<?php
 class mailer extends base {
 
     var $tablename = "mailqueue";

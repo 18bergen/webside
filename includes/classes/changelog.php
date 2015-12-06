@@ -1,4 +1,4 @@
-<?
+<?php
 class changelog extends base {
 	var $getvars = array();
 

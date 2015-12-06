@@ -1,5 +1,4 @@
-<?
-
+<?php
 class imageeditor {
 
 	var $gd;		// gd on server?

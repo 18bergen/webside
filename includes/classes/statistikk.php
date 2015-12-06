@@ -1,5 +1,4 @@
-﻿<?
-
+﻿<?php
 class statistikk {
 
 	function run() {

@@ -1,4 +1,4 @@
-<?
+<?php
 class competition extends base {
 
 	var $getvars = array("editpage");

@@ -1,5 +1,4 @@
-<?
-
+<?php
 class crypto {
 
 	var $md5key;

@@ -32,8 +32,7 @@ function insertEmoticon(addSmilie) {
 <body style='background: #EDF0ED; font-family: Tahoma; font-size:12px;'>
 Klikk for å sette inn:<br>
 <br>
-<?
-
+<?php
 	function makeSmileysTable($insertFunction) {
 		$c = "
 		<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\">

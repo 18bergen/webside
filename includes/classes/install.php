@@ -1,5 +1,4 @@
-<?
-
+<?php
 class install extends base {
 	
 	function initialize() {

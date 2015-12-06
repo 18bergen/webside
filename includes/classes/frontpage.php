@@ -1,5 +1,4 @@
-<?
-
+<?php
 class frontpage extends base {
 
 	var $article_collection;

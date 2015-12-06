@@ -1,5 +1,4 @@
-<?
-
+<?php
 class cms_basic extends base {
 	
 	var $preferred_lang = "NA";

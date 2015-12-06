@@ -1,4 +1,4 @@
-<?
+<?php
 class uimage extends base {
 	
 	var $uimage_dir;

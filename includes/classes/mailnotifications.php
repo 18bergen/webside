@@ -1,5 +1,4 @@
-<?
-
+<?php
 class MailNotifications {
 	
 	function getUnread() {

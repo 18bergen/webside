@@ -1,4 +1,4 @@
-<?
+<?php
 class addresslist extends base {
 
 	var $getvars = array();

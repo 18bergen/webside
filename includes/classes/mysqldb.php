@@ -1,5 +1,4 @@
-<?
-
+<?php
 class mysqldb extends mysqli {
 
 	var $image_dir;

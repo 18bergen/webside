@@ -1,5 +1,4 @@
-<?
-
+<?php
 class innlogging extends base {
 
 	public $getvars = array("dologin","brukernavn","passord","dologout","sendpwd","passwordsent","loginfailed","sendlogininfo","lost_pass");

@@ -1,5 +1,4 @@
-<?
-
+<?php
 class base {
 
 	var $getvars = array();

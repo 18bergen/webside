@@ -1,5 +1,4 @@
-<?
-
+<?php
 class calendar extends calendar_basic {
 
 	var $getvars = array('action','show_event',

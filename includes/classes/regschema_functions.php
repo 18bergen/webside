@@ -1,4 +1,4 @@
-<?
+<?php
  function loadFullMemberlist() {
  	global $memberdb,$login,$db;
  	require_once("$classpath/memberlist_actions.php");

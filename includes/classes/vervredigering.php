@@ -1,5 +1,4 @@
-<?
-
+<?php
 class vervredigering extends base {
 
 	var $getvars = array("vervskifte","vervhistorie","edittypes","delconf","moveup","movedown","verv","endreverv");

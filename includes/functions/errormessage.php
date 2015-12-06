@@ -1,4 +1,4 @@
-<?
+<?php
 function ErrorMessage($str){
 	global $eventLog;
 	// Skriv ut generisk feilmelding basert på input.

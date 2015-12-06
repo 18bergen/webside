@@ -1,5 +1,4 @@
-<?
-
+<?php
 class ForumNotifications extends base {
 
 	function ForumNotifications() {

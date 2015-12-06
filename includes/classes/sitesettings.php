@@ -1,5 +1,4 @@
-<?
-
+<?php
 class sitesettings extends base {
 
 	var $getvars = array("savesettings","addsetting","dropsetting");

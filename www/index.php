@@ -1,4 +1,4 @@
-<?
+<?php
 /*
 if (($_SERVER['REMOTE_ADDR'] == "::1") || ($_SERVER['REMOTE_ADDR'] == "84.208.96.226") || ($_SERVER['REMOTE_ADDR'] == "128.39.226.149")){
  

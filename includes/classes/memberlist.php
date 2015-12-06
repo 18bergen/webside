@@ -1,5 +1,4 @@
-<?
-
+<?php
 class memberlist extends base {
 	
 	var $members;

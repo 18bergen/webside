@@ -1,5 +1,4 @@
-<?
-
+<?php
 date_default_timezone_set('Europe/Oslo');
 mb_internal_encoding('utf-8');
 

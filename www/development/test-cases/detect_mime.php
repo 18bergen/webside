@@ -1,4 +1,4 @@
-<?
+<?php
 $finfo = new finfo(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
 if ($finfo === false) {
 	print "failed";

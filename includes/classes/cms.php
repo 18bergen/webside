@@ -1,5 +1,4 @@
-<?
-
+<?php
 class cms extends base {
 
 	var $getvars = array("dynpage",

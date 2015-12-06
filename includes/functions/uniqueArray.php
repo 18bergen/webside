@@ -1,4 +1,4 @@
-<? 
+<?php
 function uniqueArray($array) { 
  // Get unique elts as keys in assoc. array 
  for ($i=0,$n=count($array, 1);$i<$n;$i++) 

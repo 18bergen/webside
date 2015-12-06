@@ -1,5 +1,4 @@
-<?
-
+<?php
 function dpeventlogentry($str, $unique = false, $type = "minor"){
 	global $eventLog;
 	$eventLog->addToActivityLog($str, $unique, $type);

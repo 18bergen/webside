@@ -1,5 +1,4 @@
-<?
-
+<?php
 class html_page extends base {
 	
 	var $page_title;
