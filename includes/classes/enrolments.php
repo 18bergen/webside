@@ -287,7 +287,7 @@ class enrolments extends base {
 		$res = $this->query("SELECT closing_date FROM $this->table_enrolments WHERE id=$enrolment_id");
 		if ($res->num_rows != 1) return false;
 		$row = $res->fetch_assoc();
-		return strtotime($row['closing_date']);
+		return ($row['closing_date'] == '0000-00-00 00:00:00') ? '0' : strtotime($row['closing_date']);
 	}
 	
 	public function getEnrolmentParticipants($id) {
