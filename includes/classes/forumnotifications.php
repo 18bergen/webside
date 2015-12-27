@@ -1,10 +1,10 @@
 <?php
 class ForumNotifications {
 	
-	function getUnread() {
+	public static function getUnread() {
 		global $memberdb,$login,$db;
 
-		if ($this->isLoggedIn()){ 
+		if ($login->isLoggedIn()){ 
 			$userId = $login->getUserId();
 		
 			$pageIdGruppeForum = 77;

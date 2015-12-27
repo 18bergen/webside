@@ -3,7 +3,7 @@ require_once(BG_LIB_PATH.'simplepie/autoloader.php');
 
 class FeedFetcher {
 
-	function fetchFeeds($feeds) {
+	public static function fetchFeeds($feeds) {
 
 		$_cacheDir = '../cache/simplepie';
 

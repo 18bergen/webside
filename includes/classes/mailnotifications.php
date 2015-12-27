@@ -1,10 +1,10 @@
 <?php
 class MailNotifications {
 	
-	function getUnread() {
+	public static function getUnread() {
 		global $memberdb,$db,$login;
 
-		if ($this->isLoggedIn()){ 
+		if ($login->isLoggedIn()){ 
 			$userId = $login->getUserId();
 	
 			$visInternForum = true;
