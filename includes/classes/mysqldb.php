@@ -4,9 +4,15 @@ class mysqldb extends mysqli {
 	var $image_dir;
 
 	public function __construct(){
-		global $dbHost, $dbUser, $dbPass, $dbName, $dbPipe;
 
-		parent::__construct($dbHost,$dbUser,$dbPass,$dbName, NULL, $dbPipe);
+		parent::__construct(
+			getenv('MYSQL_HOST') ?: null,
+			getenv('MYSQL_USER'),
+			getenv('MYSQL_PASSWORD'),
+			getenv('MYSQL_DB'),
+			NULL,
+			getenv('MYSQL_SOCKET') ?: null
+		);
 
 		if (!empty($this->connect_error)) {
 			die("

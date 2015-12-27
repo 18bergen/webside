@@ -93,7 +93,6 @@ $crypto = new crypto();
 
 $db = new mysqldb();
 $db->image_dir = ROOT_DIR.'/images/';
-unset($dbHost, $dbUser, $dbPass, $dbName, $dbPipe);
 
 $eventLog  = new eventlog();
 
