@@ -9,7 +9,7 @@ define('BG_WWW_PATH',dirname(dirname(__FILE__)).'/www/');
 define('BG_LIB_PATH',dirname(dirname(__FILE__)).'/www/libs/');
 
 define('LIB_CKFINDER_URI', '/libs/ckfinder-2.6.0/');
-define('LIB_CKEDITOR_URI', '/libs/ckeditor-4.1.2/');
+define('LIB_CKEDITOR_URI', '/libs/ckeditor-4.5.6/');
 
 /*
  if (($_SERVER['REMOTE_ADDR'] == "::1") || ($_SERVER['REMOTE_ADDR'] == "192.168.2.144") || ($_SERVER['REMOTE_ADDR'] == "192.168.2.194") || ($_SERVER['REMOTE_ADDR'] == "10.24.124.195") || ($_SERVER['REMOTE_ADDR'] == "193.157.195.156") || ($_SERVER['REMOTE_ADDR'] == "84.48.18.118")){
