@@ -1,0 +1,13 @@
+{
+    "name": "18bergen/webside",
+    "require": {
+        "vlucas/phpdotenv": "~2.1.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dan Michael O. Heggø",
+            "email": "danmichaelo@gmail.com"
+        }
+    ]
+}

@@ -48,8 +48,12 @@ function CheckAuthentication()
 
 // LicenseKey : Paste your license key here. If left blank, CKFinder will be
 // fully functional, in demo mode.
+require(dirname(dirname(__DIR__)) . '/vendor/autoload.php');
+$dotenv = new Dotenv\Dotenv(dirname(dirname(__DIR__)));
+$dotenv->load();
+
 $config['LicenseName'] = 'www.18bergen.org';
-$config['LicenseKey'] = 'NJ3A-BQA1-C111-E4NX-R9NN-EYHT-DDUH';
+$config['LicenseKey'] = getenv('CKFINDER_LICENSE_KEY');
 
 /*
  Uncomment lines below to enable PHP error reporting and displaying PHP errors.
