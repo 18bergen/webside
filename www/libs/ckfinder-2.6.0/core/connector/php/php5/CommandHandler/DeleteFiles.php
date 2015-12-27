@@ -119,6 +119,14 @@ class CKFinder_Connector_CommandHandler_DeleteFiles extends CKFinder_Connector_C
 
         $filePath = $_resourceTypeConfig[$type]->getDirectory().$path.$name;
 
+        /*************************** Modified by DM BEGIN ****************************/
+        global $bg18;
+
+        if (!$bg18->allowWrite($filePath)) {
+              $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UNAUTHORIZED);
+        }
+        /**************************** Modified by DM END *****************************/
+
         if (!file_exists($filePath) || !is_file($filePath) ) {
           $errorCode = CKFINDER_CONNECTOR_ERROR_FILE_NOT_FOUND;
           $this->appendErrorNode($oErrorsNode, $errorCode, $name, $type, $path);
@@ -135,6 +143,11 @@ class CKFinder_Connector_CommandHandler_DeleteFiles extends CKFinder_Connector_C
           $thumbPath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_currentFolder->getThumbsServerPath(), $name);
 
           @unlink($thumbPath);
+
+          /*************************** Modified by DM BEGIN ****************************/
+          global $baseDir;
+          $bg18->fileDeleted($filePath,$baseDir);
+          /**************************** Modified by DM END *****************************/
         }
       }
     }

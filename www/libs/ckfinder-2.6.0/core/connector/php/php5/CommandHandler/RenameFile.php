@@ -95,6 +95,13 @@ class CKFinder_Connector_CommandHandler_RenameFile extends CKFinder_Connector_Co
         $filePath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_currentFolder->getServerPath(), $fileName);
         $newFilePath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_currentFolder->getServerPath(), $newFileName);
 
+        /*************************** Modified by DM BEGIN ****************************/
+        global $bg18;
+        if (!$bg18->allowWrite($filePath)) {
+            $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_UNAUTHORIZED);
+        }
+        /**************************** Modified by DM END *****************************/
+
         $bMoved = false;
 
         if (!file_exists($filePath)) {
@@ -123,5 +130,10 @@ class CKFinder_Connector_CommandHandler_RenameFile extends CKFinder_Connector_Co
             $thumbPath = CKFinder_Connector_Utils_FileSystem::combinePaths($this->_currentFolder->getThumbsServerPath(), $fileName);
             CKFinder_Connector_Utils_FileSystem::unlink($thumbPath);
         }
+
+        /*************************** Modified by DM BEGIN ****************************/
+        global $baseDir;
+        $bg18->fileRenamed($filePath, $newFilePath,$baseDir);
+        /**************************** Modified by DM END *****************************/
     }
 }

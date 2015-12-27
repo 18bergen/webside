@@ -31,6 +31,11 @@
 ob_start();
 
 /**
+ * Modified by DM: Load 18. Bergen interface
+ */
+require_once "./bergenvs_plugin.php";
+
+/**
  * define required constants
  */
 require_once dirname(__FILE__) . '/constants.php';

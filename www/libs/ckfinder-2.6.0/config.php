@@ -11,6 +11,7 @@
  * Other settings may be left with their default values, or used to control
  * advanced features of CKFinder.
  */
+if (!isset($_SESSION)) session_start();
 
 /**
  * This function must check the user session to be sure that he/she is
@@ -30,13 +31,25 @@ function CheckAuthentication()
 	// user logs in your system. To be able to use session variables don't
 	// forget to add session_start() at the top of this file.
 
+	$sessId = 'c18bg';
+
+	/* We should consider also verifying the value of the session-variable through the innlogging-class. */
+	if (isset($_SESSION)){
+		if (isset($_SESSION[$sessId]) && !empty($_SESSION[$sessId])){
+			return true;
+		} else if (isset($_COOKIE[$sessId]) && !empty($_COOKIE[$sessId])){
+			return true;
+		} else {
+			return false;
+		}
+	}
 	return false;
 }
 
 // LicenseKey : Paste your license key here. If left blank, CKFinder will be
 // fully functional, in demo mode.
-$config['LicenseName'] = '';
-$config['LicenseKey'] = '';
+$config['LicenseName'] = 'www.18bergen.org';
+$config['LicenseKey'] = 'NJ3A-BQA1-C111-E4NX-R9NN-EYHT-DDUH';
 
 /*
  Uncomment lines below to enable PHP error reporting and displaying PHP errors.
@@ -60,7 +73,7 @@ Examples:
 
 ATTENTION: The trailing slash is required.
 */
-$baseUrl = '/ckfinder/userfiles/';
+$baseUrl = '/userfiles/';
 
 /*
 $baseDir : the path to the local directory (in the server) which points to the
@@ -81,6 +94,12 @@ ATTENTION: The trailing slash is required.
 */
 $baseDir = resolveUrl($baseUrl);
 
+if (isset($_SESSION['CKFinder_UserRole']) && strpos($_SESSION['CKFinder_UserRole'],'user') === 0) {
+	$userId = substr($_SESSION['CKFinder_UserRole'],4);
+	$baseDir .= "Medlemsfiler/$userId/";
+	$baseUrl .= "Medlemsfiler/$userId/";
+}
+
 /*
  * ### Advanced Settings
  */
@@ -90,12 +109,12 @@ Thumbnails : thumbnails settings. All thumbnails will end up in the same
 directory, no matter the resource type.
 */
 $config['Thumbnails'] = Array(
-		'url' => $baseUrl . '_thumbs',
-		'directory' => $baseDir . '_thumbs',
+		'url' => $baseUrl . '_thumbs140',
+		'directory' => $baseDir . '_thumbs140',
 		'enabled' => true,
-		'directAccess' => false,
-		'maxWidth' => 100,
-		'maxHeight' => 100,
+		'directAccess' => true,
+		'maxWidth' => 140,
+		'maxHeight' => 140,
 		'bmpSupported' => false,
 		'quality' => 80);
 
@@ -117,7 +136,8 @@ To be able to use this feature, you must initialize the session data by
 uncommenting the following "session_start()" call.
 */
 $config['RoleSessionVar'] = 'CKFinder_UserRole';
-//session_start();
+if (!isset($_SESSION)) session_start();
+
 
 /*
 AccessControl : used to restrict access or features to specific folders.
@@ -138,13 +158,60 @@ $config['AccessControl'][] = Array(
 
 		'folderView' => true,
 		'folderCreate' => true,
-		'folderRename' => true,
-		'folderDelete' => true,
+		'folderRename' => false,
+		'folderDelete' => false,
 
 		'fileView' => true,
 		'fileUpload' => true,
 		'fileRename' => true,
 		'fileDelete' => true);
+
+$config['AccessControl'][] = Array(
+		'role' => 'limited',
+		'resourceType' => '*',
+		'folder' => '/',
+
+		'folderView' => true,
+		'folderCreate' => false,
+		'folderRename' => false,
+		'folderDelete' => false,
+
+		'fileView' => true,
+		'fileUpload' => false,
+		'fileRename' => false,
+		'fileDelete' => false);
+/*
+Restrict uploading and editing in image archive
+*/
+$config['AccessControl'][] = Array(
+		'role' => '*',
+		'resourceType' => '*',
+		'folder' => '/Bildearkiv',
+
+		'folderView' => true,
+		'folderCreate' => false,
+		'folderRename' => false,
+		'folderDelete' => false,
+
+		'fileView' => true,
+		'fileUpload' => false,
+		'fileRename' => false,
+		'fileDelete' => false);
+
+/*
+Restrict uploading and editing for the patrols
+*/
+$patruljer = array('bever','orn','elg','falk','hjort');
+foreach ($patruljer as $patrulje) {
+	$config['AccessControl'][] = Array(
+			'role' => "patrulje_$patrulje", 'resourceType' => '*', 'folder' => '/',
+			'folderView' => true, 'folderCreate' => false, 'folderRename' => false, 'folderDelete' => false,
+			'fileView' => true, 'fileUpload' => false, 'fileRename' => false, 'fileDelete' => false);
+	$config['AccessControl'][] = Array(
+			'role' => "patrulje_$patrulje", 'resourceType' => '*', 'folder' => "/patruljer/$patrulje",
+			'folderView' => true,'folderCreate' => true, 'folderRename' => false, 'folderDelete' => false,
+			'fileView' => true, 'fileUpload' => true, 'fileRename' => true, 'fileDelete' => true);
+}
 
 /*
 For example, if you want to restrict the upload, rename or delete of files in
@@ -193,27 +260,35 @@ to upload `.swf` files only if you understand and can accept this risk.
 $config['DefaultResourceTypes'] = '';
 
 $config['ResourceType'][] = Array(
-		'name' => 'Files',				// Single quotes not allowed
-		'url' => $baseUrl . 'files',
-		'directory' => $baseDir . 'files',
+		'name' => 'Bilder',
+		'url' => $baseUrl . 'Bilder',
+		'directory' => $baseDir . 'Bilder',
 		'maxSize' => 0,
-		'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,pxd,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,sitd,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip',
-		'deniedExtensions' => '');
-
-$config['ResourceType'][] = Array(
-		'name' => 'Images',
-		'url' => $baseUrl . 'images',
-		'directory' => $baseDir . 'images',
-		'maxSize' => 0,
-		'allowedExtensions' => 'bmp,gif,jpeg,jpg,png',
+		'allowedExtensions' => 'gif,jpeg,jpg,png',
 		'deniedExtensions' => '');
 
 $config['ResourceType'][] = Array(
 		'name' => 'Flash',
-		'url' => $baseUrl . 'flash',
-		'directory' => $baseDir . 'flash',
+		'url' => $baseUrl . 'Flash',
+		'directory' => $baseDir . 'Flash',
 		'maxSize' => 0,
 		'allowedExtensions' => 'swf,flv',
+		'deniedExtensions' => '');
+
+$config['ResourceType'][] = Array(
+		'name' => 'Medlemsbilder',
+		'url' => $baseUrl . 'Medlemsbilder',
+		'directory' => $baseDir . 'Medlemsbilder',
+		'maxSize' => 0,
+		'allowedExtensions' => 'gif,jpeg,jpg,png',
+		'deniedExtensions' => '');
+
+$config['ResourceType'][] = Array(
+		'name' => 'Vedlegg',
+		'url' => $baseUrl . 'Vedlegg',
+		'directory' => $baseDir . 'Vedlegg',
+		'maxSize' => 0,
+		'allowedExtensions' => 'pdf,doc,docx,rtf,xls,xlsx,ppt,pptx,dot,zip,svg,png',
 		'deniedExtensions' => '');
 
 /*
@@ -281,7 +356,7 @@ No paths are accepted, only the folder name.
 The * and ? wildcards are accepted.
 ".*" disallows the creation of folders starting with a dot character.
 */
-$config['HideFolders'] = Array(".*", "CVS");
+$config['HideFolders'] = Array(".*", "CVS", "_thumb490");
 
 /*
 Files to not display in CKFinder, no matter their location.
@@ -297,20 +372,20 @@ If possible, it is recommended to set more restrictive permissions, like 0755.
 Set to 0 to disable this feature.
 Note: not needed on Windows-based servers.
 */
-$config['ChmodFiles'] = 0777 ;
+$config['ChmodFiles'] = 0 ;
 
 /*
 See comments above.
 Used when creating folders that does not exist.
 */
-$config['ChmodFolders'] = 0755 ;
+$config['ChmodFolders'] = 0 ;
 
 /*
 Force ASCII names for files and folders.
 If enabled, characters with diactric marks, like å, ä, ö, ć, č, đ, š
 will be automatically converted to ASCII letters.
 */
-$config['ForceAscii'] = false;
+$config['ForceAscii'] = true;
 
 /*
 Send files using X-Sendfile module

@@ -71,5 +71,10 @@ class CKFinder_Connector_CommandHandler_DeleteFolder extends CKFinder_Connector_
         }
 
         CKFinder_Connector_Utils_FileSystem::unlink($this->_currentFolder->getThumbsServerPath());
+
+        /*************************** Modified by DM BEGIN ****************************/
+        global $bg18;
+        $bg18->folderDeleted($folderServerPath);
+        /**************************** Modified by DM END *****************************/
     }
 }

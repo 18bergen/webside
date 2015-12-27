@@ -90,6 +90,14 @@ class CKFinder_Connector_CommandHandler_CreateFolder extends CKFinder_Connector_
         if (!$bCreated) {
             $this->_errorHandler->throwError(CKFINDER_CONNECTOR_ERROR_ACCESS_DENIED);
         } else {
+
+            /*************************** Modified by DM BEGIN ****************************/
+
+            global $bg18,$baseDir;
+            $bg18->folderCreated($sServerDir, $baseDir);
+
+            /**************************** Modified by DM END *****************************/
+
             $oNewFolderNode = new Ckfinder_Connector_Utils_XmlNode("NewFolder");
             $this->_connectorNode->addChild($oNewFolderNode);
             $oNewFolderNode->addAttribute("name", CKFinder_Connector_Utils_FileSystem::convertToConnectorEncoding($sNewFolderName));
