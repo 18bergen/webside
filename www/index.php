@@ -8,8 +8,8 @@ if (($_SERVER['REMOTE_ADDR'] == "::1") || ($_SERVER['REMOTE_ADDR'] == "84.208.96
 	exit();
  }
  */
-require_once(__DIR__ . '/vendor/autoload.php');
-$dotenv = new Dotenv\Dotenv(__DIR__);
+require_once(dirname(__DIR__) . '/vendor/autoload.php');
+$dotenv = new Dotenv\Dotenv(dirname(__DIR__));
 $dotenv->load();
 
 define('BG_INC_PATH',dirname(dirname(__FILE__)).'/includes/');

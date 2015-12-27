@@ -48,8 +48,8 @@ function CheckAuthentication()
 
 // LicenseKey : Paste your license key here. If left blank, CKFinder will be
 // fully functional, in demo mode.
-require(dirname(dirname(__DIR__)) . '/vendor/autoload.php');
-$dotenv = new Dotenv\Dotenv(dirname(dirname(__DIR__)));
+require_once(dirname(dirname(dirname(__DIR__))) . '/vendor/autoload.php');
+$dotenv = new Dotenv\Dotenv(dirname(dirname(dirname(__DIR__))));
 $dotenv->load();
 
 $config['LicenseName'] = 'www.18bergen.org';
