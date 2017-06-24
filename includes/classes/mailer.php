@@ -8,7 +8,6 @@ class mailer extends base {
 	}
 	
 	function initialize(){
-        #require_once '../www/libs/swift-latest/lib/swift_required.php';
 		$this->initialize_base();
 	}
 	
@@ -137,13 +136,12 @@ class mailer extends base {
 	function send_from_queue($attachment_dir = '') {
 	    global $bergen18globalconfig;
 
-        require_once '../www/libs/swift-latest/lib/swift_required.php';        
-        $mailer_working = array();
-        for ($i = 0; $i < count($bergen18globalconfig['smtpServers']); $i++) {
-    		$_SESSION['msg'] = "Meldingen er allerede sendt";
-	    	$_SESSION['success'] = "success";
-            $mailer_working[] = true;
-        }
+                $mailer_working = array();
+                for ($i = 0; $i < count($bergen18globalconfig['smtpServers']); $i++) {
+                        $_SESSION['msg'] = "Meldingen er allerede sendt";
+                        $_SESSION['success'] = "success";
+                    $mailer_working[] = true;
+                }
         	        
 		$res = $this->query("SELECT id, sender_name, sender_email, rcpt_name, rcpt_email, subject, plain_body, html_body, attachments FROM $this->tablename WHERE time_sent=0 AND permanent_failure=0 ORDER BY time_added");
 		$queuesize = $res->num_rows;

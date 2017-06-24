@@ -2698,20 +2698,33 @@ class memberlist_actions extends memberlist {
 		
 		if ($preview) return $plainBody;
 		
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
+
+
+
+
+
 		// Send mail		
-		$mail = new htmlMimeMail5();
-		$mail->setFrom("$this->mailSenderName <$this->mailSenderAddr>");
-		$mail->setReturnPath($this->mailSenderAddr);
-		if ($isReminder)
-			$mail->setSubject("Påminnelse om brukerkonto hos $this->mailSenderName");
-		else
-			$mail->setSubject("Velkommen til $this->mailSenderName");
-		$mail->setText($plainBody);
+                $message = Swift_Message::newInstance();
 		$recipients = array("$rcptmail");
-		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-		$mail->send($recipients,$type = 'smtp');		
-		
+		if ($isReminder)
+			$message->setSubject("Påminnelse om brukerkonto hos $this->mailSenderName");
+		else
+			$message->setSubject("Velkommen til $this->mailSenderName");
+                $message->setFrom(array($this->mailSenderAddr => $this->mailSenderName));
+                $message->setTo($recipients);
+                $message->setBody($plainBody);
+                $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
+                $transport->setUsername($this->smtpUser);
+                $transport->setPassword($this->smtpPass);
+                $swiftmailer = Swift_Mailer::newInstance($transport);
+                try {
+                    $numSent = $swiftmailer->send($message);
+                } catch (Exception $e) {
+                    echo 'Mail sending failed: ',  $e->getMessage(), "\n";
+                    die;
+                }
+                if (!$numSent) { echo "Mail sending failed!"; die; }
+
 		if ($isReminder) 
 			$this->addToActivityLog("sendte påminnelse om aktivering av brukernavn til ".$usr->fullname);
 		//else

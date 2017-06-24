@@ -1650,8 +1650,6 @@ class enrolments extends base {
 	
 	private function mailReceipt($enrolment){
 		
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-
 		$from_name = $this->mailSenderName; // global options
 		$from_addr = $this->mailSenderAddr; // global options
 		
@@ -1719,21 +1717,22 @@ $server/
 ";
 
 			// Send mail        
-			$mail = new htmlMimeMail5();
-			$mail->setFrom("$from_name <$from_addr>");
-			$mail->setReturnPath($from_addr);
-			$mail->setSubject("Kvittering for påmelding til ".$this->event_obj['caption']);
-			$mail->setText($plainBody);
-			//$mail->setHTML($htmlBody);
-			$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-			$mail->send($recipients,$type = 'smtp');        
+	                $message = Swift_Message::newInstance();
+			$message->setSubject("Kvittering for påmelding til ".$this->event_obj['caption']);
+                        $message->setFrom(array($from_addr => $from_name));
+                        $message->setTo($recipients);
+                        $message->setBody($plainBody);
+                        $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
+                        $transport->setUsername($this->smtpUser);
+                        $transport->setPassword($this->smtpPass);
+                        $swiftmailer = Swift_Mailer::newInstance($transport);
+			$swiftmailer->send($message);
+
 		}
 	}
 	
 	private function mailReceiptCancel($enrolment){
 		
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-
 		$from_name = $this->mailSenderName; // global options
 		$from_addr = $this->mailSenderAddr; // global options
 		
@@ -1804,14 +1803,19 @@ $server/
 ";
 
 			// Send mail        
-			$mail = new htmlMimeMail5();
-			$mail->setFrom("$from_name <$from_addr>");
-			$mail->setReturnPath($from_addr);
-			$mail->setSubject("Kvittering for avmelding til ".$this->event_obj['caption']);
-			$mail->setText($plainBody);
-			//$mail->setHTML($htmlBody);
-			$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-			$mail->send($recipients,$type = 'smtp');                
+	                $message = Swift_Message::newInstance();
+			$message->setSubject("Kvittering for avmelding til ".$this->event_obj['caption']);
+                        $message->setFrom(array($from_addr => $from_name));
+                        $message->setTo($recipients);
+                        $message->setBody($plainBody);
+                        $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
+                        $transport->setUsername($this->smtpUser);
+                        $transport->setPassword($this->smtpPass);
+                        $swiftmailer = Swift_Mailer::newInstance($transport);
+			$swiftmailer->send($message);
+
+
+
 		}
 	}
 	

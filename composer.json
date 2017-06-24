@@ -1,7 +1,8 @@
 {
     "name": "18bergen/webside",
     "require": {
-        "vlucas/phpdotenv": "~2.1.0"
+        "vlucas/phpdotenv": "~2.1.0",
+        "swiftmailer/swiftmailer": "^5.4"
     },
     "license": "MIT",
     "authors": [

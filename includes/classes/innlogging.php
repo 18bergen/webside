@@ -242,15 +242,18 @@ class innlogging extends base {
 		$plainBody .="\r\n\r\n-- \r\nDette er en auto-generert utsendelse.\r\n$url_root";
 		
 		$recipients = array($rcptmail);
+
 		// Send mail
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-		$mail = new htmlMimeMail5();
-		$mail->setFrom("$this->mailSenderName <$this->mailSenderAddr>");
-		$mail->setReturnPath($this->mailSenderAddr);
-		$mail->setSubject("[$this->mailSenderName] Innloggingsopplysninger");
-		$mail->setText($plainBody);
-		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-		$mail->send($recipients,$type = 'smtp');
+                $message = Swift_Message::newInstance();
+		$message->setSubject("[$this->mailSenderName] Innloggingsopplysninger");
+                $message->setFrom(array($this->mailSenderAddr => $this->mailSenderName));
+                $message->setTo($recipients);
+                $message->setBody($plainBody);
+                $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
+                $transport->setUsername($this->smtpUser);
+                $transport->setPassword($this->smtpPass);
+                $swiftmailer = Swift_Mailer::newInstance($transport);
+		$swiftmailer->send($message);
 
 		return true;
 	}

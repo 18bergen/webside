@@ -1101,14 +1101,17 @@ http://".$_SERVER['SERVER_NAME']."$url
 		$recipients = array($reg_behandler->email);
 
 		// Send mail
-		$mail = new htmlMimeMail5();
-		$mail->setFrom("$this->mailSenderName <$this->mailSenderAddr>");
-		$mail->setReturnPath($this->mailSenderAddr);
-		$mail->setSubject("[$this->mailSenderName] Registrering av nytt medlem");
-		$mail->setText($plainBody);
-		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-		$mail->send($recipients,$type = 'smtp');		
-		
+                $message = Swift_Message::newInstance();
+		$message->setSubject("[$this->mailSenderName] Registrering av nytt medlem");
+                $message->setFrom(array($this->mailSenderAddr => $this->mailSenderName));
+                $message->setTo($recipients);
+                $message->setBody($plainBody);
+                $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
+                $transport->setUsername($this->smtpUser);
+                $transport->setPassword($this->smtpPass);
+                $swiftmailer = Swift_Mailer::newInstance($transport);
+		$swiftmailer->send($message);
+
 		$this->redirect($this->generateURL(array("regview","regid=$id")),
 			"Registreringen er sendt! Dersom du har oppgitt en e-postadresse, vil du vil motta informasjon når registreringen er godkjent."
 		);
@@ -1433,7 +1436,6 @@ http://".$_SERVER['SERVER_NAME']."$url
 	}
 	
 	function processRegistration($id) {
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
 	
 		if (!$this->allow_acceptregistrations) return $this->permissionDenied(); 
 		if (!is_numeric($id)) return $this->notSoFatalError("Registreringen eksisterer ikke (1)"); 
@@ -1563,18 +1565,21 @@ http://".$_SERVER['SERVER_NAME']."$url
 			
 			if (count($recipients) > 0) {
 		
-				$plainBody = "$this->site_name\n\n".
-					"Søknaden om registrering av et nytt medlem er godkjent.\n\n".
-					"http://".$_SERVER['SERVER_NAME']."$url\n\n";
+				// $plainBody = "$this->site_name\n\n".
+				// 	"Søknaden om registrering av et nytt medlem er godkjent.\n\n".
+				// 	"http://".$_SERVER['SERVER_NAME']."$url\n\n";
 	
-				// Send mail		
-				$mail = new htmlMimeMail5();
-				$mail->setFrom("$this->mailSenderName <$this->mailSenderAddr>");
-				$mail->setReturnPath($this->mailSenderAddr);
-				$mail->setSubject("[$this->mailSenderName] Registrering av nytt medlem");
-				$mail->setText($plainBody);
-				$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-				$mail->send($recipients,$type = 'smtp');		
+				// // Send mail		
+		                $message = Swift_Message::newInstance();
+				$message->setSubject("[$this->mailSenderName] Registrering av nytt medlem");
+                                $message->setFrom(array($this->mailSenderAddr => $this->mailSenderName));
+                                $message->setTo($recipients);
+                                $message->setBody($plainBody);
+                                $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
+                                $transport->setUsername($this->smtpUser);
+                                $transport->setPassword($this->smtpPass);
+                                $swiftmailer = Swift_Mailer::newInstance($transport);
+				$swiftmailer->send($message);
 			
 			}
 			
@@ -1594,13 +1599,17 @@ http://".$_SERVER['SERVER_NAME']."$url
 					"http://".$_SERVER['SERVER_NAME']."$url\n\n";
 	
 				// Send mail		
-				$mail = new htmlMimeMail5();
-				$mail->setFrom("$this->mailSenderName <$this->mailSenderAddr>");
-				$mail->setReturnPath($this->mailSenderAddr);
-				$mail->setSubject("[$this->mailSenderName] Registrering av nytt medlem");
-				$mail->setText($plainBody);
-				$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-				$mail->send($recipients,$type = 'smtp');		
+		                $message = Swift_Message::newInstance();
+				$message->setSubject("[$this->mailSenderName] Registrering av nytt medlem");
+                                $message->setFrom(array($this->mailSenderAddr => $this->mailSenderName));
+                                $message->setTo($recipients);
+                                $message->setBody($plainBody);
+                                $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
+                                $transport->setUsername($this->smtpUser);
+                                $transport->setPassword($this->smtpPass);
+                                $swiftmailer = Swift_Mailer::newInstance($transport);
+				$swiftmailer->send($message);
+
 			
 			}
 			
