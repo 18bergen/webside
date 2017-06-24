@@ -22,14 +22,15 @@ class TemplateService extends base {
 	private $_rootDir = "";
 	
 	private $_rssFeeds = array(
-			'nsf' => array(
+			/*
+                         'nsf' => array(
 				'url' => 'http://www.speiding.no/rss/',
 				'short_title' => 'forbundet'
 			),
 			'krins' => array(
 				'url' => 'http://www.hordalandsspeiderne.no/news/rss',
 				'short_title' => 'krinsen'
-			),
+			), */
 			'speiderbasen' => array( 
 			    'url' => 'http://www.speiderbasen.no/rss/?ord=',
 			    'short_title' => 'speiderbasen'
