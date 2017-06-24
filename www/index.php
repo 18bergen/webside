@@ -12,6 +12,14 @@ require_once(dirname(__DIR__) . '/vendor/autoload.php');
 $dotenv = new Dotenv\Dotenv(dirname(__DIR__));
 $dotenv->load();
 
+$client = new Raven_Client(getenv('SENTRY_DSN'));
+$client->install();
+
+# DEBUG:
+# $whoops = new \Whoops\Run;
+# $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+# $whoops->register();
+
 define('BG_INC_PATH',dirname(dirname(__FILE__)).'/includes/');
 require_once(BG_INC_PATH.'head.php');
 
@@ -66,7 +74,7 @@ function myErrorHandler($errno, $errstr, $errfile, $errline){
 		}
 	}
 }
-set_error_handler("myErrorHandler");
+// set_error_handler("myErrorHandler");
 
 // Sjekk om standardmalen skal sendes. Sider som f.eks. bruker redirect ønsker ikke dette.
 /*
