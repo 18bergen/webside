@@ -24,23 +24,6 @@ $time_string = explode(" ", microtime()); $stime = $time_string[1] . substr($tim
  
 session_start();
 
-/*
-	Remove magic quotes 
-	Good news: magic quotes is deprecated as of PHP 5.3.0, 
-	and removed in PHP 6
-*/
-if (get_magic_quotes_gpc()) { 
-  stripslashes_array($_GET); 
-  stripslashes_array($_POST); 
-  stripslashes_array($_REQUEST); 
-  stripslashes_array($_COOKIE); 
-}
-function stripslashes_array(&$arr) { 
-  foreach (array_keys($arr) as $k) { 
-    $arr[$k] = stripslashes($arr[$k]); 
-  } 
-}
-
 if (!isset($_SERVER['HTTP_REFERER'])) $_SERVER['HTTP_REFERER'] = "/";
 
  
