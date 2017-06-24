@@ -18,3 +18,4 @@ includes/config.php
 www/uimages
 bower_components
 .env
+vendor
