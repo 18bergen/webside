@@ -121,20 +121,6 @@
  </div>
 	
  %infomsg%
-  
-  <!--
-  /* LAYOUT DEBUG: 
-  <div style="width:1000px;background:#fff;margin:auto;text-align:center;">
-  <div style="width:940px;background:#ff4;margin:auto;text-align:center;">  
-  Page width: 940px
-  <table cellpadding="0" cellspacing="0">
-  <tr><td style="width:160px;background:#77f;">Left col: 160px</td>
-  <td style="width:540px;background:#ccf;">Main col: 540px</td>
-  <td style="width:240px;background:#77f;">Right col: 240px</td>
-  </td></tr></table>
-  </div>
-  </div>
-  -->
 
  <div id="container1">
 	<div id="container2">
@@ -149,10 +135,6 @@
 			%menu%
 		</div>
 		<div class="col_below"></div>
-		
-		<p align="center" style="padding-top:6px;">
-		  <a href="http://www.sortere.no/"><img src="/images/sortere.png" alt="Sortere.no" border="0" /></a>
-        </p>
         
 	  </div>
 
