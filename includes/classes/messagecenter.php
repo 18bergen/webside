@@ -1236,11 +1236,11 @@ class messagecenter extends base {
 		$bodyHtml = nl2br($body);
 		$bodyHtml = $this->makeHtmlUrls($bodyHtml,60,"...");
 
-		$url_root = "http://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
-		$url_reply = "http://".$_SERVER['SERVER_NAME'].$this->generateCoolUrl("/reply/$message_id");
+		$url_root = "https://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
+		$url_reply = "https://".$_SERVER['SERVER_NAME'].$this->generateCoolUrl("/reply/$message_id");
         
 		$headerImg = rtrim($url_root,"/")."/".trim($this->image_dir,"/")."/email_header3.png";
-		$url_root = "http://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
+		$url_root = "https://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
 
 		$r1a = array(); $r2a = array();
 		$r1a[] = '%sender_name%';		$r2a[] = $sender_name;
@@ -1282,8 +1282,8 @@ class messagecenter extends base {
 		/*
 			We must minimize the use of icons to prevent a high HTML_IMAGE_ONLY spam score..
 			
-			<img src="http://www.18bergen.org/images/info.png" alt="Info" border="0" style="float:left; padding:3px; padding-bottom: 30px;" />
-			style="background:url(http://www.18bergen.org/images/reply3.gif) left no-repeat;padding-left:18px;
+			<img src="https://www.18bergen.org/images/info.png" alt="Info" border="0" style="float:left; padding:3px; padding-bottom: 30px;" />
+			style="background:url(https://www.18bergen.org/images/reply3.gif) left no-repeat;padding-left:18px;
 		*/
 				
 		// Send mail

@@ -455,7 +455,7 @@ class rent extends base {
 		$year = date("Y",strtotime($startdate));
 		$month = date("n",strtotime($startdate));
 		$day = date("j",strtotime($startdate));
-		$server = "http://".$_SERVER['SERVER_NAME'];
+		$server = "https://".$_SERVER['SERVER_NAME'];
 		$url = $server.$this->generateCoolUrl("/info/","hall=$hallId&year=$year&month=$month&day=$day");
 		
 		$from_name = $this->mailSenderName;
@@ -497,7 +497,7 @@ $server
 		$year = date("Y",strtotime($startdate));
 		$month = date("n",strtotime($startdate));
 		$day = date("j",strtotime($startdate));
-		$server = "http://".$_SERVER['SERVER_NAME'];
+		$server = "https://".$_SERVER['SERVER_NAME'];
 		$url = $server.$this->generateCoolUrl("/listapp/");
 		
 		$from_name = $this->mailSenderName;

@@ -153,7 +153,7 @@ class TemplateService extends base {
 
 		// Must be run after $this->_cms->initializePage():
 		$additional_scripts = "\n  ".'<!-- Page-specific scripts: -->';
-		if (isset($_GET['history'])) $additional_scripts .= "\n  ".'<script type="text/javascript" src="http://api.simile-widgets.org/timeline/2.3.1/timeline-api.js"></script>';
+		if (isset($_GET['history'])) $additional_scripts .= "\n  ".'<script type="text/javascript" src="https://api.simile-widgets.org/timeline/2.3.1/timeline-api.js"></script>';
 		foreach ($this->_cms->js_libs as $j) {
 			if (!empty($j)) $additional_scripts .= "\n  ".'<script type="text/javascript" src="/jscript/'.$j.'"></script>';
 		}
@@ -253,7 +253,7 @@ class TemplateService extends base {
 			default:
 				$googleAnalytics = '
 				
-					<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+					<script src="https://www.google-analytics.com/urchin.js" type="text/javascript"></script>
 					<script type="text/javascript"> 
 					//<![CDATA[
 						_uacct = "UA-82140-1";

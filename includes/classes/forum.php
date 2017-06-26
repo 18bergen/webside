@@ -1080,7 +1080,7 @@ class forum extends base {
 				)"
 		);
 		$id = $this->insert_id();
-		$url = "http://".$_SERVER['SERVER_NAME'].$this->generateURL("forum_thread=$id");
+		$url = "https://".$_SERVER['SERVER_NAME'].$this->generateURL("forum_thread=$id");
 
 		$this->logDebug("[forum] New thread: \"".addslashes($caption)."\"");
 		
@@ -1130,7 +1130,7 @@ class forum extends base {
 		$to_addr = $member->email;
 		$recipients = array($to_name => $to_addr);
 	
-		$server = "http://".$_SERVER['SERVER_NAME'];
+		$server = "https://".$_SERVER['SERVER_NAME'];
 
 		$template = file_get_contents($this->template_dir.$this->template_threadupdated);
 		
@@ -1162,7 +1162,7 @@ class forum extends base {
 		$to_addr = $member->email;
 		$recipients = array($to_name => $to_addr);
 		
-		$server = "http://".$_SERVER['SERVER_NAME'];
+		$server = "https://".$_SERVER['SERVER_NAME'];
 		
 		$template = file_get_contents($this->template_dir.$this->template_newthread);
 		
@@ -1227,7 +1227,7 @@ class forum extends base {
 
 		$members = array();
 		$topic = "";
-		$url = "http://".$_SERVER['SERVER_NAME'].$this->generateURL("forum_thread=$post_data->thread");
+		$url = "https://".$_SERVER['SERVER_NAME'].$this->generateURL("forum_thread=$post_data->thread");
 		while ($row = $res->fetch_assoc()){
 			$topic = stripslashes($row['thread']);
 			if (empty($row['unreadexists'])){

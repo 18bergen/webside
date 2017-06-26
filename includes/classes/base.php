@@ -115,7 +115,7 @@ class base {
 		
 		/* Search for urls starting with http:// */
 		$pattern = '('.   
-			'http:\/{2}'.   		  			// 1) http://
+			'https?:\/{2}'.   		  			// 1) http://
 			'[\w\.]{3,}?'.   		  			// 2) at least 2 "word" characters (alphanumeric plus "_") or dots
 			'[\/\w\-\.\?\+\&\=\#]*?'. 			// 3) matches the rest of the url
 			')'.$termination;	

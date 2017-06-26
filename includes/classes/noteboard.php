@@ -768,8 +768,8 @@ class noteboard extends comments {
 		/** PARSE INPUT **/
 
         $body = $_POST['editor_body'];
-        $body = str_replace('"http://www.18bergen.org/','"/',$body); // make links domain-invariant
-        $body = str_replace('"http://www.18bergen.no/','"/',$body);
+        $body = str_replace('"https://www.18bergen.org/','"/',$body); // make links domain-invariant
+        $body = str_replace('"https://www.18bergen.no/','"/',$body);
 		$body = addslashes($body); 
 		
 		$lead_image = isset($_POST['lead_image']) ? $_POST['lead_image'] : '';
@@ -1012,7 +1012,7 @@ class noteboard extends comments {
 		$r1a[3]  = "%body%";		 $r2a[3]  = $this->prepareForRss($row['body']);
 		$r1a[4]  = "%timestamp%";	 $r2a[4]  = $dateStr;
 		$r1a[5]  = "%commentcount%"; $r2a[5]  = $row['commentcount'];
-		$r1a[11] = "%articleurl%"; 	 $r2a[11] = "http://".$_SERVER['SERVER_NAME'].ROOT_DIR.str_replace("&","&amp;",($this->useCoolUrls? 
+		$r1a[11] = "%articleurl%"; 	 $r2a[11] = "https://".$_SERVER['SERVER_NAME'].ROOT_DIR.str_replace("&","&amp;",($this->useCoolUrls? 
 					$this->generateCoolURL("/".$row['id']) :
 					$this->generateURL("news_article=".$row['id'])
 				));
@@ -1058,7 +1058,7 @@ class noteboard extends comments {
 		$rssTOC = ""; $rssItems = "";
 		while ($row = $res->fetch_assoc()){
 			$rssTOC .= "
-                    <rdf:li resource=\"http://".$_SERVER['SERVER_NAME'].ROOT_DIR.str_replace("&","&amp;",($this->useCoolUrls? 
+                    <rdf:li resource=\"https://".$_SERVER['SERVER_NAME'].ROOT_DIR.str_replace("&","&amp;",($this->useCoolUrls? 
 						$this->generateCoolURL("/".$row['id']) :
 						$this->generateURL("news_article=".$row['id'])
 					))."\" />";
@@ -1073,20 +1073,20 @@ class noteboard extends comments {
     xmlns:admin=\"http://webns.net/mvcb/\" 
     xmlns=\"http://purl.org/rss/1.0/\"
 >
-    <channel rdf:about=\"http://".$this->server_name."/\">
+    <channel rdf:about=\"https://".$this->server_name."/\">
         <title>".$this->site_name.": Nyheter</title>
-        <link>http://".$this->server_name."/</link>
+        <link>https://".$this->server_name."/</link>
         <description>".$this->site_name." sin nyhetsfeed.</description>
-        <image rdf:resource=\"http://".$this->server_name."/images/scoutlogo2.gif\" />
+        <image rdf:resource=\"https://".$this->server_name."/images/scoutlogo2.gif\" />
         <items>
             <rdf:Seq>$rssTOC
             </rdf:Seq>
         </items>
     </channel>
-    <image rdf:about=\"http://".$this->server_name."/images/scoutlogo2.gif\">
+    <image rdf:about=\"https://".$this->server_name."/images/scoutlogo2.gif\">
         <title>".$this->site_name."</title>
-        <link>http://".$this->server_name."</link>
-        <url>http://".$this->server_name."/images/scoutlogo2.gif</url>
+        <link>https://".$this->server_name."</link>
+        <url>https://".$this->server_name."/images/scoutlogo2.gif</url>
     </image>
     $rssItems
 </rdf:RDF>

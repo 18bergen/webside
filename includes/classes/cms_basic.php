@@ -1292,7 +1292,7 @@ class cms_basic extends base {
 
 		$this->totalUrlsWritten++;
 		$xml .= "\n\t<url>\n";
-		$xml .= "\t\t<loc>".htmlspecialchars('http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$obj['loc'])."</loc>";
+		$xml .= "\t\t<loc>".htmlspecialchars('https://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$obj['loc'])."</loc>";
 		if (isset($obj['lastmod'])) {
 			if (is_numeric($obj['lastmod'])) {
 				$xml .= "\n\t\t<lastmod>".date("Y-m-d",$obj['lastmod'])."</lastmod>";

@@ -2077,7 +2077,7 @@ class memberlist_actions extends memberlist {
 		$r1a[] = '%userFilesDir%';				$r2a[] = '/'.$this->userFilesDir."Medlemsfiler/$id/";
 		$r1a[] = '%smallThumbsDir%';			$r2a[] = '/'.$this->userFilesDir."Medlemsfiler/$id/_thumbs140/";
 
-		$r1a[] = '%adressPrefix%';				$r2a[] = "http://".$this->server_name."/medlemmer/";
+		$r1a[] = '%adressPrefix%';				$r2a[] = "https://".$this->server_name."/medlemmer/";
 		$r1a[] = '%slug%';						$r2a[] = $slug;
 
 		$r1a[] = "%ckfinder_uri%";				$r2a[]  = LIB_CKFINDER_URI;
@@ -4123,7 +4123,7 @@ class memberlist_actions extends memberlist {
 					<td>Adresse: </td>
 					</tr><tr>
 						<td>
-							http://'.$_SERVER["SERVER_NAME"].'/'.$this->coolUrlPrefix.'/ <input type="text" name="slug" value="'.$slug.'" size="20" />
+							https://'.$_SERVER["SERVER_NAME"].'/'.$this->coolUrlPrefix.'/ <input type="text" name="slug" value="'.$slug.'" size="20" />
 						</td>
 					</tr>
 				</table>
@@ -4616,10 +4616,10 @@ class memberlist_actions extends memberlist {
 							<td><input type=\"text\" name=\"gruppenavn\" value=\"$gruppenavn\" size=\"40\" /></td>
 						</tr><tr>
 							<td>Adresse: </td>
-							<td>http://".$_SERVER['SERVER_NAME']."/".$this->coolUrlPrefix."/ <input type=\"text\" name=\"slug\" value=\"$slug\" size=\"20\" /></td>
+							<td>https://".$_SERVER['SERVER_NAME']."/".$this->coolUrlPrefix."/ <input type=\"text\" name=\"slug\" value=\"$slug\" size=\"20\" /></td>
 						</tr><tr>
 							<td>Nettsider: </td>
-							<td>http://".$_SERVER['SERVER_NAME']." <input type=\"text\" name=\"gruppesider\" value=\"$gruppesider\" size=\"20\" /></td>
+							<td>https://".$_SERVER['SERVER_NAME']." <input type=\"text\" name=\"gruppesider\" value=\"$gruppesider\" size=\"20\" /></td>
 						</tr><tr>
 							<td>Undergruppe av: </td>
 							<td>$grouplist</td>

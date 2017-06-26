@@ -222,7 +222,7 @@ class newsletters extends base {
 		
 		$newsletter_name = $this->body_header;
 		
-		$url_root = "http://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
+		$url_root = "https://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
 		$url_self = $url_root . $this->fullslug . "/";
 		
 		if ($compabilityMode) {

@@ -30,7 +30,7 @@
   <script type="text/javascript" src="/libs/NiftyCube/niftycube.js"></script>
   <script type="text/javascript" src="/libs/jquery/jquery-1.10.2.min.js"></script>
   <script type="text/javascript" src="/libs/jquery/jquery.nestable.js"></script>
-  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
   <script src="/libs/jquery.ui.datepicker-no.js"></script>
 
   <!-- The Load Image plugin is included for the preview images and image resizing functionality -->
@@ -62,8 +62,8 @@
 	<div style="position:absolute;left:31px;top:8px;"><a href="/"><img src="/images/logo2.png" border="0" /></a></div>
 	<map name="map1" id="map1">
 	   <area shape="rect" href="/" coords="50,20,200,117" alt="Gå til forsiden" title="Gå til forsiden" />
-	   <area shape="rect" href="http://www.hordalandsspeiderne.no/" coords="715,20,810,100" alt="Hordaland Krins" title="Besøk Hordaland Krins" />
-	   <area shape="rect" href="http://www.speiding.no/" coords="835,20,930,100" alt="Norges Speiderforbund" title="Besøk Norges Speiderforbund" />
+	   <area shape="rect" href="https://www.hordalandsspeiderne.no/" coords="715,20,810,100" alt="Hordaland Krins" title="Besøk Hordaland Krins" />
+	   <area shape="rect" href="https://www.speiding.no/" coords="835,20,930,100" alt="Norges Speiderforbund" title="Besøk Norges Speiderforbund" />
 	</map>
 	<map name="map2" id="map2">
 	   <area shape="rect" href="/" coords="80,0,180,54" alt="Gå til forsiden" title="Gå til forsiden" />
@@ -79,7 +79,7 @@
 	-->
   <!--
 	<div style="position:absolute;left:780px;top:85px;z-index:2;">
-      <a href="http://www.speiding.no/nyheter/?liste=arkiv;dato=200400;id=2233"><img src="/_design/banners/jubileumsmerket_2011.png" alt="" style="border:none;" /></a>
+      <a href="https://www.speiding.no/nyheter/?liste=arkiv;dato=200400;id=2233"><img src="/_design/banners/jubileumsmerket_2011.png" alt="" style="border:none;" /></a>
     </div>
     -->
 	<div style="background:url(/_design/header/header8_03.png);float:left;width:648px;height:53px;padding-top:1px;">

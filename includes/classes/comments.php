@@ -772,7 +772,7 @@ class Comments extends base {
         
     	$subject = '[18. Bergen] Ny kommentar til '.$context;
 
-		$server = "http://".$_SERVER['SERVER_NAME'];
+		$server = "https://".$_SERVER['SERVER_NAME'];
 
 		$template = file_get_contents($this->template_dir.$this->template_newcomment);
         $r1a = array(); $r2a = array();

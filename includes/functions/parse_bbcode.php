@@ -141,8 +141,8 @@ function parse_bbcode($str,$bildegruppe = "general", $patrulje = ""){
 	$str = str_replace("\r","\n",$str);
 
 	// URL: Lokal link, åpnes i samme vindu
-	$pattern = "/\[URL=http:\/\/(www\.)?18bergen\.org\/(.+?)\](.+?)\[\/URL\]/i";
-	$replacement = "<a href=\"http://www.18bergen.org/\\2\">\\3</a>";
+	$pattern = "/\[URL=https?:\/\/(www\.)?18bergen\.org\/(.+?)\](.+?)\[\/URL\]/i";
+	$replacement = "<a href=\"https://www.18bergen.org/\\2\">\\3</a>";
 	$str = preg_replace("$pattern","$replacement",$str);
 
 	// URL: Ekstern link, åpnes i nytt vindu

@@ -2339,9 +2339,9 @@ class imagearchive extends comments {
 			
 			$jup = new JqueryUpload();
 			#$jup->jupload_dir = ROOT_DIR.$this->java_path_to_jupload;
-			$jup->actionurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL(array("action=uploadImagesDo","userid=$this->login_identifier"));
-			$jup->completeurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL('action=processUploadedImages');
-			#$jup->errorurl = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL('action=uploadError');		
+			$jup->actionurl = 'https://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL(array("action=uploadImagesDo","userid=$this->login_identifier"));
+			$jup->completeurl = 'https://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL('action=processUploadedImages');
+			#$jup->errorurl = 'https://'.$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateURL('action=uploadError');		
 			$output .= $jup->printUploadForm();
 			
 			return $output;

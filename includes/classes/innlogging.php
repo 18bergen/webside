@@ -233,7 +233,7 @@ class innlogging extends base {
 		if ($row['pwd'] == 'NOT_SET') return false;
 
 		$m = $this->memberdb->getMemberById($user_id);
-		$url_root = "http://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
+		$url_root = "https://".$_SERVER['SERVER_NAME'].ROOT_DIR."/";
 		$rcptmail = $m->email;
 		$rcptname = $m->fullname;
 		$plainBody = $this->_loggedinUser->name." har initiert en automatisk utsending av dine innloggingsdetaljer.\r\n\r\n";
@@ -587,7 +587,7 @@ class innlogging extends base {
 			$this->redirect($this->generateURL('loginfailed=PWD_NOT_SET'));
 		}		
 		$subject = "Innloggingsopplysninger for ".$this->server_name;
-		$url_root = 'http://'.$_SERVER['SERVER_NAME'].ROOT_DIR.'/';
+		$url_root = 'https://'.$_SERVER['SERVER_NAME'].ROOT_DIR.'/';
 		$plainBody = "Navn: ".$m->fullname."\nBrukernavn: ".stripslashes($row['username'])."\r\n".
 			"Passord: ".$crypto->decrypt(stripslashes($row['pwd'])).
 			"\r\n\r\n".

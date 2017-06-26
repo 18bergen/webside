@@ -1090,7 +1090,7 @@ $this->site_name
 En søknad om registrering av et nytt medlem er mottatt.
 Du behandler søknaden ved å gå til denne adressen:
 
-http://".$_SERVER['SERVER_NAME']."$url
+https://".$_SERVER['SERVER_NAME']."$url
 
 ";
 		
@@ -1567,7 +1567,7 @@ http://".$_SERVER['SERVER_NAME']."$url
 		
 				// $plainBody = "$this->site_name\n\n".
 				// 	"Søknaden om registrering av et nytt medlem er godkjent.\n\n".
-				// 	"http://".$_SERVER['SERVER_NAME']."$url\n\n";
+				// 	"https://".$_SERVER['SERVER_NAME']."$url\n\n";
 	
 				// // Send mail		
 		                $message = Swift_Message::newInstance();
@@ -1596,7 +1596,7 @@ http://".$_SERVER['SERVER_NAME']."$url
 						
 				$plainBody = "$this->site_name\n\n".
 					"Søknaden om registrering av et nytt medlem er avslått.\n\n".
-					"http://".$_SERVER['SERVER_NAME']."$url\n\n";
+					"https://".$_SERVER['SERVER_NAME']."$url\n\n";
 	
 				// Send mail		
 		                $message = Swift_Message::newInstance();

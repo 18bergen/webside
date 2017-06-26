@@ -13,8 +13,8 @@ Header set X-Content-Type-Options nosniff
 
 RewriteEngine on
 RewriteCond %{HTTP_REFERER} !^$
-RewriteCond %{HTTP_REFERER} !^http://(www\.)?18bergen.org/.*$ [NC]
-RewriteCond %{HTTP_REFERER} !^http://(www\.)?18bergen.no/.*$ [NC]
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?18bergen.org/.*$ [NC]
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?18bergen.no/.*$ [NC]
 RewriteCond %{HTTP_REFERER} !^http://bergenvs.dev:8000/.*$ [NC]
 RewriteRule \.(gif|jpg|js|css)$ - [F]
 

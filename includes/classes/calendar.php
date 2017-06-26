@@ -524,7 +524,7 @@ class calendar extends calendar_basic {
 	/********************************************** ADVANCED *************************************************/		
 		
 		$year = date("Y",time());
-		$pre_slug = "http://www.".$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateCoolURL("/")."<span id='slugYear'>$year</span>/";
+		$pre_slug = "https://www.".$_SERVER['SERVER_NAME'].ROOT_DIR.$this->generateCoolURL("/")."<span id='slugYear'>$year</span>/";
 		$r1a[] = "%privateChecked%";			$r2a[] = ($this->private_default == "1") ? " checked=\"checked\"" : "";
 		$r1a[] = "%pre_slug%";					$r2a[] = $pre_slug;
 		$r1a[] = "%slug%";						$r2a[] = $this->slug_default;
@@ -1179,10 +1179,10 @@ class calendar extends calendar_basic {
 	
 	function subscription(){
 		
-		$url_root = "http://".$_SERVER['SERVER_NAME'].ROOT_DIR;
+		$url_root = "https://".$_SERVER['SERVER_NAME'].ROOT_DIR;
 		
 		$calurl = $url_root . $this->generateCoolURL("/subscribe.ics");
-		$abbcalurl = str_replace("http:","webcal:",$calurl);
+		$abbcalurl = str_replace("https:","webcal:",$calurl);
 		
 		$r1a = array(); $r2a = array();
 		$r1a[0] = "%abblink%"; 			$r2a[0] = $abbcalurl;
@@ -2293,7 +2293,7 @@ END:VTIMEZONE
 			$rid = $row['id'];
 			$rcaption = $row['caption'];
 			$uid = "00000$rid@".$this->server_name;
-			$url_root = "http://".$_SERVER['SERVER_NAME'].ROOT_DIR;
+			$url_root = "https://".$_SERVER['SERVER_NAME'].ROOT_DIR;
 			$uri = $url_root . $this->generateCoolURL('/','show_event='.$rid);
 			$lead = $this->prepareForCalendar($row['lead']);
 			$output .= "BEGIN:VEVENT
@@ -2344,19 +2344,19 @@ END:VEVENT
     xmlns:admin="http://webns.net/mvcb/" 
     xmlns="http://purl.org/rss/1.0/"
 >
-    <channel rdf:about="http://'.$this->server_name.'/">
+    <channel rdf:about="https://'.$this->server_name.'/">
         <title>'.$this->site_name.': '.$this->header.'</title>
-        <link>http://'.$this->server_name.'/</link>
-        <image rdf:resource="http://'.$this->server_name.'/images/scoutlogo2.gif" />
+        <link>https://'.$this->server_name.'/</link>
+        <image rdf:resource="https://'.$this->server_name.'/images/scoutlogo2.gif" />
         <items>
             <rdf:Seq>'.$rssTOC.'
             </rdf:Seq>
         </items>
     </channel>
-    <image rdf:about="http://'.$this->server_name.'/images/scoutlogo2.gif">
+    <image rdf:about="https://'.$this->server_name.'/images/scoutlogo2.gif">
         <title>'.$this->site_name.'</title>
-        <link>http://'.$this->server_name.'</link>
-        <url>http://'.$this->server_name.'/images/scoutlogo2.gif</url>
+        <link>https://'.$this->server_name.'</link>
+        <url>https://'.$this->server_name.'/images/scoutlogo2.gif</url>
     </image>
     
     '.$rssItems.'
