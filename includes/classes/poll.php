@@ -51,13 +51,16 @@ class poll extends base {
 	}
 
 	function listPolls(){
-		$this->polls = Array();
+		$this->polls = [];
 		$res = $this->query("SELECT * FROM $this->table_polls ORDER BY -startdate");
 		while ($row = $res->fetch_assoc()){
 			if (empty($this->activePoll) && ($row['active'])){
 				$this->activePoll = $row['id'];
 			}
 			foreach ($row as $n => $v){
+				if (!isset($this->polls[$row['id']])) {
+					$this->polls[$row['id']] = new \stdClass();
+				}
 				$this->polls[$row['id']]->$n = stripslashes($v);
 			}
 		}

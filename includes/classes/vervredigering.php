@@ -193,6 +193,9 @@ class vervredigering extends base {
 		);
 		while ($row = $res->fetch_assoc()){
 			foreach ($row as $n => $v){
+				if (!isset($this->thelist[$row['id']])) {
+					$this->thelist[$row['id']] = new \stdClass();
+				}
 				$this->thelist[$row['id']]->$n = $v;
 			}
 			if (empty($this->thelist[$row['id']]->person)) $this->thelist[$row['id']]->person = 0;
@@ -250,6 +253,9 @@ class vervredigering extends base {
 		}
 		while ($row = $res->fetch_assoc()){
 			foreach ($row as $n => $v){
+				if (!isset($this->history[$row['id']])) {
+					$this->history[$row['id']] = new \stdClass();
+				}
 				$this->history[$row['id']]->$n = $v;
 			}
 		}
