@@ -1059,9 +1059,6 @@ class regschema extends base {
 	
 	function submitConfirm() {
 
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-
-		
 		$id = $_POST['id'];
 		if (!is_numeric($id)) return $this->notSoFatalError("Registreringen eksisterer ikke eller er låst for redigering (1)"); 
 		
