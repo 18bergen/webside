@@ -645,7 +645,7 @@ class innlogging extends base {
 		if ( $length > 36 ){ 
 			return "ERROR"; 
 		} else { 
-			$str = md5(mktime()); 
+			$str = md5(time());
 			$cutoff = 31 - $length; 
 			$start = rand(0, $cutoff); 
 			return substr($str, $start, $length); 
