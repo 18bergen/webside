@@ -45,14 +45,6 @@
 			&nbsp;
 			<div class="col_above"></div>
 			<div class="inner_col">
-		
-				%rss%
-		
-			</div>
-			<div class="col_below"></div>
-			&nbsp;
-			<div class="col_above"></div>
-			<div class="inner_col">
 							
 				<div id="updates">
 					<h2 class='small'>Nytt på 18bergen.org:</h2>

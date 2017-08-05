@@ -5,7 +5,6 @@
 
 require_once('forumnotifications.php');
 require_once('mailnotifications.php');
-require_once('feedfetcher.php');
 require_once("changelog.php");
 require_once("birthdays.php");
 require_once("menueditor.php");
@@ -20,22 +19,6 @@ class TemplateService extends base {
 	private $_requestUri = "";
 	private $_allowIndexing = true;
 	private $_rootDir = "";
-	
-	private $_rssFeeds = array(
-			/*
-                         'nsf' => array(
-				'url' => 'http://www.speiding.no/rss/',
-				'short_title' => 'forbundet'
-			),
-			'krins' => array(
-				'url' => 'http://www.hordalandsspeiderne.no/news/rss',
-				'short_title' => 'krinsen'
-			), */
-			'speiderbasen' => array( 
-			    'url' => 'http://www.speiderbasen.no/rss/?ord=',
-			    'short_title' => 'speiderbasen'
-			)
-		);
 	
 	private $_page = "";
 
@@ -160,7 +143,6 @@ class TemplateService extends base {
 
 
 		/* RSS */
-		$rssUrl = $this->_cms->getRssUrl();
 		$ourRssFeed = (empty($rssUrl)) ? '': '<link rel="alternate" type="application/rss+xml" title="RSS" href="'.$rssUrl.'" />';
 
 		
@@ -197,9 +179,6 @@ class TemplateService extends base {
 		$pollObj->initialize();
 		$poll = $pollObj->outputPoll();
 		unset($pollObj);
-		
-		/* RSS */
-		$rss = FeedFetcher::fetchFeeds($this->_rssFeeds);
 		
 		/* Updates */
 		$changes = new changelog();
@@ -316,7 +295,6 @@ class TemplateService extends base {
 		$s1[] = "%notifications%";		$s2[] = $notifications;
 		$s1[] = "%wordbox%";			$s2[] = $wordbox;
 		$s1[] = "%poll%";				$s2[] = $poll;
-		$s1[] = "%rss%";				$s2[] = $rss;
 		$s1[] = "%whoisonline%";		$s2[] = printWhosOnline();
 		$s1[] = "%updates%";			$s2[] = $updates;
 		$s1[] = "%birthdays%";			$s2[] = $birthdays;
