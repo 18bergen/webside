@@ -864,7 +864,12 @@ class calendar_basic extends comments {
 		if (!empty($customText)) $txt = $customText;
 		return "<a href=\"$url\" class=\"icn\" style=\"background-image:url(/images/icns/calendar.png);\">$txt</a>";
 	}
-	
+
+	/* Don't rename! Used by CMS */
+	function getLinkToEntry($id) {
+		return $this->getLinkToEvent($id);
+	}
+
 	function listCalendarPages($cal_id = -1) {
 
 		$lang = $this->preferred_lang;
