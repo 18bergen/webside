@@ -800,18 +800,19 @@ class Comments extends base {
 
         $to_name = $member->fullname;
         $to_addr = $member->email;
-        $recipients = array($to_name => $to_addr);
-				
+	$recipients = array($to_name => $to_addr);
+
 		// Send mail
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
-		$mail = new htmlMimeMail5();
-		$mail->setFrom("$from_name <$from_addr>");
-		$mail->setReturnPath($from_addr);
-		$mail->setSubject($subject);
-		$mail->setText($body);
-		//$mail->setHTML($htmlBody);
-		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-		$mail->send($recipients, $type = 'smtp');	
+		$message = Swift_Message::newInstance();
+		$message->setSubject($subject);
+		$message->setFrom(array($from_addr => $from_name));
+		$message->setTo($recipients);
+		$message->setBody($body);
+		$transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
+		$transport->setUsername($this->smtpUser);
+		$transport->setPassword($this->smtpPass);
+		$swiftmailer = Swift_Mailer::newInstance($transport);
+		$swiftmailer->send($message);
 	}
 
 	

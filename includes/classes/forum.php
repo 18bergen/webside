@@ -1054,8 +1054,6 @@ class forum extends base {
 		global $memberdb;
 		
 		if (!$this->allow_startthreads) return $this->permissionDenied();
-
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
 		
 		// Short vars
 		$tt = $this->table_threads;
@@ -1140,17 +1138,19 @@ class forum extends base {
 		$r1a[] = '%site_name%';			$r2a[] = $_SERVER['SERVER_NAME'];
 		$r1a[] = '%topic_url%';			$r2a[] = $url;
 		$r1a[] = '%settings_url%';		$r2a[] = $server.$this->generateURL("forumsettings");
-		$plainBody = str_replace($r1a, $r2a, $template);
+		$body = str_replace($r1a, $r2a, $template);
 
-		// Send mail		
-		$mail = new htmlMimeMail5();
-		$mail->setFrom("$from_name <$from_addr>");
-		$mail->setReturnPath($from_addr);
-		$mail->setSubject("[Forum] Varsel om svar på emne - $topic");
-		$mail->setText($plainBody);
-		//$mail->setHTML($htmlBody);
-		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-		$mail->send($recipients,$type = 'smtp');		
+		// Send mail
+		$message = Swift_Message::newInstance();
+		$message->setSubject("[Forum] Varsel om svar på emne - $topic");
+		$message->setFrom(array($from_addr => $from_name));
+		$message->setTo($recipients);
+		$message->setBody($body);
+		$transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
+		$transport->setUsername($this->smtpUser);
+		$transport->setPassword($this->smtpPass);
+		$swiftmailer = Swift_Mailer::newInstance($transport);
+		$swiftmailer->send($message);
 	}
 	
 	function mailNotificationNewThread($topic,$url,$member){
@@ -1172,17 +1172,20 @@ class forum extends base {
 		$r1a[] = '%site_name%';			$r2a[] = $_SERVER['SERVER_NAME'];
 		$r1a[] = '%topic_url%';			$r2a[] = $url;
 		$r1a[] = '%settings_url%';		$r2a[] = $server.$this->generateURL("forumsettings");
-		$plainBody = str_replace($r1a, $r2a, $template);
+		$body = str_replace($r1a, $r2a, $template);
 
-		// Send mail		
-		$mail = new htmlMimeMail5();
-		$mail->setFrom("$from_name <$from_addr>");
-		$mail->setReturnPath($from_addr);
-		$mail->setSubject("[Forum] Varsel om nytt tema");
-		$mail->setText($plainBody);
-		//$mail->setHTML($htmlBody);
-		$mail->setSMTPParams($this->smtpHost,$this->smtpPort,null,true,$this->smtpUser,$this->smtpPass);
-		$mail->send($recipients,$type = 'smtp');		
+		// Send mail
+		$message = Swift_Message::newInstance();
+		$message->setSubject("[Forum] Varsel om nytt tema");
+		$message->setFrom(array($from_addr => $from_name));
+		$message->setTo($recipients);
+		$message->setBody($body);
+		$transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
+		$transport->setUsername($this->smtpUser);
+		$transport->setPassword($this->smtpPass);
+		$swiftmailer = Swift_Mailer::newInstance($transport);
+		$swiftmailer->send($message);
+
 	}
 
 	function saveNewPost(){
@@ -1192,8 +1195,6 @@ class forum extends base {
 			print_r($_POST);
 			return 0;
 		}
-
-		require_once("../htmlMimeMail5/htmlMimeMail5.php");
 
 		// 1) First fetch and prepare the POST data:
 		
