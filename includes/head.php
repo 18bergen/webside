@@ -105,6 +105,11 @@ $login->useCoolUrls = true;					 // base
 $login->coolUrlPrefix = "";					 // base
 $login->run();
 
-if ($login->isLoggedIn()) $dp0->login_identifier = $login->getUserId();
+if ($login->isLoggedIn()) {
+	$dp0->login_identifier = $login->getUserId();
+	$ravenClient->user_context(array(
+	    'id' => $login->getUserId()
+	));
+}
 
 ?>

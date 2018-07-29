@@ -12,8 +12,8 @@ require_once(dirname(__DIR__) . '/vendor/autoload.php');
 $dotenv = new Dotenv\Dotenv(dirname(__DIR__));
 $dotenv->load();
 
-$client = new Raven_Client(getenv('SENTRY_DSN'));
-$client->install();
+$ravenClient = new Raven_Client(getenv('SENTRY_DSN'));
+$ravenClient->install();
 
 # DEBUG:
 # $whoops = new \Whoops\Run;
