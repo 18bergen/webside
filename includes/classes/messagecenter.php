@@ -535,7 +535,7 @@ class messagecenter extends base {
 			unset($_SESSION['errors']);
 			unset($_SESSION['postdata']);
 			unset($_SESSION['attachments']);
-		} else if ((count(array_keys($this->recipients)) > 1) && (!$this->allow_sendGroupMail)){
+		} else if ((count(array_keys($recipients)) > 1) && (!$this->allow_sendGroupMail)){
 			$erroutp = "<p class='cal_notice'>NB! Du må være innlogget for å sende e-post til mer enn en adresse om gangen. Du må derfor enten krysse vekk så det kun står en adresse igjen eller logge inn. Ellers vil e-posten ikke bli sendt.</p>";
 		} else {
 			$erroutp = "";
