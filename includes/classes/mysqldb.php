@@ -63,7 +63,7 @@ class mysqldb extends mysqli {
 		$queryCount++;
         // DEBUG: print "<tt>$str</tt><br />";
         if ($debug) print "<tt>$str</tt><br />";
-		$res = parent::query($str) or $this->onError($str,mysql_error(),$logError, $silentErrors);
+		$res = parent::query($str) or $this->onError($str, $this->error, $logError, $silentErrors);
 		return $res;
 	}
 
