@@ -66,7 +66,7 @@ class regschema extends base {
 		
 	);
 	
-	function regschema() {
+	function __construct() {
 		$this->tablename = DBPREFIX.$this->tablename;
 		$this->grouptable = DBPREFIX.$this->grouptable;
 		$this->table_addresslist = DBPREFIX.$this->table_addresslist;

@@ -34,7 +34,7 @@ class images extends base {
 	// uploadImage($dirName, $varName);
 				
 				
-	function images($dblink, $table_dirs, $table_images, $pathToImages, $login_identifier, $temp_dir, $root_dir = ""){
+	function __construct($dblink, $table_dirs, $table_images, $pathToImages, $login_identifier, $temp_dir, $root_dir = ""){
 		$this->login_identifier = $login_identifier;
 		$this->table_dirs = DBPREFIX.$this->table_dirs;
 		$this->table_images = DBPREFIX.$this->table_images;		

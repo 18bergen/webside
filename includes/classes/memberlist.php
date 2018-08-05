@@ -287,7 +287,7 @@ class memberlist extends base {
 	);
 
 	/* Constructor. Reads the member database into an array. */
-	function memberlist(){
+	function __construct(){
 		$this->table_pages = DBPREFIX.$this->table_pages;
 		$this->table_pageoptions = DBPREFIX.$this->table_pageoptions;
 		$this->table_pagelabels = DBPREFIX.$this->table_pagelabels;

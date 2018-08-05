@@ -2,7 +2,7 @@
 class eventLog {
 
 	/* Constructor */
-	function eventLog(){
+	function __construct(){
 		$this->queryLog = Array();
 	}
 

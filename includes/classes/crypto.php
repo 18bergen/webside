@@ -3,7 +3,7 @@ class crypto {
 
 	var $md5key;
 
-	function crypto(){
+	function __construct(){
 		$this->md5key = "9ø206p3zw1eva156n5lpv";
 	}
 

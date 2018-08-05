@@ -147,7 +147,7 @@ class messagecenter extends base {
 		</form>
 	';
 	
-	function messagecenter() {
+	function __construct() {
 		$this->table_messages = DBPREFIX.$this->table_messages;
 		$this->table_user = DBPREFIX.$this->table_user;
 		$this->table_attachments = DBPREFIX.$this->table_attachments;

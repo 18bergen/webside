@@ -41,7 +41,7 @@ class wordbox extends base {
 	var $label_newer = "Nyere meldinger &gt;&gt;";
 	var $label_older = "&lt;&lt; Eldre meldinger";
 	
-	function wordbox() {
+	function __construct() {
 		$this->table_wordbox = DBPREFIX.$this->table_wordbox;
 	}
 	

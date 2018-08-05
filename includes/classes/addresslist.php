@@ -8,7 +8,7 @@ class addresslist extends base {
 	//var $allow_send_application = false;
 	//var $allow_approve = false;
 	
-	function addresslist() {
+	function __construct() {
 		$this->table_addresslist = DBPREFIX.$this->table_addresslist;
 	}
 	

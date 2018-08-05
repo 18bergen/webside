@@ -34,7 +34,7 @@ class newsletters extends base {
 	
 	var $mcenter_instance;
 	
-	function newsletters() {
+	function __construct() {
 		$this->tablename = DBPREFIX.$this->tablename;
 		if (isset($_GET['previewletter']) || isset($_GET['shownewsletter'])){ 
 			$this->wideMode = true;

@@ -18,7 +18,7 @@ class innlogging extends base {
 		var $passwordLengthLimit = 40;
 		var $replaceContent;
 	
-	function innlogging() {
+	function __construct() {
 		$this->table_globaloptions = DBPREFIX.$this->table_globaloptions;
 		$this->table_login = DBPREFIX.$this->table_login;
 		$this->table_members = DBPREFIX.$this->table_members;

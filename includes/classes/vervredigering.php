@@ -15,7 +15,7 @@ class vervredigering extends base {
 
 	var $pathToJpGraph;
 	
-	function vervredigering() {
+	function __construct() {
 		$this->table_verv = DBPREFIX.$this->table_verv;
 		$this->table_verv_history = DBPREFIX.$this->table_verv_history;
 	}

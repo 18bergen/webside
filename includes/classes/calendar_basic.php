@@ -167,7 +167,7 @@ class calendar_basic extends comments {
 	var $str_nextpage = "Neste side";
 
 	
-	function calendar_basic(){
+	function __construct(){
 		$d = getdate(time());
 		$this->startdatetime_default = mktime(0,1,0,$d['mon'],$d['mday'],$d['year']); 
 		$this->enddatetime_default = mktime(0,1,0,$d['mon'],$d['mday'],$d['year']); 

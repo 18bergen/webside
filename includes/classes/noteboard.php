@@ -139,7 +139,7 @@ class noteboard extends comments {
 	
 	/* Constructor */
 
-	function noteboard(){
+	function __construct(){
 		$this->table_news = DBPREFIX.$this->table_news;
 		$this->table_imagedirs = DBPREFIX.$this->table_imagedirs;
 		$this->table_images = DBPREFIX.$this->table_images;

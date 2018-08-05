@@ -47,7 +47,7 @@ class localization extends base {
 	var $lookup_member;
 	var $lookup_webmaster;
 	
-	function localization() {
+	function __construct() {
 		$this->table_classlabels = DBPREFIX.$this->table_classlabels;
 		$this->table_classes = DBPREFIX.$this->table_classes;
 		$this->table_languages = DBPREFIX.$this->table_languages;

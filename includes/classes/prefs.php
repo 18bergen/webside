@@ -2,7 +2,7 @@
 class prefs {
 
 	/* Constructor */
-	function prefs(){ 
+	function __construct(){ 
 		global $db;
 		$this->cacheEnabled = false;
 		$this->cache = Array();

@@ -28,7 +28,7 @@ class TemplateService extends base {
 	function setCMS($l) { $this->_cms = $l; $this->_cms->setTemplateService($this); }
 	function getDocumentTitle() { return $this->_documentTitle; }
 	
-	function TemplateService() {
+	function __construct() {
 		$this->initialize_base();
 	}
 	

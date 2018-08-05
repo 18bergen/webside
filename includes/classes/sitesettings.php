@@ -9,7 +9,7 @@ class sitesettings extends base {
 	var $allow_editsettings = false;
 	
 	/* Constructor */
-	function sitesettings(){
+	function __construct(){
 
 	}
 	

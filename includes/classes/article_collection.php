@@ -158,7 +158,8 @@ class article_collection extends comments {
 	
 	';
 	
-	function article_collection() {
+	function __construct() {
+		parent::__construct();
 		$this->table_articles = DBPREFIX.'articles';
 		$this->table_comments = DBPREFIX.'comments';
 	}

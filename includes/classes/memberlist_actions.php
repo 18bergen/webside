@@ -184,8 +184,8 @@ class memberlist_actions extends memberlist {
 	var $current_gruppe;
 	var $run_action;
 	
-	function memberlist_actions() {
-		$this->memberlist();
+	function __construct() {
+		parent::__construct();
 	}
 
 	function initialize(){

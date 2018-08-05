@@ -23,7 +23,7 @@ class menu extends base {
 	var $item_to_edit = -1;
 	var $item_to_delete = -1;
 	
-	function menu() {
+	function __construct() {
 		$this->table_labels = DBPREFIX.$this->table_labels;
 		$this->table_items = DBPREFIX.$this->table_items;
 		$this->table_languages = DBPREFIX.$this->table_languages;

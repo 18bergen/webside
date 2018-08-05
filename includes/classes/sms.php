@@ -18,7 +18,7 @@ class sms extends base {
 	var $NOKperGBP;
 	var $maxCharsPerMsg;
 	
-	function sms() {
+	function __construct() {
 		$this->table_sms = DBPREFIX.$this->table_sms;
 		$this->table_sms_status = DBPREFIX.$this->table_sms_status;
 

@@ -153,7 +153,7 @@ class cms extends base {
 		
 	var $webmaster_ident = -1;
 	
-	function cms() {
+	function __construct() {
 		$this->table_rights = DBPREFIX.$this->table_rights;
 		$this->table_pages = DBPREFIX.$this->table_pages;
 		$this->table_images = DBPREFIX.$this->table_images;

@@ -18,7 +18,7 @@ class html_page extends base {
 
 	var $current_path;
 	
-	function html_page() {
+	function __construct() {
 		$this->table_html = DBPREFIX.$this->table_html;
 	}
 	

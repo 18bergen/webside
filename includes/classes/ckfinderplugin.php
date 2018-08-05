@@ -1,7 +1,7 @@
 <?php
 class ckFinderPlugin extends base {
 	
-	function ckFinderPlugin() {
+	function __construct() {
 
 	}	
 	

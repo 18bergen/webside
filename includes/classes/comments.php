@@ -1,5 +1,5 @@
 <?php
-class Comments extends base {
+class comments extends base {
 
 	var $enable_comments = true;
 	
@@ -154,7 +154,7 @@ class Comments extends base {
 	
 	var $comment_id = "_new"; // do not edit
 	
-	function comments() {
+	function __construct() {
 		$this->table_comments = DBPREFIX.'comments';	
 	}
 		

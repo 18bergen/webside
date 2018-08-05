@@ -268,7 +268,7 @@ class forum extends base {
 						
 	
 	/* Constructor */
-	function forum(){
+	function __construct(){
 		$this->table_posts = DBPREFIX.$this->table_posts;
 		$this->table_threads = DBPREFIX.$this->table_threads;
 		$this->table_unread = DBPREFIX.$this->table_unread;

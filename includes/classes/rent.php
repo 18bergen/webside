@@ -9,7 +9,7 @@ class rent extends base {
 	var $allow_send_application = false;
 	var $allow_approve = false;
 	
-	function rent() {
+	function __construct() {
 		$this->table_calendar = DBPREFIX.$this->table_calendar;
 		$this->table_halls = DBPREFIX.$this->table_halls;
 	}

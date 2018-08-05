@@ -18,7 +18,7 @@ class poll extends base {
 	var $allow_createnewpoll = false;
 	
 	/* Constructor */
-	function poll(){
+	function __construct(){
 		$this->table_polls = DBPREFIX.$this->table_polls;
 		$this->table_members = DBPREFIX.$this->table_members;
 	}

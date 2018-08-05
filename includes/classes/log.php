@@ -137,7 +137,7 @@ class log extends comments {
 	
 	';
 	
-	function log() {
+	function __construct() {
 		$this->table_log = DBPREFIX.$this->table_log;
 		$this->table_images = DBPREFIX.$this->table_images;
 		$this->table_imagedirs = DBPREFIX.$this->table_imagedirs;

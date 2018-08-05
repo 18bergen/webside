@@ -53,7 +53,7 @@ class guestbook extends base {
 	var $label_newer = "&lt;&lt; Nyere innlegg";
 	var $label_older = "Eldre innlegg &gt;&gt;";
 	
-	function guestbook() {
+	function __construct() {
 		$this->tablename = DBPREFIX.$this->tablename;
 	}
 		

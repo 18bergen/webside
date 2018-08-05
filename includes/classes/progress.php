@@ -13,7 +13,7 @@ class progress extends base {
 	var $table_images = "images";
 
 	
-	function progress() {
+	function __construct() {
 		$this->table_desc = DBPREFIX.$this->table_desc;
 		$this->table_elem = DBPREFIX.$this->table_elem;
 		$this->table_images = DBPREFIX.$this->table_images;

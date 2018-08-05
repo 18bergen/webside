@@ -63,7 +63,7 @@ class MIMEDECODE
      * @param string The input to decode
      * @access public
      */
-    function MIMEDECODE($input)
+    function __construct($input)
     {
         list($header, $body)   = $this->_split_body_header($input);
 

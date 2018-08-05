@@ -146,8 +146,8 @@ class calendar extends calendar_basic {
 	</item>
 	';
 
-	function calendar(){
-		$this->calendar_basic();
+	function __construct(){
+		parent::__construct();
 	}
 		
 	function sitemapListAllPages(){

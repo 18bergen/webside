@@ -3,7 +3,7 @@ class mailer extends base {
 
     var $tablename = "mailqueue";
 
-	function mailer() {
+	function __construct() {
 		$this->tablename = DBPREFIX.$this->tablename;
 	}
 	

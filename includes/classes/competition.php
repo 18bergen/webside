@@ -11,7 +11,7 @@ class competition extends base {
 
 	var $FCKeditorWidth = 450;
 	
-	function competition() {
+	function __construct() {
 		$this->table_desc = DBPREFIX.$this->table_desc;
 		$this->table_groups = DBPREFIX.$this->table_groups;
 		$this->table_rounds = DBPREFIX.$this->table_rounds;

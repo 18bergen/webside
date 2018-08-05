@@ -10,7 +10,7 @@ class contact_page extends base {
 	var $label_email;
 	var $label_form;
 	
-	function contact_page() {
+	function __construct() {
 		$this->table_vervhistorie = DBPREFIX.$this->table_vervhistorie;
 		$this->table_verv = DBPREFIX.$this->table_verv;
 		$this->table_memberlist = DBPREFIX.$this->table_memberlist;		

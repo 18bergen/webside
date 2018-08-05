@@ -113,7 +113,7 @@ class image_editor {
 	}
 	
 	/* Constructor (checks for gd on server) */
-	function image_editor(){
+	function __construct(){
 		$this->gd = false;
 		$this->gd2 = false;
 		ob_start();

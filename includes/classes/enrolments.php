@@ -200,7 +200,7 @@ class enrolments extends base {
 	   ======================================================================================== */
 	
 	// Constructor:
-	function enrolments() {
+	function __construct() {
 		$this->table_enrolments = DBPREFIX.$this->table_enrolments;
 		$this->table_enrolments_user = DBPREFIX.$this->table_enrolments_user;
 		$this->table_calendars = DBPREFIX.$this->table_calendars;

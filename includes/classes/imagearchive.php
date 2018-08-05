@@ -715,7 +715,7 @@ class imagearchive extends comments {
 		 General                                                               
 		 **************************************************************************************/
 	
-	function imagearchive() {
+	function __construct() {
 		$this->table_dirs = DBPREFIX.$this->table_dirs;
 		$this->table_files = DBPREFIX.$this->table_files;
 		$this->table_tags = DBPREFIX.$this->table_tags;
