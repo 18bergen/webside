@@ -535,7 +535,7 @@ class memberlist extends base {
 			$useragent = "unknown";
 			if (isset($_SERVER['HTTP_USER_AGENT'])) $useragent = $_SERVER['HTTP_USER_AGENT'];
 			if (isset($_SERVER['USER_AGENT'])) $useragent = $_SERVER['USER_AGENT'];
-			if ((strpos("unknown",$useragent) !== false) || (strpos("Googlebot",$useragent) !== false) || (isset($_GET['simulategoogle']))){
+			if ((strpos($useragent, "unknown") !== false) || (strpos($useragent, "Googlebot") !== false) || (isset($_GET['simulategoogle']))){
 				$tmp['FirstName'] = $tmp['MiddleName'] = $tmp['LastName'] = "[skjult]";
 			}
 			
@@ -700,7 +700,7 @@ class memberlist extends base {
 					case 'middlename':
 					case 'nickname':
 					case 'lastname':
-						if ((strpos("unknown",$useragent) !== false) || (strpos("Googlebot",$useragent) !== false) || (isset($_GET['simulategoogle']))){
+						if ((strpos($useragent, "unknown") !== false) || (strpos($useragent, "Googlebot") !== false) || (isset($_GET['simulategoogle']))){
 							$this->members[$id]->$n = "[skjult]";
 						} else {
 							$this->members[$id]->$n = $v;					
