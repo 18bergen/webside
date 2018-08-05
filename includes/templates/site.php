@@ -28,7 +28,7 @@
   <!-- JAVASCRIPT: -->
   <script type="text/javascript"> var site_rootdir = ""; </script>
   <script type="text/javascript" src="/libs/NiftyCube/niftycube.js"></script>
-  <script type="text/javascript" src="/libs/jquery/jquery-1.10.2.min.js"></script>
+  <script type="text/javascript" src="/libs/jquery/jquery-1.12.4.min.js"></script>
   <script type="text/javascript" src="/libs/jquery/jquery.nestable.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
   <script src="/libs/jquery.ui.datepicker-no.js"></script>
@@ -38,9 +38,9 @@
   <!-- The Canvas to Blob plugin is included for image resizing functionality -->
   <script src="//blueimp.github.io/JavaScript-Canvas-to-Blob/js/canvas-to-blob.min.js"></script>
 
-  <script type="text/javascript" src="/libs/jquery-file-upload-9.11.2/js/jquery.fileupload.js"></script>
-  <script type="text/javascript" src="/libs/jquery-file-upload-9.11.2/js/jquery.fileupload-process.js"></script>
-  <script type="text/javascript" src="/libs/jquery-file-upload-9.11.2/js/jquery.fileupload-image.js"></script>
+  <script type="text/javascript" src="/libs/jquery-file-upload-9.22.0/js/jquery.fileupload.js"></script>
+  <script type="text/javascript" src="/libs/jquery-file-upload-9.22.0/js/jquery.fileupload-process.js"></script>
+  <script type="text/javascript" src="/libs/jquery-file-upload-9.22.0/js/jquery.fileupload-image.js"></script>
 
   <!-- <script type="text/javascript" src="/libs/bootstrap/js/bootstrap.min.js"></script> -->
 
