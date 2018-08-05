@@ -41,8 +41,7 @@
  <li><a href="http://www.html.it/articoli/niftycube/">NiftyCube</a> for avrundede hjørner (inntil alle
  nettlesere får innebygget støtte for dette)</a>
  <li><a href="http://simplepie.org/">SimplePie</a> for å hente RSS</li>
- <li><a href="http://squirrelmail.org/">SquirrelMail</a> for Webmail.</li>
- <li><a href="http://www.phpguru.org/static/Rmail">RMail</a> (tidligere htmlMimeMail5) for å sende 
+ <li><a href="https://swiftmailer.symfony.com/">SwiftMailer</a> (tidligere htmlMimeMail5) for å sende 
  epost som både inneholder HTML og ren tekst versjoner.</li>
  <li>små script: <a href="http://couloir.org/js_slideshow/">Slideshow</a> av Scott Upton, 
  <a href="http://www.dhtmlgoodies.com/index.html?whichScript=image-crop">bildebeskjæring</a> 

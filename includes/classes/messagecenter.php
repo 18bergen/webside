@@ -2668,7 +2668,7 @@ class messagecenter extends base {
 
 	function generateTimeStamp($d,$m,$y, $h,$i){
 		// int mktime ( [int hour [, int minute [, int second [, int month [, int day [, int year [, int is_dst]]]]]]] )
-		return $timestamp = adodb_mktime($h,$i,0,$m,$d,$y);
+		return $timestamp = mktime($h,$i,0,$m,$d,$y);
 	}
 
 	function isValidEmail($email_address) {
