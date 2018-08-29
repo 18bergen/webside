@@ -1693,7 +1693,7 @@ class enrolments extends base {
 			
 			$to_name = $u->fullname;
 			$to_addr = $u->email;
-			$recipients = array($to_name => $to_addr);
+			$recipients = array($to_addr => $to_name);
 		
 			$server = "https://".$_SERVER['SERVER_NAME'];
 		
@@ -1780,7 +1780,7 @@ $server/
 			
 			$to_name = $u->fullname;
 			$to_addr = $u->email;
-			$recipients = array($to_name => $to_addr);
+			$recipients = array($to_addr => $to_name);
 		
 			$server = "https://".$_SERVER['SERVER_NAME'];
 		

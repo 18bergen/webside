@@ -1126,7 +1126,7 @@ class forum extends base {
 		
 		$to_name = $member->fullname;
 		$to_addr = $member->email;
-		$recipients = array($to_name => $to_addr);
+		$recipients = array($to_addr => $to_name);
 	
 		$server = "https://".$_SERVER['SERVER_NAME'];
 

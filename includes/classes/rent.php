@@ -463,7 +463,7 @@ class rent extends base {
 		
 		$to_name = $member->fullname;
 		$to_addr = $member->email;
-		$recipients = array($to_name => $to_addr);	
+		$recipients = array($to_addr => $to_name);	
 	
 		$plainBody = "$member->firstname,
 
@@ -506,7 +506,7 @@ $server
 		$behandler = call_user_func($this->lookup_member, $this->reg_behandler);
 		$to_name = $behandler->fullname;
 		$to_addr = $behandler->email;
-		$recipients = array($to_name => $to_addr);	
+		$recipients = array($to_addr => $to_name);	
 	
 		$plainBody = "
 $member->fullname ønsker å leie $hall $timeint.
