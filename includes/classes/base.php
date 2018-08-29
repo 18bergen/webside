@@ -114,23 +114,50 @@ class base {
 
 		
 		/* Search for urls starting with http:// */
-		$pattern = '('.   
+		$pattern = '('.
 			'https?:\/{2}'.   		  			// 1) http://
 			'[\w\.]{3,}?'.   		  			// 2) at least 2 "word" characters (alphanumeric plus "_") or dots
 			'[\/\w\-\.\?\+\&\=\#]*?'. 			// 3) matches the rest of the url
-			')'.$termination;	
-		$replacement = "'<a href=\"\\1\" title=\"\\1\" target=\"_blank\">'.(strlen('\\1')>=$chr_limit ? substr('\\1',0,$end_firstpart).'$add'.substr('\\1',$begin_secondpart):'\\1').'</a>\\2'";				
-		$text = preg_replace("/$pattern/ie", $replacement, $text);
-
+			')'.$termination;
+		$text = preg_replace_callback(
+			"/$pattern/i",
+			function($matches) use ($chr_limit, $add, $end_firstpart, $begin_secondpart) {
+				return sprintf(
+					'<a href="%s" title="%s" target="_blank">%s</a>%s',
+					$matches[1],
+					$matches[1],
+					((strlen($matches[1]) >= $chr_limit)
+						? substr($matches[1], 0, $end_firstpart). $add . substr($matches[1], $begin_secondpart)
+						: $matches[1]
+					),
+					$matches[2]
+				);
+			},
+			$text
+		);
 
 		/* Search for urls starting with www. */
 		$pattern = '( |\t|\n|^)'.   			// 0) prefixed by linebreak, whitespace or tab
 			'(www\.'.   		  				// 1) www.
 			'[\/\w\-\.\?\+\&\=\#]*?'. 			// 3) matches the rest of the url
 			')'.$termination;
-		$replacement = "'\\1<a href=\"http://\\2\" title=\"http://\\2\" target=\"_blank\">'.(strlen('\\2')>=$chr_limit ? substr('\\2',0,$end_firstpart).'$add'.substr('\\2',$begin_secondpart):'\\2').'</a>\\3'";
-		$text = preg_replace("/$pattern/ie", $replacement, $text);
-		
+		$text = preg_replace_callback(
+			"/$pattern/i",
+			function($matches) use ($chr_limit, $add, $end_firstpart, $begin_secondpart) {
+				return sprintf(
+					'%s<a href="http://%s" title="http://%s" target="_blank">%s</a>%s',
+					$matches[1],
+					$matches[2],
+					$matches[2],
+					((strlen($matches[2]) >= $chr_limit)
+						? substr($matches[2], 0, $end_firstpart). $add . substr($matches[2], $begin_secondpart)
+						: $matches[2]
+					),
+					$matches[3]
+				);
+			},
+			$text
+		);
 
 		/* Search for email addresses */
 		$pattern = '([\w\.-]{3,}@([\w]+\.)+[a-z]{2,3})';
