@@ -2003,7 +2003,7 @@ class messagecenter extends base {
               <li style='background:url(\"/images/icns/accept.png\") no-repeat left;padding:2px 2px 2px 20px;'>Levert til ".count($rcpts)." personer i 18. Bergens interne meldingssystem.</li>
             ";
             if ($_SESSION['message_status']['numqueued'] > 0) {
-              $output .= "<li style='background:url(\"/images/icns/accept.png\") no-repeat left;padding:2px 2px 2px 20px;'>Levert til  ".count($_SESSION['message_status']['numqueued'])." personer per epost.</li>";
+              $output .= "<li style='background:url(\"/images/icns/accept.png\") no-repeat left;padding:2px 2px 2px 20px;'>Levert til  " . $_SESSION['message_status']['numqueued'] ." personer per epost.</li>";
             }
             $notsent = count($_SESSION['message_status']['errors']);
             if ($notsent > 0) {
