@@ -1586,6 +1586,8 @@ https://".$_SERVER['SERVER_NAME']."$url
 		
 		if (isset($_POST['decline'])){
 			$this->query("UPDATE $this->tablename SET editable='0', processed='".time()."' WHERE id='$id'");
+
+			$recipients = array();
 					
 			$url = $this->generateURL(array("regview&regid=$id"));
 
