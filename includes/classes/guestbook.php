@@ -285,57 +285,7 @@ class guestbook extends base {
 			}
 			
 			$output .= "
-			<h2>$this->label_signourguestbook</h2>
-			<form method=\"post\" action=\"".$this->generateURL(array("noprint=true","gb_save"))."\"> 
-				<table>
-					<tr>
-						<td align='right'>
-							$this->label_name:
-						</td><td>
-							<input type=\"text\" name=\"".$fieldnames['name']."\" value=\"$value_name\" size=\"30\" />
-						</td>
-					</tr><tr>
-						<td align='right'>
-							$this->label_email:
-						</td><td>
-							<input type=\"text\" name=\"".$fieldnames['email']."\" value=\"$value_email\" size=\"30\" />
-						</td>
-					</tr><tr>
-						<td valign='top' align='right'>
-							$this->label_scoutgroup:
-						</td><td>
-							<input type=\"text\" name=\"".$fieldnames['scoutgroup']."\" value=\"$value_scoutgroup\" size=\"30\" /> 
-							<span style='color: #888888;font-size:80%;'>$this->label_maybeleftblank</span>
-						</td>
-					</tr><tr>
-						<td valign='top' align='right'>
-							$this->label_homepage:
-						</td><td>
-							<input type=\"text\" name=\"".$fieldnames['homepage']."\" value=\"$value_homepage\" size=\"30\" /> 
-							<span style='color: #888888;font-size:80%;'>$this->label_maybeleftblank</span>
-						</td>
-					</tr><tr>
-						<td valign=\"top\" align='right'>
-							$this->label_comment:
-						</td><td>
-							<textarea name=\"".$fieldnames['body']."\" cols=\"40\" rows=\"6\">$value_body</textarea>
-						</td>
-					</tr><tr>
-						<td valign=\"top\" align='right'>
-							$this->label_checkcode:
-						</td><td>
-							<img src=\"/verify.php\" alt='Verification image' /><br />
-							".$this->label_checkcodedesc."<br />
-							<input name=\"".$fieldnames['checkcode']."\" value=\"$value_checkcode\" size=\"20\" />
-						</td>
-					</tr><tr>
-						<td></td>
-						<td>
-							<input type=\"submit\" value=\"     $this->label_submit      \" /> 
-						</td>
-					</tr>
-				</table>
-			</form>
+			<p>Denne gjesteboken er avsluttet. Det går dessverre ikke lenger an å skrive i den.</p>
 			";
 			
 		}
