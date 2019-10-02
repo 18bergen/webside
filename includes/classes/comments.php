@@ -429,6 +429,9 @@ class comments extends base {
 
 	
  	function editCommentForm($post_id = 0){
+		if (empty($this->login_identifier)) {
+			return '';
+		}
 
         $comment_id = '_new';
 		if (isset($_GET['editComment'])){
