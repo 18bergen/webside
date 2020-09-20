@@ -56,12 +56,6 @@
 						<a href="/kommentarer">Vis siste kommentarer</a>.
 					</div>
 				</div>
-				
-				&nbsp;
-				<div id="bursdager">
-					%birthdays%	
-				</div>
-		
 				&nbsp;
 				<div id="statistikk">
 					<h2 class="small">Hvem er her nå?</h2>
