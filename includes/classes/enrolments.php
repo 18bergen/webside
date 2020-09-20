@@ -1722,7 +1722,7 @@ $server/
 				->setFrom([$from_addr => $from_name])
 				->setTo($recipients)
 				->setBody($plainBody);
-			$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+			$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'tls'))
 				->setUsername($this->smtpUser)
 				->setPassword($this->smtpPass);
 			$mailer = new Swift_Mailer($transport);
@@ -1806,7 +1806,7 @@ $server/
 				->setFrom(array($from_addr => $from_name))
 				->setTo($recipients)
 				->setBody($plainBody);
-			$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+			$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'tls'))
 				->setUsername($this->smtpUser)
 				->setPassword($this->smtpPass);
 			$mailer = new Swift_Mailer($transport);

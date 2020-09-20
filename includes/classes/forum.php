@@ -1147,7 +1147,7 @@ class forum extends base {
 			->setTo($recipients)
 			->setBody($body);
 
-		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'tls'))
 			->setUsername($this->smtpUser)
 			->setPassword($this->smtpPass);
 		$mailer = new Swift_Mailer($transport);
@@ -1181,7 +1181,7 @@ class forum extends base {
 			->setFrom(array($from_addr => $from_name))
 			->setTo($recipients)
 			->setBody($body);
-		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'tls'))
 			->setUsername($this->smtpUser)
 			->setPassword($this->smtpPass);
 		$mailer = new Swift_Mailer($transport);

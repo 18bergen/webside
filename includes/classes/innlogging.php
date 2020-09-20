@@ -249,7 +249,7 @@ class innlogging extends base {
 			->setFrom([$this->mailSenderAddr => $this->mailSenderName])
 			->setTo($recipients)
 			->setBody($plainBody);
-		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'tls'))
 			->setUsername($this->smtpUser)
 			->setPassword($this->smtpPass);
 		$mailer = new Swift_Mailer($transport);
