@@ -152,16 +152,10 @@ class mailer extends base {
 
         $message = (new Swift_Message())
 			->setSubject($subject)
-        	->setFrom([$sender_email => $sender_name]);
-        try {
-            $message->setTo([$rcpt_email => $rcpt_name]);
-        } catch (Swift_RfcComplianceException $e) {
-            $this->query("UPDATE $this->tablename SET permanent_failure=1 WHERE id=$id");
-            return array('mail_sent' => 'false', 'mail_left' => $queuesize, 'error_msg' => $e->getMessage() );
-        }
-
-        $message->setReplyTo([$sender_email => $sender_name]);
-        $message->setBody($plain_body);
+			->setFrom([$sender_email => $sender_name])
+			->setTo([$rcpt_email => $rcpt_name])
+			->setReplyTo([$sender_email => $sender_name])
+			->setBody($plain_body);
 
         //And optionally an alternative body
         if (!empty($html_body)) {
@@ -189,10 +183,16 @@ class mailer extends base {
 			->setPassword($this->smtpPass);
 		$mailer = new Swift_Mailer($transport);
 
+		$error = null;
+
 		try {
 			$numSent = $mailer->send($message);
-		} catch (Exception $e) {
+			if ($numSent === 0) {
+				$error = 'invalid_address';
+			}
+		} catch (Swift_TransportException $exc) {
 			$numSent = 0;
+			$error = $exc->getMessage();
 		}
 		if ($numSent) {
 			$this->query("UPDATE $this->tablename SET time_sent=NOW(), plain_body='HIDDEN', html_body='HIDDEN' WHERE id=$id");
@@ -205,6 +205,7 @@ class mailer extends base {
 		return [
 			'mail_sent' => $mail_sent ? 'true' : 'false',
 			'mail_left' => $queuesize,
+			'error' => $error,
 		];
 	}
 }
