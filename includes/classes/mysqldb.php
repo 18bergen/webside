@@ -6,12 +6,12 @@ class mysqldb extends mysqli {
 	public function __construct(){
 
 		parent::__construct(
-			getenv('MYSQL_HOST') ?: null,
-			getenv('MYSQL_USER'),
-			getenv('MYSQL_PASSWORD'),
-			getenv('MYSQL_DB'),
+			$_ENV['MYSQL_HOST'] ?: null,
+			$_ENV['MYSQL_USER'],
+			$_ENV['MYSQL_PASSWORD'],
+			$_ENV['MYSQL_DB'],
 			NULL,
-			getenv('MYSQL_SOCKET') ?: null
+			$_ENV['MYSQL_SOCKET'] ?: null
 		);
 
 		if (!empty($this->connect_error)) {

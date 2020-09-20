@@ -5,11 +5,10 @@ define('BG_INC_PATH', BG_ROOT_PATH . '/includes/');
 
 require_once(BG_ROOT_PATH . '/vendor/autoload.php');
 
-$dotenv = new Dotenv\Dotenv(BG_ROOT_PATH);
+$dotenv = Dotenv\Dotenv::createImmutable(BG_ROOT_PATH);
 $dotenv->load();
 
-$ravenClient = new Raven_Client(getenv('SENTRY_DSN'));
-$ravenClient->install();
+Sentry\init(['dsn' => $_ENV['SENTRY_DSN']]);
 
 require_once(BG_INC_PATH . 'head.php');
 require_once(BG_CLASS_PATH . 'ckfinderplugin.php');

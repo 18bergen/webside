@@ -478,17 +478,18 @@ $this->site_name
 $server
 ";
 
-		// Send mail		
-                $message = Swift_Message::newInstance();
-		$message->setSubject("$this->site_name - Søknad behandlet");
-                $message->setFrom(array($from_addr => $from_name));
-                $message->setTo($recipients);
-                $message->setBody($plainBody);
-                $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
-                $transport->setUsername($this->smtpUser);
-                $transport->setPassword($this->smtpPass);
-                $swiftmailer = Swift_Mailer::newInstance($transport);
-		$swiftmailer->send($message);
+		// Send mail
+		$message = (new Swift_Message())
+			->setSubject("$this->site_name - Søknad behandlet")
+			->setFrom([$from_addr => $from_name])
+			->setTo($recipients)
+			->setBody($plainBody);
+
+		$transport = (new Swift_SmtpTransport($this->smtpHost,$this->smtpPort, 'ssl'))
+			->setUsername($this->smtpUser)
+			->setPassword($this->smtpPass);
+		$mailer = new Swift_Mailer($transport);
+		$mailer->send($message);
 	}
 	
 	function mailNotificationNewApp($hall, $member, $startdate, $enddate, $allday, $comment){
@@ -521,17 +522,16 @@ $server
 ";
 
 		// Send mail		
-                $message = Swift_Message::newInstance();
-		$message->setSubject("$this->site_name - Søknad om leie av lokale");
-                $message->setFrom(array($from_addr => $from_name));
-                $message->setTo($recipients);
-                $message->setBody($plainBody);
-                $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
-                $transport->setUsername($this->smtpUser);
-                $transport->setPassword($this->smtpPass);
-                $swiftmailer = Swift_Mailer::newInstance($transport);
-		$swiftmailer->send($message);
-
+		$message = (new Swift_Message())
+			->setSubject("$this->site_name - Søknad om leie av lokale")
+			->setFrom([$from_addr => $from_name])
+			->setTo($recipients)
+			->setBody($plainBody);
+		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+			->setUsername($this->smtpUser)
+			->setPassword($this->smtpPass);
+		$mailer = new Swift_Mailer($transport);
+		$mailer->send($message);
 	}
 	
 	# PHP Calendar (version 2.3), written by Keith Devens

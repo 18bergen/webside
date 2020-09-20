@@ -2697,35 +2697,33 @@ class memberlist_actions extends memberlist {
 		$plainBody = str_replace($r1a, $r2a, $template);
 		
 		if ($preview) return $plainBody;
-		
-
-
-
-
 
 		// Send mail		
-                $message = Swift_Message::newInstance();
 		$recipients = array("$rcptmail");
-		if ($isReminder)
+		$message = (new Swift_Message())
+			->setFrom(array($this->mailSenderAddr => $this->mailSenderName))
+			->setTo($recipients)
+			->setBody($plainBody);
+		if ($isReminder) {
 			$message->setSubject("Påminnelse om brukerkonto hos $this->mailSenderName");
-		else
+		} else {
 			$message->setSubject("Velkommen til $this->mailSenderName");
-                $message->setFrom(array($this->mailSenderAddr => $this->mailSenderName));
-                $message->setTo($recipients);
-                $message->setBody($plainBody);
-                $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
-                $transport->setUsername($this->smtpUser);
-                $transport->setPassword($this->smtpPass);
-                $swiftmailer = Swift_Mailer::newInstance($transport);
-                try {
-                    $numSent = $swiftmailer->send($message);
-                } catch (Exception $e) {
-                    echo 'Mail sending failed: ',  $e->getMessage(), "\n";
-                    die;
-                }
-                if (!$numSent) { echo "Mail sending failed!"; die; }
+		}
+		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+			->setUsername($this->smtpUser)
+			->setPassword($this->smtpPass);
+		$mailer = new Swift_Mailer($transport);
+		$mailer->send($message);
 
-		if ($isReminder) 
+		try {
+			$numSent = $mailer->send($message);
+		} catch (Exception $e) {
+			echo 'Mail sending failed: ',  $e->getMessage(), "\n";
+			die;
+		}
+		if (!$numSent) { echo "Mail sending failed!"; die; }
+
+		if ($isReminder)
 			$this->addToActivityLog("sendte påminnelse om aktivering av brukernavn til ".$usr->fullname);
 		//else
 		//	$this->addToActivityLog("Velkomstmail sendt til ".$usr->fullname);

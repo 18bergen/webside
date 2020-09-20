@@ -1717,17 +1717,16 @@ $server/
 ";
 
 			// Send mail        
-	                $message = Swift_Message::newInstance();
-			$message->setSubject("Kvittering for påmelding til ".$this->event_obj['caption']);
-                        $message->setFrom(array($from_addr => $from_name));
-                        $message->setTo($recipients);
-                        $message->setBody($plainBody);
-                        $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
-                        $transport->setUsername($this->smtpUser);
-                        $transport->setPassword($this->smtpPass);
-                        $swiftmailer = Swift_Mailer::newInstance($transport);
-			$swiftmailer->send($message);
-
+			$message = (new Swift_Message())
+				->setSubject("Kvittering for påmelding til ".$this->event_obj['caption'])
+				->setFrom([$from_addr => $from_name])
+				->setTo($recipients)
+				->setBody($plainBody);
+			$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+				->setUsername($this->smtpUser)
+				->setPassword($this->smtpPass);
+			$mailer = new Swift_Mailer($transport);
+			$mailer->send($message);
 		}
 	}
 	
@@ -1735,7 +1734,6 @@ $server/
 		
 		$from_name = $this->mailSenderName; // global options
 		$from_addr = $this->mailSenderAddr; // global options
-		
 
 		$res = $this->query("SELECT 
 				$this->table_enrolments.id,
@@ -1803,19 +1801,16 @@ $server/
 ";
 
 			// Send mail        
-	                $message = Swift_Message::newInstance();
-			$message->setSubject("Kvittering for avmelding til ".$this->event_obj['caption']);
-                        $message->setFrom(array($from_addr => $from_name));
-                        $message->setTo($recipients);
-                        $message->setBody($plainBody);
-                        $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
-                        $transport->setUsername($this->smtpUser);
-                        $transport->setPassword($this->smtpPass);
-                        $swiftmailer = Swift_Mailer::newInstance($transport);
-			$swiftmailer->send($message);
-
-
-
+			$message = (new Swift_Message())
+				->setSubject("Kvittering for avmelding til ".$this->event_obj['caption'])
+				->setFrom(array($from_addr => $from_name))
+				->setTo($recipients)
+				->setBody($plainBody);
+			$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+				->setUsername($this->smtpUser)
+				->setPassword($this->smtpPass);
+			$mailer = new Swift_Mailer($transport);
+			$mailer->send($message);
 		}
 	}
 	

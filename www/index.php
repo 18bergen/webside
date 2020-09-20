@@ -9,11 +9,11 @@ if (($_SERVER['REMOTE_ADDR'] == "::1") || ($_SERVER['REMOTE_ADDR'] == "84.208.96
  }
  */
 require_once(dirname(__DIR__) . '/vendor/autoload.php');
-$dotenv = new Dotenv\Dotenv(dirname(__DIR__));
+
+$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 
-$ravenClient = new Raven_Client(getenv('SENTRY_DSN'));
-$ravenClient->install();
+Sentry\init(['dsn' => $_ENV['SENTRY_DSN']]);
 
 # DEBUG:
 # $whoops = new \Whoops\Run;
@@ -23,7 +23,7 @@ $ravenClient->install();
 define('BG_INC_PATH',dirname(dirname(__FILE__)).'/includes/');
 require_once(BG_INC_PATH.'head.php');
 
-if ($printTemplate) header("Content-Type: text/html; charset=utf-8"); 
+if (isset($printTemplate) && $printTemplate) header("Content-Type: text/html; charset=utf-8");
 
 require_once(BG_CLASS_PATH.'prefs.php');
 require_once(BG_CLASS_PATH.'cms_basic.php');

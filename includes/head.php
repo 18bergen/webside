@@ -107,9 +107,9 @@ $login->run();
 
 if ($login->isLoggedIn()) {
 	$dp0->login_identifier = $login->getUserId();
-	$ravenClient->user_context(array(
-	    'id' => $login->getUserId()
-	));
+	\Sentry\configureScope(function (\Sentry\State\Scope $scope) use ($login): void {
+		$scope->setUser(['id' => $login->getUserId()]);
+	});
 }
 
 ?>

@@ -1126,13 +1126,13 @@ class forum extends base {
 		
 		$to_name = $member->fullname;
 		$to_addr = $member->email;
-		$recipients = array($to_addr => $to_name);
+		$recipients = [$to_addr => $to_name];
 	
 		$server = "https://".$_SERVER['SERVER_NAME'];
 
 		$template = file_get_contents($this->template_dir.$this->template_threadupdated);
 		
-		$r1a = array(); $r2a = array();
+		$r1a = []; $r2a = [];
 		$r1a[] = '%recipient_name%';	$r2a[] = $member->firstname;
 		$r1a[] = '%topic%';				$r2a[] = $topic;
 		$r1a[] = '%site_name%';			$r2a[] = $_SERVER['SERVER_NAME'];
@@ -1141,16 +1141,17 @@ class forum extends base {
 		$body = str_replace($r1a, $r2a, $template);
 
 		// Send mail
-		$message = Swift_Message::newInstance();
-		$message->setSubject("[Forum] Varsel om svar på emne - $topic");
-		$message->setFrom(array($from_addr => $from_name));
-		$message->setTo($recipients);
-		$message->setBody($body);
-		$transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
-		$transport->setUsername($this->smtpUser);
-		$transport->setPassword($this->smtpPass);
-		$swiftmailer = Swift_Mailer::newInstance($transport);
-		$swiftmailer->send($message);
+		$message = (new Swift_Message())
+			->setSubject("[Forum] Varsel om svar på emne - $topic")
+			->setFrom([$from_addr => $from_name])
+			->setTo($recipients)
+			->setBody($body);
+
+		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+			->setUsername($this->smtpUser)
+			->setPassword($this->smtpPass);
+		$mailer = new Swift_Mailer($transport);
+		$mailer->send($message);
 	}
 	
 	function mailNotificationNewThread($topic,$url,$member){
@@ -1175,17 +1176,16 @@ class forum extends base {
 		$body = str_replace($r1a, $r2a, $template);
 
 		// Send mail
-		$message = Swift_Message::newInstance();
-		$message->setSubject("[Forum] Varsel om nytt tema");
-		$message->setFrom(array($from_addr => $from_name));
-		$message->setTo($recipients);
-		$message->setBody($body);
-		$transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
-		$transport->setUsername($this->smtpUser);
-		$transport->setPassword($this->smtpPass);
-		$swiftmailer = Swift_Mailer::newInstance($transport);
-		$swiftmailer->send($message);
-
+		$message = (new Swift_Message())
+			->setSubject("[Forum] Varsel om nytt tema")
+			->setFrom(array($from_addr => $from_name))
+			->setTo($recipients)
+			->setBody($body);
+		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+			->setUsername($this->smtpUser)
+			->setPassword($this->smtpPass);
+		$mailer = new Swift_Mailer($transport);
+		$mailer->send($message);
 	}
 
 	function saveNewPost(){

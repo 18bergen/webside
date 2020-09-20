@@ -159,17 +159,17 @@ class mailer extends base {
         $html_body = stripslashes($row['html_body']);
         $attachments = explode("|",stripslashes($row['attachments']));
 
-        $message = Swift_Message::newInstance();
-        $message->setSubject($subject);
-        $message->setFrom(array($sender_email => $sender_name));
+        $message = (new Swift_Message())
+			->setSubject($subject)
+        	->setFrom([$sender_email => $sender_name]);
         try {
-            $message->setTo(array($rcpt_email => $rcpt_name));
+            $message->setTo([$rcpt_email => $rcpt_name]);
         } catch (Swift_RfcComplianceException $e) {
             $this->query("UPDATE $this->tablename SET permanent_failure=1 WHERE id=$id");
             return array('mail_sent' => 'false', 'mail_left' => $queuesize, 'error_msg' => $e->getMessage() );
         }
 
-        $message->setReplyTo(array($sender_email => $sender_name));
+        $message->setReplyTo([$sender_email => $sender_name]);
         $message->setBody($plain_body);
 
         //And optionally an alternative body
@@ -219,15 +219,14 @@ class mailer extends base {
                 #print "<br />Trying mailer ".$mailer['user']."...";
                 
                 $this->query("UPDATE $this->tablename SET mailer=$mailer_id, attempts = attempts + 1 WHERE id=$id");
-        
-                $transport = Swift_SmtpTransport::newInstance($mailer['host'], $mailer['port'], $mailer['transport']);
-                $transport->setUsername($mailer['user']);
-                $transport->setPassword($mailer['pass']);
-                
-                $swiftmailer = Swift_Mailer::newInstance($transport);
-                
+
+				$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+					->setUsername($this->smtpUser)
+					->setPassword($this->smtpPass);
+				$mailer = new Swift_Mailer($transport);
+
                 try {
-                    $numSent = $swiftmailer->send($message);
+                    $numSent = $mailer->send($message);
                 } catch (Exception $e) {
                     $numSent = 0;
                     //echo 'Caught exception: ',  $e->getMessage(), "\n";

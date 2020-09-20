@@ -806,16 +806,16 @@ class comments extends base {
 	$recipients = array($to_addr => $to_name);
 
 		// Send mail
-		$message = Swift_Message::newInstance();
-		$message->setSubject($subject);
-		$message->setFrom(array($from_addr => $from_name));
-		$message->setTo($recipients);
-		$message->setBody($body);
-		$transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
-		$transport->setUsername($this->smtpUser);
-		$transport->setPassword($this->smtpPass);
-		$swiftmailer = Swift_Mailer::newInstance($transport);
-		$swiftmailer->send($message);
+		$message = (new Swift_Message())
+			->setSubject($subject)
+			->setFrom([$from_addr => $from_name])
+			->setTo($recipients)
+			->setBody($body);
+		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+			->setUsername($this->smtpUser)
+			->setPassword($this->smtpPass);
+		$mailer = new Swift_Mailer($transport);
+		$mailer->send($message);
 	}
 
 	

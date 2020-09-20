@@ -244,16 +244,16 @@ class innlogging extends base {
 		$recipients = array($rcptmail);
 
 		// Send mail
-                $message = Swift_Message::newInstance();
-		$message->setSubject("[$this->mailSenderName] Innloggingsopplysninger");
-                $message->setFrom(array($this->mailSenderAddr => $this->mailSenderName));
-                $message->setTo($recipients);
-                $message->setBody($plainBody);
-                $transport = Swift_SmtpTransport::newInstance($this->smtpHost,$this->smtpPort, 'ssl');
-                $transport->setUsername($this->smtpUser);
-                $transport->setPassword($this->smtpPass);
-                $swiftmailer = Swift_Mailer::newInstance($transport);
-		$swiftmailer->send($message);
+		$message = (new Swift_Message())
+			->setSubject("[$this->mailSenderName] Innloggingsopplysninger")
+			->setFrom([$this->mailSenderAddr => $this->mailSenderName])
+			->setTo($recipients)
+			->setBody($plainBody);
+		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+			->setUsername($this->smtpUser)
+			->setPassword($this->smtpPass);
+		$mailer = new Swift_Mailer($transport);
+		$mailer->send($message);
 
 		return true;
 	}
