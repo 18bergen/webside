@@ -134,15 +134,6 @@ class mailer extends base {
 	}
 	
 	function send_from_queue($attachment_dir = '') {
-	    global $bergen18globalconfig;
-
-                $mailer_working = array();
-                for ($i = 0; $i < count($bergen18globalconfig['smtpServers']); $i++) {
-                        $_SESSION['msg'] = "Meldingen er allerede sendt";
-                        $_SESSION['success'] = "success";
-                    $mailer_working[] = true;
-                }
-        	        
 		$res = $this->query("SELECT id, sender_name, sender_email, rcpt_name, rcpt_email, subject, plain_body, html_body, attachments FROM $this->tablename WHERE time_sent=0 AND permanent_failure=0 ORDER BY time_added");
 		$queuesize = $res->num_rows;
 		if ($queuesize == 0) {
@@ -187,63 +178,34 @@ class mailer extends base {
                 $message->attach(Swift_Attachment::fromPath($attachment_dir.$f));
             }
         }
-        
-        $mailer_id = 0;
-        $mailer_limit_reached = true;
-        $mail_sent = false; 
-        while (!$mail_sent) {
-            $mailer_id++;
-            if ($mailer_id > count($bergen18globalconfig['smtpServers'])) {
-                #$this->fatalError("Oi, vi har overskredet sendingskvoten vår. Meldingen din er lagt i kø, og blir sendt ved neste anledning.");
-                break;
-            }
-            if ($mailer_working[$mailer_id-1]) {
-                
-                $mailer = $bergen18globalconfig['smtpServers'][$mailer_id-1];
-                $res2 = $this->query("SELECT COUNT(id) FROM bg_mailqueue WHERE time_sent > (NOW() - INTERVAL 1 HOUR) AND mailer=$mailer_id");
-                $n = $res2->fetch_row();
-                $n = intval($n[0]);
-                #print "$n / ".$mailer['send_limit_per_hour']." mail sent from $mailer_id<br />";
-                $mailer_limit_reached = ($n >= $mailer['send_limit_per_hour']);
-                
-                $res2 = $this->query("SELECT COUNT(id) FROM bg_mailqueue WHERE time_sent > (NOW() - INTERVAL 1 DAY) AND mailer=$mailer_id");
-                $n = $res2->fetch_row();
-                $n = intval($n[0]);
-                #print "$n mail/day sent from $mailer_id<br />";
-                if ($mailer_limit_reached) {
-                    $mailer_working[$mailer_id-1] = false;
-                }
-            }
 
-            if ($mailer_working[$mailer_id-1]) {
-                #print "<br />Trying mailer ".$mailer['user']."...";
-                
-                $this->query("UPDATE $this->tablename SET mailer=$mailer_id, attempts = attempts + 1 WHERE id=$id");
+        $mail_sent = false;
+		$mailer_id = 1;
 
-				$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
-					->setUsername($this->smtpUser)
-					->setPassword($this->smtpPass);
-				$mailer = new Swift_Mailer($transport);
+		$this->query("UPDATE $this->tablename SET mailer=$mailer_id, attempts = attempts + 1 WHERE id=$id");
 
-                try {
-                    $numSent = $mailer->send($message);
-                } catch (Exception $e) {
-                    $numSent = 0;
-                    //echo 'Caught exception: ',  $e->getMessage(), "\n";
-                    $mailer_working[$mailer_id-1] = false;
-                }
-                if ($numSent) {
-                    $this->query("UPDATE $this->tablename SET time_sent=NOW(), plain_body='HIDDEN', html_body='HIDDEN' WHERE id=$id");
-                    $mail_sent = true;
-                    $queuesize -= 1;
-            		$_SESSION['msg'] = "Meldingen ble levert!";
-	            	$_SESSION['success'] = "success";
-                    #print "SENT";
-                }
-                #print "<br />";
-            }
-        }
-        return array('mail_sent' => $mail_sent?'true':'false', 'mail_left' => $queuesize);
-    }	
+		$transport = (new Swift_SmtpTransport($this->smtpHost, $this->smtpPort, 'ssl'))
+			->setUsername($this->smtpUser)
+			->setPassword($this->smtpPass);
+		$mailer = new Swift_Mailer($transport);
+
+		try {
+			$numSent = $mailer->send($message);
+		} catch (Exception $e) {
+			$numSent = 0;
+		}
+		if ($numSent) {
+			$this->query("UPDATE $this->tablename SET time_sent=NOW(), plain_body='HIDDEN', html_body='HIDDEN' WHERE id=$id");
+			$mail_sent = true;
+			$queuesize -= 1;
+			$_SESSION['msg'] = "Meldingen ble levert!";
+			$_SESSION['success'] = "success";
+		}
+
+		return [
+			'mail_sent' => $mail_sent ? 'true' : 'false',
+			'mail_left' => $queuesize,
+		];
+	}
 }
 ?>
