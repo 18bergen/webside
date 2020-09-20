@@ -48,14 +48,16 @@ function CheckAuthentication()
 
 // LicenseKey : Paste your license key here. If left blank, CKFinder will be
 // fully functional, in demo mode.
-require_once(dirname(dirname(dirname(__DIR__))) . '/vendor/autoload.php');
 
-$dotenv = Dotenv\Dotenv::createImmutable(dirname(dirname(dirname(__DIR__))));
+$baseDir18 = dirname(dirname(dirname(__DIR__)));
+require_once($baseDir18 . '/vendor/autoload.php');
+
+$dotenv = \Dotenv\Dotenv::createImmutable($baseDir18);
 $dotenv->load();
 
-Sentry\init(['dsn' => getenv('SENTRY_DSN')]);
+Sentry\init(['dsn' => $_ENV['SENTRY_DSN']]);
 
-$config['LicenseName'] = 'www.18bergen.org';
+$config['LicenseName'] = 'www.18bergen.no';
 $config['LicenseKey'] = $_ENV['CKFINDER_LICENSE_KEY'];
 
 /*

@@ -1,37 +1,35 @@
+# ------------------------------------
+# Cheat sheet
+# [L]: Last Rule
+# [NC]: Case-Insensitive Match
+# ------------------------------------
 
 AddDefaultCharset utf-8
 
 <IfModule mod_rewrite.c>
-  
   RewriteEngine on
 
+  # Rewrite to HTTPS
+  RewriteCond %{HTTPS} off
+  RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
-RewriteCond %{HTTPS} off
-# First rewrite to HTTPS:
-# Don't put www. here. If it is already there it will be included, if not
-# the subsequent rule will catch it.
-RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-# Now, rewrite any request to the wrong domain to use www.
-# [NC] is a case-insensitive match
-RewriteCond %{HTTP_HOST} !^www\. [NC]
-RewriteRule .* https://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  # Rewrite .org to .no
+  RewriteCond %{HTTP_HOST} ^www.18bergen.org$ [OR]
+  RewriteCond %{HTTP_HOST} ^18bergen.org$
+  RewriteRule .* https://www.18bergen.no%{REQUEST_URI} [R=301,L]
 
-  # Ignore
-  # [L]-flagget angir Last Rule
+  # Rewrite to www. subdomain
+  RewriteCond %{HTTP_HOST} !^www\.
+  RewriteRule .* https://www.%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
-  #RewriteRule ^$ nyheter/ [R,L]
-
-  # Treats the TestString as a pathname and tests if it exists and is a directory or a regular file.
+  # Regular files
   RewriteCond %{REQUEST_FILENAME} -d [OR]
   RewriteCond %{REQUEST_FILENAME} -f
   RewriteRule . - [L]
 
   RewriteRule ^sms-delivery-report /lederverktoy/sms/?noprint=true&sms_action=delivery_report&%{QUERY_STRING} [R,L]
 
+  # Use index.php as router for everything else
   RewriteRule . index.php?s=0002&%{QUERY_STRING}
-
 </IfModule>
-
-#php_value upload_max_filesize 1M
-#php_value extension_dir "./www/libs/pdflib/bind/php/php-520"
 
