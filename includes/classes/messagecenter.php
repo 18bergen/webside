@@ -304,7 +304,7 @@ class messagecenter extends base {
 		
 		$newsletterHeading = "";
 
-		if (!$this->isLoggedIn() || !isset($groupId)) {
+		if (!$this->isLoggedIn()) {
 			return $this->permissionDenied();
 		}
 
