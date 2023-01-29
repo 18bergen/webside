@@ -1,10 +1,10 @@
 {
     "name": "18bergen/webside",
     "require": {
-        "vlucas/phpdotenv": "^5.2",
-        "swiftmailer/swiftmailer": "^6.2",
-        "filp/whoops": "^2.1",
-        "sentry/sdk": "^2.2",
+        "vlucas/phpdotenv": "^5.5",
+        "swiftmailer/swiftmailer": "^6.3",
+        "filp/whoops": "^2.14",
+        "sentry/sdk": "^3.3",
         "ext-mysqli": "*"
     },
     "license": "MIT",
