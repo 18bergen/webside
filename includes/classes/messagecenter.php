@@ -304,7 +304,11 @@ class messagecenter extends base {
 		
 		$newsletterHeading = "";
 
-        // Lag liste over mottakere
+		if (!$this->isLoggedIn() || !isset($groupId)) {
+			return $this->permissionDenied();
+		}
+
+		// Lag liste over mottakere
         
 		if (isset($_SESSION['errors'])){
 			$i = 1;

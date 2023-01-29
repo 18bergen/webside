@@ -39,7 +39,6 @@ require_once(BG_INC_PATH.'functions/errormessage.php');
 require_once(BG_INC_PATH.'functions/printr.php');
 
 require_once(BG_CLASS_PATH.'base.php');
-require_once(BG_CLASS_PATH.'crypto.php');
 require_once(BG_CLASS_PATH.'mysqldb.php');
 require_once(BG_CLASS_PATH.'memberlist.php');
 require_once(BG_CLASS_PATH.'innlogging.php');
@@ -71,8 +70,6 @@ function isValidEmail($email_address) {
 	return (preg_match($regex, $email_address));
 }
 
-
-$crypto = new crypto();
 
 $db = new mysqldb();
 $db->image_dir = ROOT_DIR.'/images/';

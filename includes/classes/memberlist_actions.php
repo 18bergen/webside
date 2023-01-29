@@ -1632,7 +1632,7 @@ class memberlist_actions extends memberlist {
 			if (count($activity) > 0) {
 				if (count($activity) > 1) {
 					$last = array_pop($activity);
-					$activity = "Har skrevet ".implode($activity,', ').' og '.$last;
+					$activity = "Har skrevet ". implode(', ', $activity).' og '.$last;
 				} else {
 					$activity = "Har skrevet ".$activity[0];
 				}

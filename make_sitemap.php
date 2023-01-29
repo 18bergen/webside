@@ -24,7 +24,6 @@ require_once("includes/functions/printr.php");
 
 $classpath = "includes/classes";
 require_once("$classpath/base.php");
-require_once("$classpath/crypto.php");
 require_once("$classpath/mysqldb.php");
 require_once("$classpath/memberlist.php");
 require_once("$classpath/innlogging.php");
@@ -60,7 +59,6 @@ function isValidEmail($email_address) {
 	return (preg_match($regex, $email_address));
 }
  
-$crypto	= new crypto();
 $db		= new mysqldb();
 $db->image_dir = ROOT_DIR."/images/";
 unset($dbHost, $dbUser, $dbPass, $dbName);

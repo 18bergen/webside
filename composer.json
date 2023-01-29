@@ -5,7 +5,8 @@
         "swiftmailer/swiftmailer": "^6.3",
         "filp/whoops": "^2.14",
         "sentry/sdk": "^3.3",
-        "ext-mysqli": "*"
+        "ext-mysqli": "*",
+        "paragonie/halite": "^5"
     },
     "license": "MIT",
     "authors": [

@@ -17,20 +17,20 @@
 			<div class="col_below"></div>	    	
 			&nbsp;
 			
-			%right_col_extras%    
-		
+			%right_col_extras%
+
+			<!--
 			<div class="col_above"></div>
-			<div class="inner_col">
-		
-				<h1 style='display:none'>Sidefelt:</h1>
-					
-				<div id='snikksnakk_content'>
-					<h2>Snikk snakk</h2>
-					%wordbox%
-				</div>
-			</div>
-			<div class="col_below"></div>
-			
+	<div class="inner_col">
+
+		<h1 style='display:none'>Sidefelt:</h1>
+		<div id='snikksnakk_content'>
+			<h2>Snikk snakk</h2>
+			%wordbox%
+	</div>
+	<div class="col_below"></div>
+		</div>-->
+
 			&nbsp;
 			<div class="col_above"></div>
 			<div class="inner_col">

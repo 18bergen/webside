@@ -1,7 +1,8 @@
 <?php
+
 class innlogging extends base {
 
-	public $getvars = array("dologin","brukernavn","passord","dologout","sendpwd","passwordsent","loginfailed","sendlogininfo","lost_pass");
+	public $getvars = array("dologin","brukernavn","passord","dologout","sendpwd","passwordsent","loginfailed","sendlogininfo","lost_pass", "token");
 
 	/* PRIVATE */
 	private $memberdb;
@@ -44,7 +45,7 @@ class innlogging extends base {
 		$this->setGlobalOptions();
 	
 		$this->replaceContent = false;
-		if ((isset($_GET['loginfailed'])) || (isset($_GET['sendlogininfo'])) || (isset($_GET['passwordsent'])) || (isset($_GET['lost_pass']))){
+		if (isset($_GET['loginfailed']) || isset($_GET['sendlogininfo']) || isset($_GET['passwordsent']) || isset($_GET['lost_pass']) || isset($_GET['token']) || isset($_POST['reset_password'])){
 			$this->replaceContent = true;
 		}
 		
@@ -121,17 +122,16 @@ class innlogging extends base {
 	}
 
 	function doLogin($username, $password, $remberLogin){
-		global $crypto;
 		if (strlen($password) > $this->passwordLengthLimit){
 			return "GENERAL_ERROR";
 		}
-		
+
 		$res = $this->query("
 			SELECT user_id, pwd, sperret 
 			FROM $this->table_login
-			WHERE username=\"".addslashes($username)."\" 
-				AND (pwd=\"".addslashes($crypto->encrypt($password))."\" OR pwd='NOT_SET')"
+			WHERE username=\"".addslashes($username)."\""
 		);
+
 		// DEBUG: print "Hello $username,$password,".base64_encode($password);
 		//exit();
 		if ($res->num_rows == 1){
@@ -140,10 +140,16 @@ class innlogging extends base {
 			if (count($this->memberdb->getMemberById($ident)->memberof) == 0){
 				return "NO_MEMBERSHIPS";
 			} else if ($row['sperret'] == '1'){
-				return "ACCOUNT_LOCKED";			
+				return "ACCOUNT_LOCKED";
+			} else if ($row['pwd'] == 'PWD_RESET_NEEDED'){
+				return "PWD_RESET_NEEDED";
 			} else if ($row['pwd'] == 'NOT_SET'){
 				return "PWD_NOT_SET";
 			} else {
+				if (!password_verify($password, $row["pwd"])) {
+					return "INCORRECT_LOGIN";
+				}
+
 				/* Vi lager en unik session_id, som vi deler ut som cookie og lagrer i tabellen 
 				   så lenge brukeren er innlogget. */
 				$uniqueid = false;
@@ -314,17 +320,16 @@ class innlogging extends base {
 	}
 	
 	public function setPassword($user_id, $pwd) {
-		global $crypto;
 		$user_id = intval($user_id);
 		
 		if (mb_strlen($pwd,'UTF-8') < $this->_minPwdLen) return array('pwd_tooshort'); 
 		if (mb_strlen($pwd,'UTF-8') > $this->_maxPwdLen) return array('pwd_toolong'); 
 
-		// "Krypter" passord
-		$pwd = addslashes($crypto->encrypt($pwd));
+		// Hash passord
+		$pwd = addslashes(password_hash($pwd, PASSWORD_BCRYPT));
 
 		// Lagre passord
-		$this->query("UPDATE $this->table_login SET pwd=\"$pwd\" WHERE user_id='$user_id'");	
+		$this->query("UPDATE $this->table_login SET pwd=\"$pwd\", reset_token=NULL, reset_token_time=NULL WHERE user_id='$user_id'");
 		return array();
 	}
 	
@@ -346,6 +351,11 @@ class innlogging extends base {
 			$output .= $this->selectUserForm($_GET['sendlogininfo']);
 		} else if (isset($_GET['lost_pass'])){
 			$output .= $this->lostPassword($_GET['lost_pass']);
+		} else if (isset($_GET['token'])){
+			$output .= $this->resetPasswordForm($_GET['token']);
+		} else if (isset($_POST['reset_password'])){
+			$output .= $this->resetPassword();
+
 		} else if (isset($_GET['loginfailed'])){
 			$output .= "
 				<h1>Innloggingen ble avbrutt</h1>
@@ -382,6 +392,18 @@ class innlogging extends base {
 							få fjernet sperringen.
 						</p>
 					";
+					break;
+				case "PWD_RESET_NEEDED":
+					$output .= '
+						<h2>Du må bytte passord</h2>
+						<p>
+							Passordet ditt er for gammelt og må byttes.
+							Trykk på lenken under for å tilbakestille det.
+						</p>
+						<p class="headerLinks">
+							<a href="'.$this->generateURL('sendlogininfo='.$_SESSION['brukernavn']).'" class="icn readmore" >Tilbakestill passord</a>
+						</p>
+					';
 					break;
 				case "NO_MEMBERSHIPS":
 					$output .= "
@@ -421,24 +443,93 @@ class innlogging extends base {
 			}
 		} else if (isset($_GET['passwordsent'])){
 			$output .= '
-				<h1>Passord sendt!</h1>
+				<h1>E-post sendt!</h1>
 				<p>
-					Passordet ditt er sendt til '.$_GET['passwordsent'].' og vil antakelig være fremme ganske raskt. 
-					NB! Det kan være det havner i mappen "Useriøs epost", "Junk mail" eller lignende. 
+					En e-post er sendt til '.$_GET['passwordsent'].' med videre instruksjoner.
+				</p>
+				<p>NB! Det kan være det havner i mappen "Useriøs epost", "Junk mail" eller lignende. 
 					Du bør derfor sjekke disse hvis du ikke får eposten i innboksen din.
 				</p>
-				<p>
-					<a href="'.$this->generateURL("").'">Fortsett surfing</a>
-				</p>
+				
 			';
 		}
+
 		return $output;
 	}
 	
 	/* ___________________________ RETRIEVE PASSWORD STEP 1 _____________________________ */
-	
+
+	function resetPasswordForm($token) {
+
+		$res = $this->query("
+			SELECT user_id, reset_token_time 
+			FROM $this->table_login
+			WHERE reset_token=\"".addslashes($token)."\""
+		);
+
+		if ($res->num_rows == 1){
+			$row = $res->fetch_assoc();
+			if ($row['reset_token_time'] < time()-3600) {
+				return 'Tokenet er for gammelt. Prøv på nytt.';
+			}
+		} else {
+			return 'invalid token';
+		}
+
+		return '
+			<h1>Velg nytt passord</h1>
+			<form method="post" action="'.$this->generateURL("").'">
+				<p>
+					<input type="hidden" name="reset_password" value="true">
+					<input type="hidden" name="token" value="'.$token.'">
+					<table >
+						<tr><td>Ditt nye passord:</td><td><input type="password" size="30" name="nyttpassord1" /></td></tr>
+						<tr><td>Gjenta ditt nye passord:</td><td><input type="password" size="30" name="nyttpassord2" /></td></tr>
+					</table>
+				</p>
+				<p>
+					<input type="submit" value="Lagre">
+				</p>
+			</form>
+		';
+	}
+
+	function resetPassword() {
+
+		$token = $_POST['token'];
+
+		if (!$token) {
+			return 'missing token';
+		}
+		$res = $this->query("
+			SELECT user_id, reset_token_time 
+			FROM $this->table_login
+			WHERE reset_token=\"".addslashes($token)."\""
+		);
+		if ($res->num_rows == 1){
+			$row = $res->fetch_assoc();
+			$user_id = $row['user_id'];
+			if ($row['reset_token_time'] < time()-3600) {
+				return 'Tokenet er for gammelt. Prøv på nytt.';
+			}
+		} else {
+			return 'invalid token';
+		}
+		if (!$_POST["nyttpassord1"] || $_POST["nyttpassord1"] <> $_POST["nyttpassord2"]){
+			$_SESSION['errors'] = 'Du skrev ikke passordet likt begge gangene.';
+			$this->redirect($this->generateURL(''));
+		}
+		$errors = $this->setPassword($user_id,$_POST["nyttpassord1"]);
+		if (count($errors) > 0) {
+			$_SESSION['errors'] = array_unique($errors);
+			$this->redirect($this->generateURL(''));
+		}
+
+		$_SESSION['msg'] = 'Passordet ble lagret, du kan nå logge inn';
+		$this->redirect($this->generateURL(''));
+	}
+
 	function selectUserForm($username){
-		global $memberdb;
 		$def = -1;
 		if (!empty($username)) {
 			$res = $this->query("SELECT user_id FROM $this->table_login WHERE username=\"".addslashes($username)."\"");
@@ -457,7 +548,7 @@ class innlogging extends base {
 			$info = 'Hvem er du? '.$this->memberdb->generateMemberSelectBox('lost_pass',$def);
 		}
 		return '
-			<h1>Glemt brukernavn og/eller passord</h1>
+			<h1>Tilbakestill passord</h1>
 			<form method="get" action="'.$this->generateURL("").'">
 				<p>
 					'.$info.'
@@ -504,7 +595,7 @@ class innlogging extends base {
 			';			
 		}
 		$output = '
-			<h1>Glemt brukernavn og/eller passord</h1>
+			<h1>Tilbakestill passord</h1>
 			<form method="post" action="'.$this->generateURL(array('noprint=true','sendpwd=true')).'">
 				<p>
 					Vi kan sende brukernavn og passord til e-postadressen registrert på
@@ -550,8 +641,6 @@ class innlogging extends base {
 	/* ___________________________ RETRIEVE PASSWORD STEP 3 _____________________________ */
 
 	function sendPassword(){
-		global $crypto;
-		
 		if (!isset($_POST['random'])) $this->fatalError("invalid input .1.0");
 		if (!isset($_POST['user_id'])) $this->fatalError("invalid input .1.1");
 		if (!isset($_POST['sendtil'])) $this->fatalError("invalid input .1.2");
@@ -565,7 +654,7 @@ class innlogging extends base {
 		if (!$this->memberdb->isUser($sendtil)) $this->fatalError("invalid input .3.2");
 		$m = $this->memberdb->getMemberById($id);
 		$g = $this->memberdb->getMemberById($sendtil);
-		
+
 		if (strtoupper($random) != $_SESSION['stv18bg']) {
 			$this->redirect($this->generateURL("lost_pass=$id"), "Du skrev ikke inn riktig tekst fra kodebildet. Prøv igjen.", "error");
 		}
@@ -579,19 +668,30 @@ class innlogging extends base {
 
 		$rcptmail = $g->email;
 		$rcptname = $g->fullname;
-		
+
 		$res = $this->query("SELECT username,pwd FROM $this->table_login WHERE user_id=$id");
 		if ($res->num_rows != 1) $this->fatalError('Ugyldig antall personer eksisterer for gitt kriterium');
 		$row = $res->fetch_assoc();
 		if ($row['pwd'] == 'NOT_SET') {
 			$this->redirect($this->generateURL('loginfailed=PWD_NOT_SET'));
-		}		
-		$subject = "Innloggingsopplysninger for ".$this->server_name;
+		}
+
+		$resetToken = bin2hex(random_bytes(78));
+		$this->query("
+			UPDATE $this->table_login
+			SET reset_token = \"" . addslashes($resetToken) ."\"
+			    , reset_token_time = " . time() . "
+			WHERE user_id=$id
+		");
+
+
+		$subject = "Nytt passord for ".$this->server_name;
 		$url_root = 'https://'.$_SERVER['SERVER_NAME'].ROOT_DIR.'/';
-		$plainBody = "Navn: ".$m->fullname."\nBrukernavn: ".stripslashes($row['username'])."\r\n".
-			"Passord: ".$crypto->decrypt(stripslashes($row['pwd'])).
+		$plainBody = "Hei ".$m->fullname."!\n\nBrukernavnet ditt er: ".stripslashes($row['username'])."\n\n".
+			"For å sette nytt passord, trykk på denne lenken:\n\n".
+			"https://www.18bergen.no" . $this->generateURL('token='. $resetToken) .
 			"\r\n\r\n".
-			"-- \r\nDette er en auto-generert utsendelse.\r\n$url_root";
+			"-- \r\nDette er en auto-generert utsendelse";
 		
 
         // Send mail
